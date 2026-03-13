@@ -10,20 +10,25 @@ if ($Help) {
     Write-Host @"
 PostgreSQL Database Replication Script
 ======================================
-This script copies PostgreSQL databases from a remote server to a local Docker container.
+This script copies PostgreSQL databases from a remote server to either a local Docker 
+container or another PostgreSQL host.
 
 Usage: .\Copy-PostgresDatabases.ps1
 
 The script will prompt for:
 - Remote server connection details (host, port, user, password)
   - Optional: database for initial connection (defaults to 'postgres')
-- Local Docker container details (container name, database name, password, port)
-- Optional: Local path for database persistence
+- Destination selection (Local Docker or Another Host)
+- If Local Docker:
+  - Docker container details (container name, database name, password, port)
+  - Optional: Local path for database persistence
+- If Another Host:
+  - Destination server connection details (host, port, user, password)
 - Database selection for copying
 
 Requirements:
-- Docker installed and running
-- Network access to remote PostgreSQL server
+- Docker installed and running (if using Docker destination)
+- Network access to remote PostgreSQL server (and destination if using another host)
 - PostgreSQL client tools (psql, pg_dump) installed locally OR Docker
 "@
     exit
@@ -92,12 +97,6 @@ function Get-RemoteDatabases {
 Write-Host "PostgreSQL Database Replication Script" -ForegroundColor Cyan
 Write-Host "======================================`n" -ForegroundColor Cyan
 
-# Check if Docker is running
-if (-not (Test-Docker)) {
-    Write-Host "Error: Docker is not running. Please start Docker and try again." -ForegroundColor Red
-    exit 1
-}
-
 # Check if local psql is available
 $useLocalPsql = Test-PsqlLocal
 if ($useLocalPsql) {
@@ -105,6 +104,12 @@ if ($useLocalPsql) {
 }
 else {
     Write-Host "Using Docker for PostgreSQL client tools (requires --network host)" -ForegroundColor Yellow
+    # Check if Docker is running (needed for client tools)
+    if (-not (Test-Docker)) {
+        Write-Host "Error: Docker is not running. Please start Docker and try again." -ForegroundColor Red
+        Write-Host "Docker is required for PostgreSQL client tools since psql is not installed locally." -ForegroundColor Yellow
+        exit 1
+    }
 }
 
 # Get remote server details
@@ -117,36 +122,71 @@ if ([string]::IsNullOrWhiteSpace($remoteDb)) { $remoteDb = "postgres" }
 $remoteUser = Read-Host "Remote user"
 $remotePassword = Read-Host "Remote password" -AsSecureString
 
-Write-Host "`nLocal Docker Container Details:" -ForegroundColor Yellow
-$containerName = Read-Host "Container name"
-$localPort = Read-Host "Local port (default: 5432)"
-if ([string]::IsNullOrWhiteSpace($localPort)) { $localPort = "5432" }
-$localDb = Read-Host "Local database name"
-$localPassword = Read-Host "Local postgres password" -AsSecureString
+# Ask for destination type
+Write-Host "`nDestination Selection:" -ForegroundColor Yellow
+Write-Host "  [1] Local Docker Container"
+Write-Host "  [2] Another PostgreSQL Host"
+$destChoice = Read-Host "Select destination (1 or 2)"
 
-Write-Host "`nDatabase Persistence:" -ForegroundColor Yellow
-$dataPath = Read-Host "Local path for database storage (leave empty for no persistence)"
-if (-not [string]::IsNullOrWhiteSpace($dataPath)) {
-    # Create directory if it doesn't exist
-    if (-not (Test-Path $dataPath)) {
-        Write-Host "Creating directory: $dataPath" -ForegroundColor Yellow
-        New-Item -ItemType Directory -Path $dataPath -Force | Out-Null
+$useDocker = $destChoice -eq "1"
+
+if ($useDocker) {
+    # Check if Docker is running for container destination
+    if (-not (Test-Docker)) {
+        Write-Host "Error: Docker is not running. Please start Docker and try again." -ForegroundColor Red
+        exit 1
     }
+    
+    # Local Docker configuration
+    Write-Host "`nLocal Docker Container Details:" -ForegroundColor Yellow
+    $containerName = Read-Host "Container name"
+    $localPort = Read-Host "Local port (default: 5432)"
+    if ([string]::IsNullOrWhiteSpace($localPort)) { $localPort = "5432" }
+    $localDb = Read-Host "Local database name"
+    $localPassword = Read-Host "Local postgres password" -AsSecureString
+
+    Write-Host "`nDatabase Persistence:" -ForegroundColor Yellow
+    $dataPath = Read-Host "Local path for database storage (leave empty for no persistence)"
+    if (-not [string]::IsNullOrWhiteSpace($dataPath)) {
+        # Create directory if it doesn't exist
+        if (-not (Test-Path $dataPath)) {
+            Write-Host "Creating directory: $dataPath" -ForegroundColor Yellow
+            New-Item -ItemType Directory -Path $dataPath -Force | Out-Null
+        }
+    }
+}
+else {
+    # Another PostgreSQL host configuration
+    Write-Host "`nDestination PostgreSQL Host Details:" -ForegroundColor Yellow
+    $destHost = Read-Host "Destination host"
+    $destPort = Read-Host "Destination port (default: 5432)"
+    if ([string]::IsNullOrWhiteSpace($destPort)) { $destPort = "5432" }
+    $destDb = Read-Host "Destination database for initial connection (default: postgres)"
+    if ([string]::IsNullOrWhiteSpace($destDb)) { $destDb = "postgres" }
+    $destUser = Read-Host "Destination user"
+    $destPassword = Read-Host "Destination password" -AsSecureString
 }
 
 # Convert secure strings to plain text
 $BSTR_Remote = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($remotePassword)
 $plainRemotePassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR_Remote)
 
-$BSTR_Local = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($localPassword)
-$plainLocalPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR_Local)
+if ($useDocker) {
+    $BSTR_Local = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($localPassword)
+    $plainLocalPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR_Local)
+}
+else {
+    $BSTR_Dest = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($destPassword)
+    $plainDestPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR_Dest)
+}
 
-# Check if container already exists
-$existingContainer = docker ps -a --filter "name=^/${containerName}$" --format "{{.Names}}"
+if ($useDocker) {
+    # Check if container already exists
+    $existingContainer = docker ps -a --filter "name=^/${containerName}$" --format "{{.Names}}"
 
-if ($existingContainer) {
-    Write-Host "`nContainer '$containerName' already exists." -ForegroundColor Yellow
-    $action = Read-Host "Do you want to (S)top and remove it, (U)se existing, or (C)ancel? [S/U/C]"
+    if ($existingContainer) {
+        Write-Host "`nContainer '$containerName' already exists." -ForegroundColor Yellow
+        $action = Read-Host "Do you want to (S)top and remove it, (U)se existing, or (C)ancel? [S/U/C]"
     
     switch ($action.ToUpper()) {
         "S" {
@@ -164,44 +204,74 @@ if ($existingContainer) {
             exit 0
         }
     }
-}
+    }
 
-# Start PostgreSQL container if not using existing
-if (-not $useExisting) {
-    Write-Host "`nStarting PostgreSQL Docker container..." -ForegroundColor Green
-    
-    # Build docker run command
-    $dockerArgs = @(
-        "run", "--name", $containerName,
-        "-e", "POSTGRES_PASSWORD=$plainLocalPassword",
-        "-e", "POSTGRES_DB=$localDb",
-        "-p", "${localPort}:5432"
-    )
-    
-    # Add volume mount if path was provided
-    if (-not [string]::IsNullOrWhiteSpace($dataPath)) {
-        $dockerArgs += "-v"
-        $dockerArgs += "${dataPath}:/var/lib/postgresql/data"
-        Write-Host "Database will be persisted to: $dataPath" -ForegroundColor Green
+    # Start PostgreSQL container if not using existing
+    if (-not $useExisting) {
+        Write-Host "`nStarting PostgreSQL Docker container..." -ForegroundColor Green
+        
+        # Build docker run command
+        $dockerArgs = @(
+            "run", "--name", $containerName,
+            "-e", "POSTGRES_PASSWORD=$plainLocalPassword",
+            "-e", "POSTGRES_DB=$localDb",
+            "-p", "${localPort}:5432"
+        )
+        
+        # Add volume mount if path was provided
+        if (-not [string]::IsNullOrWhiteSpace($dataPath)) {
+            $dockerArgs += "-v"
+            $dockerArgs += "${dataPath}:/var/lib/postgresql/data"
+            Write-Host "Database will be persisted to: $dataPath" -ForegroundColor Green
+        }
+        else {
+            Write-Host "Database will NOT be persisted (data will be lost when container is removed)" -ForegroundColor Yellow
+        }
+        
+        $dockerArgs += "-d"
+        $dockerArgs += "postgres:latest"
+        
+        & docker $dockerArgs
+        
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "Error: Failed to start Docker container" -ForegroundColor Red
+            Write-Host "Tip: Port $localPort might already be in use. Try a different port." -ForegroundColor Yellow
+            Write-Host "      Or the data path might already be in use by another PostgreSQL instance." -ForegroundColor Yellow
+            exit 1
+        }
+        
+        Write-Host "Waiting for PostgreSQL to be ready..." -ForegroundColor Yellow
+        Start-Sleep -Seconds 10
     }
-    else {
-        Write-Host "Database will NOT be persisted (data will be lost when container is removed)" -ForegroundColor Yellow
+}
+else {
+    # Test connection to destination host
+    Write-Host "`nTesting connection to destination PostgreSQL host..." -ForegroundColor Green
+    $env:PGPASSWORD = $plainDestPassword
+    
+    try {
+        $query = "SELECT 1;"
+        
+        if ($useLocalPsql) {
+            $testDest = psql -h $destHost -p $destPort -U $destUser -d $destDb -t -A -c $query 2>&1
+        }
+        else {
+            $testDest = docker run --rm --network host -e PGPASSWORD=$plainDestPassword postgres:latest psql -h $destHost -p $destPort -U $destUser -d $destDb -t -A -c $query 2>&1
+        }
+        
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to connect to destination database. Error: $testDest"
+        }
+        
+        Write-Host "Successfully connected to destination host" -ForegroundColor Green
     }
-    
-    $dockerArgs += "-d"
-    $dockerArgs += "postgres:latest"
-    
-    & docker $dockerArgs
-    
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "Error: Failed to start Docker container" -ForegroundColor Red
-        Write-Host "Tip: Port $localPort might already be in use. Try a different port." -ForegroundColor Yellow
-        Write-Host "      Or the data path might already be in use by another PostgreSQL instance." -ForegroundColor Yellow
+    catch {
+        Write-Host "Error: $_" -ForegroundColor Red
         exit 1
     }
-    
-    Write-Host "Waiting for PostgreSQL to be ready..." -ForegroundColor Yellow
-    Start-Sleep -Seconds 10
+    finally {
+        Remove-Item Env:\PGPASSWORD -ErrorAction SilentlyContinue
+    }
 }
 
 # Get list of databases from remote server
@@ -295,59 +365,138 @@ try {
     }
     
     # Step 2: Restore backups to local Docker container
-    Write-Host "`n`nStep 2: Restoring $($successfulBackups.Count) database(s) to local Docker container..." -ForegroundColor Cyan
-    
-    foreach ($backup in $successfulBackups) {
-        $db = $backup.Database
-        $backupFile = $backup.File
+    if ($useDocker) {
+        Write-Host "`n`nStep 2: Restoring $($successfulBackups.Count) database(s) to local Docker container..." -ForegroundColor Cyan
         
-        Write-Host "`n  Restoring database: $db" -ForegroundColor Yellow
-        
-        # Create database on local container
-        Write-Host "    Creating database on local container..." -ForegroundColor Gray
-        $env:PGPASSWORD = $plainLocalPassword
-        
-        # Check if database already exists
-        $checkDb = docker exec $containerName psql -U postgres -t -A -c "SELECT 1 FROM pg_database WHERE datname='$db';" 2>&1
-        
-        if ($checkDb -match "1") {
-            Write-Host "    Database '$db' already exists, dropping it first..." -ForegroundColor Gray
-            "DROP DATABASE `"$db`";" | docker exec -i $containerName psql -U postgres 2>&1 | Out-Null
-        }
-        
-        # Create the database
-        $createResult = "CREATE DATABASE `"$db`";" | docker exec -i $containerName psql -U postgres 2>&1
-        
-        if ($LASTEXITCODE -ne 0) {
-            Write-Host "    Error creating database '$db': $createResult" -ForegroundColor Red
+        foreach ($backup in $successfulBackups) {
+            $db = $backup.Database
+            $backupFile = $backup.File
+            
+            Write-Host "`n  Restoring database: $db" -ForegroundColor Yellow
+            
+            # Create database on local container
+            Write-Host "    Creating database on local container..." -ForegroundColor Gray
+            $env:PGPASSWORD = $plainLocalPassword
+            
+            # Check if database already exists
+            $checkDb = docker exec $containerName psql -U postgres -t -A -c "SELECT 1 FROM pg_database WHERE datname='$db';" 2>&1
+            
+            if ($checkDb -match "1") {
+                Write-Host "    Database '$db' already exists, dropping it first..." -ForegroundColor Gray
+                "DROP DATABASE `"$db`";" | docker exec -i $containerName psql -U postgres 2>&1 | Out-Null
+            }
+            
+            # Create the database
+            $createResult = "CREATE DATABASE `"$db`";" | docker exec -i $containerName psql -U postgres 2>&1
+            
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host "    Error creating database '$db': $createResult" -ForegroundColor Red
+                Remove-Item Env:\PGPASSWORD -ErrorAction SilentlyContinue
+                continue
+            }
+            
+            # Restore from backup file
+            Write-Host "    Restoring from backup file..." -ForegroundColor Gray
+            Get-Content $backupFile | docker exec -i $containerName psql -U postgres -d $db 2>&1 | Out-Null
+            
             Remove-Item Env:\PGPASSWORD -ErrorAction SilentlyContinue
-            continue
+            
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "    Successfully restored $db" -ForegroundColor Green
+            }
+            else {
+                Write-Host "    Failed to restore $db (some warnings may be normal)" -ForegroundColor Yellow
+            }
         }
+    }
+    else {
+        # Restore to another PostgreSQL host
+        Write-Host "`n`nStep 2: Restoring $($successfulBackups.Count) database(s) to destination PostgreSQL host..." -ForegroundColor Cyan
         
-        # Restore from backup file
-        Write-Host "    Restoring from backup file..." -ForegroundColor Gray
-        Get-Content $backupFile | docker exec -i $containerName psql -U postgres -d $db 2>&1 | Out-Null
-        
-        Remove-Item Env:\PGPASSWORD -ErrorAction SilentlyContinue
-        
-        if ($LASTEXITCODE -eq 0) {
-            Write-Host "    Successfully restored $db" -ForegroundColor Green
-        }
-        else {
-            Write-Host "    Failed to restore $db (some warnings may be normal)" -ForegroundColor Yellow
+        foreach ($backup in $successfulBackups) {
+            $db = $backup.Database
+            $backupFile = $backup.File
+            
+            Write-Host "`n  Restoring database: $db" -ForegroundColor Yellow
+            
+            # Create database on destination host
+            Write-Host "    Creating database on destination host..." -ForegroundColor Gray
+            $env:PGPASSWORD = $plainDestPassword
+            
+            # Check if database already exists
+            if ($useLocalPsql) {
+                $checkDb = psql -h $destHost -p $destPort -U $destUser -d $destDb -t -A -c "SELECT 1 FROM pg_database WHERE datname='$db';" 2>&1
+            }
+            else {
+                $checkDb = docker run --rm --network host -e PGPASSWORD=$plainDestPassword postgres:latest psql -h $destHost -p $destPort -U $destUser -d $destDb -t -A -c "SELECT 1 FROM pg_database WHERE datname='$db';" 2>&1
+            }
+            
+            if ($checkDb -match "1") {
+                Write-Host "    Database '$db' already exists, dropping it first..." -ForegroundColor Gray
+                
+                if ($useLocalPsql) {
+                    "DROP DATABASE `"$db`";" | psql -h $destHost -p $destPort -U $destUser -d $destDb 2>&1 | Out-Null
+                }
+                else {
+                    docker run --rm --network host -e PGPASSWORD=$plainDestPassword postgres:latest psql -h $destHost -p $destPort -U $destUser -d $destDb -c "DROP DATABASE `"$db`";" 2>&1 | Out-Null
+                }
+            }
+            
+            # Create the database
+            if ($useLocalPsql) {
+                $createResult = "CREATE DATABASE `"$db`";" | psql -h $destHost -p $destPort -U $destUser -d $destDb 2>&1
+            }
+            else {
+                $createResult = docker run --rm --network host -e PGPASSWORD=$plainDestPassword postgres:latest psql -h $destHost -p $destPort -U $destUser -d $destDb -c "CREATE DATABASE `"$db`";" 2>&1
+            }
+            
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host "    Error creating database '$db': $createResult" -ForegroundColor Red
+                Remove-Item Env:\PGPASSWORD -ErrorAction SilentlyContinue
+                continue
+            }
+            
+            # Restore from backup file
+            Write-Host "    Restoring from backup file..." -ForegroundColor Gray
+            
+            if ($useLocalPsql) {
+                Get-Content $backupFile | psql -h $destHost -p $destPort -U $destUser -d $db 2>&1 | Out-Null
+            }
+            else {
+                Get-Content $backupFile | docker run --rm -i --network host -e PGPASSWORD=$plainDestPassword postgres:latest psql -h $destHost -p $destPort -U $destUser -d $db 2>&1 | Out-Null
+            }
+            
+            Remove-Item Env:\PGPASSWORD -ErrorAction SilentlyContinue
+            
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "    Successfully restored $db" -ForegroundColor Green
+            }
+            else {
+                Write-Host "    Failed to restore $db (some warnings may be normal)" -ForegroundColor Yellow
+            }
         }
     }
     
     Write-Host "`n`nDatabase replication complete!" -ForegroundColor Green
     Write-Host "`nBackup files saved to: $backupDir" -ForegroundColor Cyan
-    Write-Host "`nConnection details for local databases:" -ForegroundColor Cyan
-    Write-Host "  Host: localhost"
-    Write-Host "  Port: $localPort"
-    Write-Host "  User: postgres"
-    Write-Host "  Container: $containerName"
-    if (-not [string]::IsNullOrWhiteSpace($dataPath)) {
-        Write-Host "  Data Path: $dataPath" -ForegroundColor Green
+    
+    if ($useDocker) {
+        Write-Host "`nConnection details for local databases:" -ForegroundColor Cyan
+        Write-Host "  Host: localhost"
+        Write-Host "  Port: $localPort"
+        Write-Host "  User: postgres"
+        Write-Host "  Container: $containerName"
+        if (-not [string]::IsNullOrWhiteSpace($dataPath)) {
+            Write-Host "  Data Path: $dataPath" -ForegroundColor Green
+        }
     }
+    else {
+        Write-Host "`nConnection details for destination databases:" -ForegroundColor Cyan
+        Write-Host "  Host: $destHost"
+        Write-Host "  Port: $destPort"
+        Write-Host "  User: $destUser"
+    }
+    
     Write-Host "`nRestored databases:"
     foreach ($backup in $successfulBackups) {
         Write-Host "  - $($backup.Database)"
