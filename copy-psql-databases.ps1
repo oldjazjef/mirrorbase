@@ -339,12 +339,12 @@ try {
         Write-Host "    Dumping to local file..." -ForegroundColor Gray
         
         if ($useLocalPsql) {
-            # Use local pg_dump
-            pg_dump -h $remoteHost -p $remotePort -U $remoteUser -d $db --no-owner --no-acl -f $backupFile 2>&1 | Out-Null
+            # Use local pg_dump (force UTF-8 output so special characters like umlauts survive)
+            pg_dump -h $remoteHost -p $remotePort -U $remoteUser -d $db --no-owner --no-acl --encoding=UTF8 -f $backupFile 2>&1 | Out-Null
         }
         else {
-            # Use Docker with host network, redirect output to file
-            docker run --rm --network host -e PGPASSWORD=$plainRemotePassword -v "${backupDir}:/backups" postgres:latest pg_dump -h $remoteHost -p $remotePort -U $remoteUser -d $db --no-owner --no-acl -f "/backups/$db.sql" 2>&1 | Out-Null
+            # Use Docker with host network, redirect output to file (force UTF-8 output)
+            docker run --rm --network host -e PGPASSWORD=$plainRemotePassword -v "${backupDir}:/backups" postgres:latest pg_dump -h $remoteHost -p $remotePort -U $remoteUser -d $db --no-owner --no-acl --encoding=UTF8 -f "/backups/$db.sql" 2>&1 | Out-Null
         }
         
         Remove-Item Env:\PGPASSWORD -ErrorAction SilentlyContinue
@@ -396,8 +396,13 @@ try {
             }
             
             # Restore from backup file
+            # Copy the file directly into the container and restore with -f so no PowerShell
+            # text pipeline re-encoding happens (which corrupts umlauts and other non-ASCII characters).
             Write-Host "    Restoring from backup file..." -ForegroundColor Gray
-            Get-Content $backupFile | docker exec -i $containerName psql -U postgres -d $db 2>&1 | Out-Null
+            $containerBackupPath = "/tmp/$db.sql"
+            docker cp $backupFile "${containerName}:${containerBackupPath}"
+            docker exec $containerName psql -U postgres -d $db -f $containerBackupPath 2>&1 | Out-Null
+            docker exec $containerName rm -f $containerBackupPath 2>&1 | Out-Null
             
             Remove-Item Env:\PGPASSWORD -ErrorAction SilentlyContinue
             
@@ -457,13 +462,15 @@ try {
             }
             
             # Restore from backup file
+            # Pass the file directly to psql (-f) instead of piping through PowerShell's Get-Content,
+            # which re-encodes text using the console codepage and corrupts umlauts/non-ASCII characters.
             Write-Host "    Restoring from backup file..." -ForegroundColor Gray
             
             if ($useLocalPsql) {
-                Get-Content $backupFile | psql -h $destHost -p $destPort -U $destUser -d $db 2>&1 | Out-Null
+                psql -h $destHost -p $destPort -U $destUser -d $db -f $backupFile 2>&1 | Out-Null
             }
             else {
-                Get-Content $backupFile | docker run --rm -i --network host -e PGPASSWORD=$plainDestPassword postgres:latest psql -h $destHost -p $destPort -U $destUser -d $db 2>&1 | Out-Null
+                docker run --rm --network host -e PGPASSWORD=$plainDestPassword -v "${backupDir}:/backups" postgres:latest psql -h $destHost -p $destPort -U $destUser -d $db -f "/backups/$db.sql" 2>&1 | Out-Null
             }
             
             Remove-Item Env:\PGPASSWORD -ErrorAction SilentlyContinue
