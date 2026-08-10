@@ -10,3 +10,4 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+postgres_backups_*
