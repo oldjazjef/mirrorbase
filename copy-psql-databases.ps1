@@ -64,7 +64,8 @@ function Get-RemoteDatabases {
         [string]$RemoteDatabase,
         [string]$RemoteUser,
         [string]$RemotePassword,
-        [bool]$UseLocalPsql
+        [bool]$UseLocalPsql,
+        [string]$PostgresImage = "postgres:latest"
     )
     
     $env:PGPASSWORD = $RemotePassword
@@ -79,7 +80,7 @@ function Get-RemoteDatabases {
         }
         else {
             # Use Docker with host network mode to access remote host
-            $databases = docker run --rm --network host postgres:latest psql -h $RemoteHost -p $RemotePort -U $RemoteUser -d $RemoteDatabase -t -A -c $query 2>&1
+            $databases = docker run --rm --network host $PostgresImage psql -h $RemoteHost -p $RemotePort -U $RemoteUser -d $RemoteDatabase -t -A -c $query 2>&1
         }
         
         if ($LASTEXITCODE -ne 0) {
@@ -96,6 +97,37 @@ function Get-RemoteDatabases {
 # Main script
 Write-Host "PostgreSQL Database Replication Script" -ForegroundColor Cyan
 Write-Host "======================================`n" -ForegroundColor Cyan
+
+# Select PostgreSQL Docker image version (used for client tools image and/or local container)
+Write-Host "PostgreSQL Version:" -ForegroundColor Yellow
+$pgVersion = Read-Host "PostgreSQL Docker image tag to use, e.g. 16, 15-alpine (default: latest)"
+if ([string]::IsNullOrWhiteSpace($pgVersion)) { $pgVersion = "latest" }
+$postgresImage = "postgres:$pgVersion"
+Write-Host "Using PostgreSQL image: $postgresImage`n" -ForegroundColor Green
+
+# Determine the major version so we can pick the correct data directory layout.
+# Starting with PostgreSQL 18, the official image changed its default PGDATA/VOLUME
+# from "/var/lib/postgresql/data" to a version-specific subdirectory of
+# "/var/lib/postgresql" (e.g. "/var/lib/postgresql/18/docker"). Mounting a host path
+# at the old "/var/lib/postgresql/data" location on 18+ will NOT persist data, since
+# postgres now writes to "/var/lib/postgresql/<major>/docker" instead.
+# See: https://github.com/docker-library/postgres/pull/1259
+if ($pgVersion -match '^(\d+)') {
+    $pgMajorVersion = [int]$matches[1]
+}
+else {
+    # Tags like "latest", "trixie", "bookworm", "alpine" currently resolve to the
+    # newest major version (18 at the time of writing), so assume the new layout.
+    $pgMajorVersion = $null
+}
+
+if ($null -eq $pgMajorVersion -or $pgMajorVersion -ge 18) {
+    $pgDataVolumeTarget = "/var/lib/postgresql"
+    Write-Host "PostgreSQL 18+ detected (or version tag '$pgVersion' could not be parsed, assuming 18+): persisting to '$pgDataVolumeTarget'`n" -ForegroundColor Yellow
+}
+else {
+    $pgDataVolumeTarget = "/var/lib/postgresql/data"
+}
 
 # Check if local psql is available
 $useLocalPsql = Test-PsqlLocal
@@ -221,15 +253,15 @@ if ($useDocker) {
         # Add volume mount if path was provided
         if (-not [string]::IsNullOrWhiteSpace($dataPath)) {
             $dockerArgs += "-v"
-            $dockerArgs += "${dataPath}:/var/lib/postgresql/data"
-            Write-Host "Database will be persisted to: $dataPath" -ForegroundColor Green
+            $dockerArgs += "${dataPath}:${pgDataVolumeTarget}"
+            Write-Host "Database will be persisted to: $dataPath (mounted at $pgDataVolumeTarget)" -ForegroundColor Green
         }
         else {
             Write-Host "Database will NOT be persisted (data will be lost when container is removed)" -ForegroundColor Yellow
         }
         
         $dockerArgs += "-d"
-        $dockerArgs += "postgres:latest"
+        $dockerArgs += $postgresImage
         
         & docker $dockerArgs
         
@@ -256,7 +288,7 @@ else {
             $testDest = psql -h $destHost -p $destPort -U $destUser -d $destDb -t -A -c $query 2>&1
         }
         else {
-            $testDest = docker run --rm --network host -e PGPASSWORD=$plainDestPassword postgres:latest psql -h $destHost -p $destPort -U $destUser -d $destDb -t -A -c $query 2>&1
+            $testDest = docker run --rm --network host -e PGPASSWORD=$plainDestPassword $postgresImage psql -h $destHost -p $destPort -U $destUser -d $destDb -t -A -c $query 2>&1
         }
         
         if ($LASTEXITCODE -ne 0) {
@@ -277,7 +309,7 @@ else {
 # Get list of databases from remote server
 Write-Host "`nConnecting to remote server to retrieve database list..." -ForegroundColor Green
 try {
-    $databases = Get-RemoteDatabases -RemoteHost $remoteHost -RemotePort $remotePort -RemoteDatabase $remoteDb -RemoteUser $remoteUser -RemotePassword $plainRemotePassword -UseLocalPsql $useLocalPsql
+    $databases = Get-RemoteDatabases -RemoteHost $remoteHost -RemotePort $remotePort -RemoteDatabase $remoteDb -RemoteUser $remoteUser -RemotePassword $plainRemotePassword -UseLocalPsql $useLocalPsql -PostgresImage $postgresImage
     
     if ($databases.Count -eq 0) {
         Write-Host "No databases found on remote server (or connection failed)" -ForegroundColor Red
@@ -325,7 +357,7 @@ try {
             $testConnection = psql -h $remoteHost -p $remotePort -U $remoteUser -d $db -c "SELECT 1;" 2>&1
         }
         else {
-            $testConnection = docker run --rm --network host -e PGPASSWORD=$plainRemotePassword postgres:latest psql -h $remoteHost -p $remotePort -U $remoteUser -d $db -c "SELECT 1;" 2>&1
+            $testConnection = docker run --rm --network host -e PGPASSWORD=$plainRemotePassword $postgresImage psql -h $remoteHost -p $remotePort -U $remoteUser -d $db -c "SELECT 1;" 2>&1
         }
         
         if ($LASTEXITCODE -ne 0) {
@@ -344,7 +376,7 @@ try {
         }
         else {
             # Use Docker with host network, redirect output to file (force UTF-8 output)
-            docker run --rm --network host -e PGPASSWORD=$plainRemotePassword -v "${backupDir}:/backups" postgres:latest pg_dump -h $remoteHost -p $remotePort -U $remoteUser -d $db --no-owner --no-acl --encoding=UTF8 -f "/backups/$db.sql" 2>&1 | Out-Null
+            docker run --rm --network host -e PGPASSWORD=$plainRemotePassword -v "${backupDir}:/backups" $postgresImage pg_dump -h $remoteHost -p $remotePort -U $remoteUser -d $db --no-owner --no-acl --encoding=UTF8 -f "/backups/$db.sql" 2>&1 | Out-Null
         }
         
         Remove-Item Env:\PGPASSWORD -ErrorAction SilentlyContinue
@@ -433,7 +465,7 @@ try {
                 $checkDb = psql -h $destHost -p $destPort -U $destUser -d $destDb -t -A -c "SELECT 1 FROM pg_database WHERE datname='$db';" 2>&1
             }
             else {
-                $checkDb = docker run --rm --network host -e PGPASSWORD=$plainDestPassword postgres:latest psql -h $destHost -p $destPort -U $destUser -d $destDb -t -A -c "SELECT 1 FROM pg_database WHERE datname='$db';" 2>&1
+                $checkDb = docker run --rm --network host -e PGPASSWORD=$plainDestPassword $postgresImage psql -h $destHost -p $destPort -U $destUser -d $destDb -t -A -c "SELECT 1 FROM pg_database WHERE datname='$db';" 2>&1
             }
             
             if ($checkDb -match "1") {
@@ -443,7 +475,7 @@ try {
                     "DROP DATABASE `"$db`";" | psql -h $destHost -p $destPort -U $destUser -d $destDb 2>&1 | Out-Null
                 }
                 else {
-                    docker run --rm --network host -e PGPASSWORD=$plainDestPassword postgres:latest psql -h $destHost -p $destPort -U $destUser -d $destDb -c "DROP DATABASE `"$db`";" 2>&1 | Out-Null
+                    docker run --rm --network host -e PGPASSWORD=$plainDestPassword $postgresImage psql -h $destHost -p $destPort -U $destUser -d $destDb -c "DROP DATABASE `"$db`";" 2>&1 | Out-Null
                 }
             }
             
@@ -452,7 +484,7 @@ try {
                 $createResult = "CREATE DATABASE `"$db`";" | psql -h $destHost -p $destPort -U $destUser -d $destDb 2>&1
             }
             else {
-                $createResult = docker run --rm --network host -e PGPASSWORD=$plainDestPassword postgres:latest psql -h $destHost -p $destPort -U $destUser -d $destDb -c "CREATE DATABASE `"$db`";" 2>&1
+                $createResult = docker run --rm --network host -e PGPASSWORD=$plainDestPassword $postgresImage psql -h $destHost -p $destPort -U $destUser -d $destDb -c "CREATE DATABASE `"$db`";" 2>&1
             }
             
             if ($LASTEXITCODE -ne 0) {
@@ -470,7 +502,7 @@ try {
                 psql -h $destHost -p $destPort -U $destUser -d $db -f $backupFile 2>&1 | Out-Null
             }
             else {
-                docker run --rm --network host -e PGPASSWORD=$plainDestPassword -v "${backupDir}:/backups" postgres:latest psql -h $destHost -p $destPort -U $destUser -d $db -f "/backups/$db.sql" 2>&1 | Out-Null
+                docker run --rm --network host -e PGPASSWORD=$plainDestPassword -v "${backupDir}:/backups" $postgresImage psql -h $destHost -p $destPort -U $destUser -d $db -f "/backups/$db.sql" 2>&1 | Out-Null
             }
             
             Remove-Item Env:\PGPASSWORD -ErrorAction SilentlyContinue
