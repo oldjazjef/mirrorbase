@@ -11,3 +11,25 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 postgres_backups_*
+
+### Node / Nx / Angular
+node_modules/
+dist/
+tmp/
+.nx/
+.angular/
+.screenshots/
+*.tsbuildinfo
+coverage/
+
+### App data and secrets
+.data/
+.env
+.env.*
+!.env.example
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.key
+apps/api/src/generated/

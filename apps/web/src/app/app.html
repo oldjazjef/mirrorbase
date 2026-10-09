@@ -1,0 +1,27 @@
+<!-- While the lock screen is up, the app behind it is inert (no focus, no clicks). -->
+@if (pin.ready()) {
+<div class="contents" [attr.inert]="showLock() ? '' : null">
+  <router-outlet />
+</div>
+@if (showLock()) {
+<dr-lock-screen />
+} } @else {
+<!-- The API did not answer (yet): the desktop shell starts it in-process, so this is brief. -->
+<div class="dr-lock-screen" role="status">
+  <div class="dr-lock-card">
+    <p class="text-muted-foreground text-sm">
+      {{ 'app.connecting' | translate }}
+    </p>
+    <button hlmBtn variant="outline" type="button" (click)="retry()">
+      {{ 'common.retry' | translate }}
+    </button>
+  </div>
+</div>
+}
+<!-- Above the CDK overlay container (z-index 1000), or toasts paint behind open dialogs. -->
+<hlm-toaster
+  [theme]="toasterTheme()"
+  richColors
+  position="bottom-right"
+  class="z-1100"
+/>

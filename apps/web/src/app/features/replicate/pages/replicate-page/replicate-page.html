@@ -1,0 +1,335 @@
+<dr-page-header
+  [title]="'replicate.title' | translate"
+  [subtitle]="'replicate.subtitle' | translate"
+/>
+
+<div class="flex flex-col gap-6 p-6">
+  <div class="grid gap-6 lg:grid-cols-2">
+    @for (side of sides; track side) {
+    <section
+      class="dr-panel flex flex-col gap-4 p-4"
+      [attr.aria-labelledby]="'dr-side-' + side"
+    >
+      <h2
+        [id]="'dr-side-' + side"
+        class="flex items-center gap-2 text-lg font-semibold"
+      >
+        <span class="dr-step" aria-hidden="true"
+          >{{ side === 'source' ? '1' : '2' }}</span
+        >
+        {{ 'replicate.' + side | translate }}
+      </h2>
+
+      <div class="flex flex-col gap-1.5">
+        <label hlmLabel [for]="'dr-pick-' + side"
+          >{{ 'replicate.chooseConnection' | translate }}</label
+        >
+        <select
+          hlmInput
+          [id]="'dr-pick-' + side"
+          [value]="selected(side)"
+          [disabled]="service.runActive()"
+          (change)="service.choose(side, $any($event.target).value)"
+        >
+          <option value="" [selected]="selected(side) === ''">
+            {{ 'replicate.choosePlaceholder' | translate }}
+          </option>
+          @for (option of options(side); track option.id) {
+          <option [value]="option.id" [selected]="option.id === selected(side)">
+            {{ option.name }}
+          </option>
+          }
+        </select>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <button
+          hlmBtn
+          variant="outline"
+          size="sm"
+          type="button"
+          [disabled]="service.runActive()"
+          (click)="service.openNewConnection(side)"
+        >
+          <ng-icon name="lucidePlus" aria-hidden="true" />
+          {{ 'replicate.newConnection' | translate }}
+        </button>
+        <button
+          hlmBtn
+          variant="outline"
+          size="sm"
+          type="button"
+          [disabled]="service.runActive()"
+          (click)="service.openDocker(side)"
+        >
+          <ng-icon name="lucideBox" aria-hidden="true" />
+          {{ 'replicate.fromDocker' | translate }}
+        </button>
+      </div>
+
+      @if (connection(side); as chosen) {
+      <dl class="text-sm">
+        <div class="flex flex-wrap items-center gap-2">
+          <dt class="sr-only">{{ 'connections.columns.type' | translate }}</dt>
+          <dd>
+            <span hlmBadge variant="secondary">{{ pluginName(side) }}</span>
+          </dd>
+          <dt class="sr-only">
+            {{ 'connections.columns.target' | translate }}
+          </dt>
+          <dd class="dr-mono min-w-0 flex-1" [drTruncate]="summary(chosen)">
+            {{ summary(chosen) }}
+          </dd>
+        </div>
+      </dl>
+      } @else if (service.data.resource.hasValue() && options(side).length ===
+      0) {
+      <p class="text-muted-foreground text-sm">
+        {{ 'replicate.noConnections' | translate }}
+      </p>
+      }
+    </section>
+    }
+  </div>
+
+  @if (service.plan()?.kind === 'unsupported') {
+  <p
+    class="dr-panel flex items-start gap-2 border-destructive/40 p-4 text-sm"
+    role="alert"
+  >
+    <ng-icon
+      name="lucideCircleAlert"
+      class="text-destructive mt-0.5 shrink-0"
+      aria-hidden="true"
+    />
+    <span>{{ 'replicate.plan.' + service.plan()?.reason | translate }}</span>
+  </p>
+  }
+
+  <section
+    class="dr-panel flex flex-col gap-4 p-4"
+    aria-labelledby="dr-databases-heading"
+  >
+    <div class="flex flex-wrap items-center gap-2">
+      <h2
+        id="dr-databases-heading"
+        class="flex flex-1 items-center gap-2 text-lg font-semibold"
+      >
+        <span class="dr-step" aria-hidden="true">3</span>
+        {{ 'replicate.databases' | translate }}
+      </h2>
+      @if (service.source()) {
+      <button
+        hlmBtn
+        variant="ghost"
+        size="sm"
+        type="button"
+        [disabled]="service.loadState() === 'loading' || service.runActive()"
+        (click)="service.loadDatabases()"
+      >
+        <ng-icon name="lucideRefreshCw" aria-hidden="true" />
+        {{ 'replicate.reload' | translate }}
+      </button>
+      }
+    </div>
+
+    @switch (service.loadState()) { @case ('idle') {
+    <p class="text-muted-foreground text-sm">
+      {{ 'replicate.pickSourceFirst' | translate }}
+    </p>
+    } @case ('loading') {
+    <div class="flex flex-col gap-2" aria-live="polite">
+      <hlm-skeleton class="h-10 w-full" />
+      <hlm-skeleton class="h-10 w-full" />
+    </div>
+    } @case ('failed') {
+    <p class="text-destructive text-sm" role="alert">
+      @if (service.loadErrorCode(); as code) { {{ 'errors.api.' + code |
+      translate }} } @else { {{ 'replicate.loadFailed' | translate }} }
+    </p>
+    } @case ('ready') { @if (service.databases().length === 0) {
+    <p class="text-muted-foreground text-sm">
+      {{ 'replicate.noDatabases' | translate }}
+    </p>
+    } @else { @if (service.sourceIsMulti()) {
+    <label class="flex items-center gap-2 text-sm">
+      <input
+        type="checkbox"
+        [checked]="service.allSelected()"
+        [disabled]="service.runActive()"
+        (change)="service.toggleAll()"
+      />
+      {{ 'replicate.selectAll' | translate }}
+      <span class="text-muted-foreground"
+        >({{ service.selection().length }} / {{ service.databases().length
+        }})</span
+      >
+    </label>
+    }
+    <ul class="flex flex-col divide-y rounded-md border">
+      @for (db of service.databases(); track db.name) {
+      <li class="flex flex-wrap items-center gap-x-4 gap-y-2 p-3">
+        @if (service.sourceIsMulti()) {
+        <label
+          class="flex min-w-0 flex-1 basis-56 items-center gap-2 text-sm font-medium"
+        >
+          <input
+            type="checkbox"
+            [checked]="db.selected"
+            [disabled]="service.runActive()"
+            (change)="service.toggle(db.name)"
+          />
+          <span class="min-w-0" [drTruncate]="db.name">{{ db.name }}</span>
+        </label>
+        } @else {
+        <!-- One database, copied by definition: nothing to tick. -->
+        <span
+          class="min-w-0 flex-1 basis-56 text-sm font-medium"
+          [drTruncate]="db.name"
+          >{{ db.name }}</span
+        >
+        } @if (service.namesMatter() && db.selected) {
+        <label class="flex items-center gap-2 text-sm">
+          <span class="text-muted-foreground"
+            >{{ 'replicate.targetName' | translate }}</span
+          >
+          <input
+            hlmInput
+            class="h-8 w-56"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            [value]="db.target"
+            [disabled]="service.runActive()"
+            (input)="service.rename(db.name, $any($event.target).value)"
+          />
+        </label>
+        }
+      </li>
+      }
+    </ul>
+    } } }
+  </section>
+
+  <section
+    class="dr-panel flex flex-col gap-4 p-4"
+    aria-labelledby="dr-start-heading"
+  >
+    <h2
+      id="dr-start-heading"
+      class="flex items-center gap-2 text-lg font-semibold"
+    >
+      <span class="dr-step" aria-hidden="true">4</span>
+      {{ 'replicate.start' | translate }}
+    </h2>
+    <label class="flex items-start gap-2 text-sm">
+      <input
+        type="checkbox"
+        class="mt-1"
+        [checked]="service.replaceExisting()"
+        [disabled]="service.runActive()"
+        (change)="service.replaceExisting.set($any($event.target).checked)"
+      />
+      <span>
+        {{ 'replicate.replaceExisting' | translate }}
+        <span class="text-muted-foreground block text-xs"
+          >{{ 'replicate.replaceHint' | translate }}</span
+        >
+      </span>
+    </label>
+    <div class="flex flex-wrap items-center gap-3">
+      <button
+        hlmBtn
+        type="button"
+        [disabled]="!service.canStart()"
+        (click)="service.requestStart()"
+      >
+        @if (service.starting()) {
+        <ng-icon name="lucideLoaderCircle" class="dr-spin" aria-hidden="true" />
+        } @else {
+        <ng-icon name="lucidePlay" aria-hidden="true" />
+        } {{ 'replicate.startButton' | translate: { count:
+        service.selection().length } }}
+      </button>
+      @if (service.blocker(); as reason) {
+      <p class="text-muted-foreground text-sm">{{ reason | translate }}</p>
+      }
+    </div>
+  </section>
+
+  @if (service.run(); as run) {
+  <dr-run-progress [run]="run" (cancelRequested)="service.cancelRun()" />
+  @if (!service.runActive()) {
+  <div class="flex flex-wrap gap-2">
+    <a
+      hlmBtn
+      variant="outline"
+      size="sm"
+      routerLink="/app/log"
+      [queryParams]="{ run: run.id }"
+    >
+      {{ 'replicate.viewLog' | translate }}
+    </a>
+    <button
+      hlmBtn
+      variant="ghost"
+      size="sm"
+      type="button"
+      (click)="service.dismissRun()"
+    >
+      {{ 'common.dismiss' | translate }}
+    </button>
+  </div>
+  } }
+</div>
+
+<dr-connection-dialog
+  [open]="dialogOpen()"
+  [prefill]="service.prefill()"
+  (closed)="service.closeDialog()"
+  (saved)="service.savedHere($event)"
+/>
+
+<dr-docker-picker
+  [open]="dockerOpen()"
+  (closed)="service.dockerSide.set(null)"
+  (picked)="service.pickedFromDocker($event)"
+/>
+
+<hlm-dialog
+  [state]="confirmState()"
+  (stateChanged)="onConfirmStateChanged($event)"
+>
+  <hlm-dialog-content *hlmDialogPortal class="sm:max-w-md">
+    <hlm-dialog-header>
+      <h3 hlmDialogTitle>{{ 'replicate.confirm.title' | translate }}</h3>
+      <p hlmDialogDescription>
+        {{ 'replicate.confirm.body' | translate: { target:
+        service.target()?.name ?? '' } }}
+      </p>
+    </hlm-dialog-header>
+    <div class="dr-dialog-body">
+      <ul class="dr-mono list-disc pl-5 text-sm">
+        @for (db of service.selection(); track db.name) {
+        <li>{{ service.namesMatter() ? db.target : db.name }}</li>
+        }
+      </ul>
+      <p class="text-muted-foreground text-sm">
+        {{ 'replicate.confirm.note' | translate }}
+      </p>
+    </div>
+    <hlm-dialog-footer>
+      <button hlmBtn variant="outline" type="button" hlmDialogClose>
+        {{ 'common.cancel' | translate }}
+      </button>
+      <button
+        hlmBtn
+        variant="destructive"
+        type="button"
+        (click)="service.start()"
+      >
+        {{ 'replicate.confirm.action' | translate }}
+      </button>
+    </hlm-dialog-footer>
+  </hlm-dialog-content>
+</hlm-dialog>

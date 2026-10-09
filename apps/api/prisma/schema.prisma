@@ -1,0 +1,130 @@
+// Prisma schema for apps/api.
+//
+// Conventions (same as lazy-koins / surf-lend / etx-working-time-manager, see CLAUDE.md "Database"):
+//
+//  1. `@default(uuid(7))` keys — generated client-side, time-ordered. Those columns carry no DDL
+//     default, so anything inserting outside Prisma must supply an id.
+//  2. snake_case table/column names via @@map/@map, so the SQL reads like SQL.
+//  3. SQLite (one file, `DATABASE_URL=file:…`). No native uuid/timestamptz types: ids are TEXT,
+//     DateTime values are stored in UTC by Prisma, and the enums below are TEXT that hand-written
+//     CHECK constraints in the migrations keep honest.
+//  4. There is exactly one user - the person at this computer - so no row has an owner column.
+//     The PIN lock (`app_pin`) is what protects the data, and passwords inside `connection` are
+//     sealed with AES-256-GCM before they get here (common/crypto/secret-box.ts).
+//
+// The datasource URL lives in prisma.config.ts (Prisma 7 removed `url` from this block).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+
+  // apps/api builds to CommonJS through webpack. Prisma 7 emits ESM by default, which would force
+  // `"type": "module"` onto the whole repo; `cjs` keeps the generated client bundleable.
+  moduleFormat = "cjs"
+  runtime      = "nodejs"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+/// queued → running → succeeded | failed | cancelled.
+enum RunStatus {
+  queued
+  running
+  succeeded
+  failed
+  cancelled
+
+  @@map("run_status")
+}
+
+enum LogLevel {
+  debug
+  info
+  warn
+  error
+
+  @@map("log_level")
+}
+
+/// A saved database connection - usable as a source and as a target. The database TYPE is a
+/// plugin (`plugin_id`), so `config` is whatever that plugin's fields declare.
+model Connection {
+  id         String    @id @default(uuid(7))
+  /// Unique, 1–80 characters.
+  name       String    @unique
+  /// Id of the database plugin (`postgres`, `sqlite`, …). No FK: plugins are code, not rows.
+  pluginId   String    @map("plugin_id")
+  /// JSON object: the plugin's non-secret settings.
+  config     String
+  /// JSON object: secret field key → `enc:v1:…` (AES-256-GCM). Never leaves the API.
+  secrets    String    @default("{}")
+  /// The Docker container this was created from, informational (shown as a badge).
+  dockerName String?   @map("docker_name")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  lastUsedAt DateTime? @map("last_used_at")
+
+  sourceRuns Run[] @relation("RunSource")
+  targetRuns Run[] @relation("RunTarget")
+
+  @@index([pluginId])
+  @@map("connection")
+}
+
+/// One replication: copy databases from a source connection into a target connection. The names
+/// are snapshots, so the history still reads after a connection is renamed or deleted.
+model Run {
+  id                 String    @id @default(uuid(7))
+  status             RunStatus @default(queued)
+  sourceConnectionId String?   @map("source_connection_id")
+  targetConnectionId String?   @map("target_connection_id")
+  sourceName         String    @map("source_name")
+  targetName         String    @map("target_name")
+  sourcePluginId     String    @map("source_plugin_id")
+  targetPluginId     String    @map("target_plugin_id")
+  /// `native` today; `interchange` once cross-engine copies exist.
+  strategy           String
+  replaceExisting    Boolean   @default(false) @map("replace_existing")
+  /// JSON array: [{ source, target, status, bytes, warnings, error }].
+  databases          String    @default("[]")
+  error              String?
+  createdAt          DateTime  @default(now()) @map("created_at")
+  startedAt          DateTime? @map("started_at")
+  finishedAt         DateTime? @map("finished_at")
+
+  source  Connection? @relation("RunSource", fields: [sourceConnectionId], references: [id], onDelete: SetNull)
+  target  Connection? @relation("RunTarget", fields: [targetConnectionId], references: [id], onDelete: SetNull)
+  entries LogEntry[]
+
+  @@index([createdAt])
+  @@map("run")
+}
+
+/// The log. Append-only; `run_id` is null for app-level entries (start-up, a connection test).
+model LogEntry {
+  id      Int      @id @default(autoincrement())
+  runId   String?  @map("run_id")
+  level   LogLevel
+  message String
+  at      DateTime @default(now())
+
+  run Run? @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId, id])
+  @@index([at])
+  @@map("log_entry")
+}
+
+/// The PIN lock. A singleton row (`id = 1`): there is one user. Only a scrypt hash is stored.
+model AppPin {
+  id              Int       @id @default(1)
+  pinHash         String    @map("pin_hash")
+  failedAttempts  Int       @default(0) @map("failed_attempts")
+  nextAttemptAt   DateTime? @map("next_attempt_at")
+  autoLockMinutes Int       @default(15) @map("auto_lock_minutes")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@map("app_pin")
+}

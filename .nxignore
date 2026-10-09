@@ -1,0 +1,2 @@
+# Backup folders written by the legacy PowerShell script – never part of the project graph.
+postgres_backups_*

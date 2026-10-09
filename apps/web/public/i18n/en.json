@@ -1,0 +1,316 @@
+{
+  "app": {
+    "name": "DB Replicator",
+    "version": "Version {{version}} ({{commit}})",
+    "versionBadge": "v{{version}}",
+    "connecting": "Waiting for the app to start…"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "retry": "Try again",
+    "back": "Back",
+    "close": "Close",
+    "dismiss": "Dismiss",
+    "loading": "Loading…",
+    "actions": "Actions"
+  },
+  "actions": {
+    "undo": "Undo"
+  },
+  "nav": {
+    "label": "Main navigation",
+    "replicate": "Replicate",
+    "connections": "Connections",
+    "log": "Log",
+    "settings": "Settings",
+    "lockNow": "Lock now",
+    "toggleTheme": "Switch between light and dark",
+    "toggleSidebar": "Show or hide the navigation"
+  },
+  "validation": {
+    "required": "This field is required.",
+    "number": "Enter a number.",
+    "range": "The number is out of range.",
+    "option": "Choose one of the options.",
+    "tooLong": "This is too long."
+  },
+  "errors": {
+    "api": {
+      "connectionNotFound": "That connection no longer exists.",
+      "nameTaken": "A connection with that name exists already.",
+      "invalidName": "The name must be 1 to 80 characters.",
+      "invalidConnection": "Some connection settings are invalid.",
+      "unknownPlugin": "That database type is not installed.",
+      "pluginMismatch": "The connection belongs to another database type.",
+      "secretsUnavailable": "No encryption key is available, so a password cannot be saved.",
+      "runNotFound": "That run no longer exists.",
+      "runInProgress": "Another run is still in progress.",
+      "runNotActive": "That run is not in progress.",
+      "noDatabases": "Select at least one database.",
+      "tooManyDatabases": "Too many databases in one run.",
+      "duplicateTarget": "Two databases would end up with the same name on the target.",
+      "sameDatabase": "Source and target are the same server: give the copy a different name or use another target.",
+      "transferUnsupported": "Copying between these two database types is not available yet.",
+      "invalidConfig": "The connection settings are incomplete.",
+      "connectionFailed": "Could not connect to the database server.",
+      "clientToolsMissing": "The tools needed to talk to this database are missing: install the PostgreSQL client, or start Docker.",
+      "targetExists": "A database with that name exists already on the target.",
+      "dumpFailed": "Reading the database from the source failed.",
+      "restoreFailed": "Writing the database to the target failed.",
+      "sourceMissing": "A connection of this run has been deleted.",
+      "aborted": "The run was cancelled.",
+      "noPin": "No PIN is set yet.",
+      "invalidPin": "The PIN must be 4 to 8 digits.",
+      "currentPinRequired": "Enter the current PIN.",
+      "wrongPin": "That PIN is wrong.",
+      "pinThrottled": "Too many wrong PINs. Wait a moment.",
+      "confirmationRequired": "Please confirm first."
+    },
+    "status": {
+      "unreachable": "The app cannot be reached.",
+      "badRequest": "The request was not valid.",
+      "forbidden": "That is not allowed.",
+      "notFound": "Not found.",
+      "conflict": "That conflicts with the current state.",
+      "unprocessable": "The request could not be processed.",
+      "locked": "The app is locked.",
+      "rateLimited": "Too many requests. Wait a moment.",
+      "server": "Something went wrong inside the app."
+    }
+  },
+  "pin": {
+    "setup": {
+      "title": "Choose a PIN",
+      "hint": "The PIN protects this app and the saved connections. You will be asked for it every time the app starts or locks.",
+      "pin": "PIN (4 to 8 digits)",
+      "repeat": "Repeat the PIN",
+      "autoLock": "Lock after",
+      "submit": "Set PIN"
+    },
+    "lock": {
+      "title": "DB Replicator is locked",
+      "hint": "Enter your PIN to continue.",
+      "label": "PIN",
+      "placeholder": "PIN",
+      "unlock": "Unlock",
+      "forgot": "I forgot my PIN",
+      "wait": "Wait {{seconds}} s before trying again.",
+      "reason": {
+        "idle": "The app locked itself after a period without activity.",
+        "system": "The app locked because your computer was locked."
+      }
+    },
+    "forgot": {
+      "title": "Reset the PIN",
+      "body": "There is no way to recover a PIN. You can set a new one, but every saved password will be erased.",
+      "erases": "Erased: all saved passwords.",
+      "keeps": "Kept: your connections (without passwords), the run history and the log.",
+      "confirm": "I understand that all saved passwords will be erased.",
+      "reset": "Erase passwords and reset PIN"
+    },
+    "form": {
+      "invalid": "The PIN must be 4 to 8 digits.",
+      "mismatch": "The two PINs are not the same."
+    },
+    "errors": {
+      "wrongPin": "That PIN is wrong.",
+      "pinThrottled": "Too many wrong PINs. Wait a moment.",
+      "noPin": "No PIN is set yet.",
+      "invalidPin": "The PIN must be 4 to 8 digits.",
+      "currentPinRequired": "Enter the current PIN.",
+      "confirmationRequired": "Please confirm first.",
+      "unreachable": "The app cannot be reached.",
+      "unknown": "Something went wrong."
+    }
+  },
+  "connections": {
+    "title": "Connections",
+    "subtitle": "Saved database servers and files. Passwords are stored encrypted.",
+    "new": "New connection",
+    "empty": "No connections yet. Save one so you do not have to enter it every time.",
+    "loadFailed": "The connections could not be loaded.",
+    "saved": "Connection saved.",
+    "saveFailed": "The connection could not be saved",
+    "deleted": "Connection deleted.",
+    "deleteFailed": "The connection could not be deleted",
+    "passwordSaved": "Saved",
+    "noPassword": "None",
+    "neverUsed": "Never used",
+    "columns": {
+      "name": "Name",
+      "type": "Type",
+      "target": "Address",
+      "password": "Password",
+      "lastUsed": "Last used"
+    },
+    "delete": {
+      "title": "Delete connection",
+      "body": "Delete the connection “{{name}}”?",
+      "note": "Past runs and the log stay."
+    },
+    "dialog": {
+      "newTitle": "New connection",
+      "editTitle": "Edit connection",
+      "description": "Choose the type of database and fill in its settings.",
+      "pluginsFailed": "The database types could not be loaded.",
+      "test": "Test connection",
+      "testing": "Testing…",
+      "testAs": "Test as",
+      "roleSource": "source",
+      "roleTarget": "target",
+      "testOk": "Connected.",
+      "testFailed": "The connection failed."
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "e.g. Production, Local test",
+      "type": "Database type",
+      "advanced": "Advanced settings",
+      "selectDefault": "Default",
+      "passwordKept": "Saved - leave blank to keep it",
+      "forgetPassword": "Remove the saved password",
+      "passwordForgotten": "The saved password will be removed when you save."
+    }
+  },
+  "docker": {
+    "title": "Databases in Docker",
+    "description": "Running containers on this computer that hold a database.",
+    "empty": "No running containers with a supported database were found.",
+    "failed": "Docker could not be asked.",
+    "unavailable": {
+      "notInstalled": "Docker is not installed (or not on the PATH).",
+      "notRunning": "Docker is not running. Start it and refresh."
+    },
+    "add": "Use",
+    "saved": "Saved",
+    "useSaved": "Use “{{name}}”",
+    "refresh": "Refresh",
+    "passwordNote": "The password is never read from the container: enter it once and it is saved encrypted."
+  },
+  "replicate": {
+    "title": "Replicate",
+    "subtitle": "Copy databases from one server to another.",
+    "source": "From (source)",
+    "target": "To (target)",
+    "chooseConnection": "Connection",
+    "choosePlaceholder": "Choose a connection…",
+    "newConnection": "New connection",
+    "fromDocker": "From Docker",
+    "noConnections": "No connections yet. Create one or pick a Docker database.",
+    "databases": "Databases",
+    "reload": "Reload",
+    "pickSourceFirst": "Choose the source first.",
+    "loadFailed": "The databases could not be listed.",
+    "noDatabases": "This connection has no databases to copy.",
+    "selectAll": "Select all",
+    "targetName": "Name on target",
+    "start": "Start",
+    "startButton": "Copy {{count}} database(s)",
+    "replaceExisting": "Replace databases that already exist on the target",
+    "replaceHint": "Without this, a database that exists already is skipped with an error.",
+    "viewLog": "View the log",
+    "startFailed": "The run could not be started",
+    "cancelFailed": "The run could not be cancelled",
+    "blocker": {
+      "running": "A run is in progress.",
+      "pickBoth": "Choose a source and a target.",
+      "unsupported": "These two database types cannot be copied yet.",
+      "noDatabases": "Load the databases of the source first.",
+      "selectOne": "Select at least one database.",
+      "emptyName": "A name on the target is empty.",
+      "duplicateName": "Two databases have the same name on the target."
+    },
+    "plan": {
+      "sourceCannotBeSource": "The source database type cannot be copied from.",
+      "targetCannotBeTarget": "The target database type cannot be copied to.",
+      "crossEngineUnavailable": "Copying between different database types is not available yet."
+    },
+    "confirm": {
+      "title": "Replace existing databases?",
+      "body": "Databases with these names on “{{target}}” will be deleted first and replaced by the copy:",
+      "note": "This cannot be undone.",
+      "action": "Replace and copy"
+    }
+  },
+  "runs": {
+    "progress": "Run progress",
+    "cancel": "Cancel run",
+    "summary": "{{done}} of {{total}} copied",
+    "replacing": "replacing existing",
+    "warnings": "{{count}} warning(s) - see the log",
+    "status": {
+      "queued": "Queued",
+      "running": "Running",
+      "succeeded": "Succeeded",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    },
+    "dbStatus": {
+      "pending": "Waiting",
+      "dumping": "Reading",
+      "restoring": "Writing",
+      "done": "Done",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    }
+  },
+  "log": {
+    "title": "Log",
+    "subtitle": "Every run and what happened during it.",
+    "runs": "Runs",
+    "appLog": "App log",
+    "noRuns": "No runs yet.",
+    "runGone": "That run no longer exists.",
+    "loadFailed": "The log could not be loaded.",
+    "empty": "Nothing logged at this level.",
+    "level": "Show",
+    "levels": {
+      "debug": "Debug",
+      "info": "Info",
+      "warn": "Warning",
+      "error": "Error"
+    },
+    "copy": "Copy",
+    "copied": "Log copied.",
+    "copyFailed": "The log could not be copied"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Security, language and information about this installation.",
+    "security": {
+      "title": "Security",
+      "description": "The PIN is the only protection: it locks the app on start, after a period without activity and when the computer is locked."
+    },
+    "pin": {
+      "change": "Change PIN",
+      "currentPin": "Current PIN",
+      "pin": "New PIN",
+      "repeat": "Repeat the new PIN",
+      "submit": "Change PIN",
+      "changed": "PIN changed."
+    },
+    "autoLock": {
+      "label": "Lock after",
+      "minutes": "{{count}} min without activity",
+      "hint": "The app also locks when your computer locks or goes to sleep."
+    },
+    "language": {
+      "title": "Language",
+      "label": "Language of the app"
+    },
+    "about": {
+      "title": "About",
+      "version": "Version",
+      "dataFolder": "Data folder",
+      "passwordKey": "Password key",
+      "reveal": "Show the data folder",
+      "keyProtection": {
+        "os-keychain": "Protected by the operating system's keychain",
+        "file": "Stored in a file only you can read (no keychain available)"
+      }
+    }
+  }
+}
