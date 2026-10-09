@@ -2,7 +2,7 @@ import { Injectable, effect, signal } from '@angular/core';
 
 export type Theme = 'light' | 'dark';
 
-const STORAGE_KEY = `dr-theme`;
+const STORAGE_KEY = `mb-theme`;
 
 function resolveInitialTheme(): Theme {
   const stored = localStorage.getItem(STORAGE_KEY);

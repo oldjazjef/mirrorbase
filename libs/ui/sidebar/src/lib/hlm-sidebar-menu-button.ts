@@ -5,8 +5,8 @@ import {
 	DEFAULT_TOOLTIP_CONTENT_CLASSES,
 	DEFAULT_TOOLTIP_SVG_CLASS,
 	tooltipPositionVariants,
-} from '@dbreplicator/ui/tooltip';
-import { classes, hlm } from '@dbreplicator/ui/utils';
+} from '@mirrorbase/ui/tooltip';
+import { classes, hlm } from '@mirrorbase/ui/utils';
 import { cva } from 'class-variance-authority';
 import { HlmSidebarService } from './hlm-sidebar.service';
 import { injectHlmSidebarConfig } from './hlm-sidebar.token';

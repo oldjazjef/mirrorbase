@@ -17,7 +17,7 @@ import {
   type TestOptions,
   type TestResult,
   validateFields,
-} from '@dbreplicator/db-plugin';
+} from '@mirrorbase/db-plugin';
 
 export const SQLITE_DUMP_FORMAT = 'sqlite-file@1';
 

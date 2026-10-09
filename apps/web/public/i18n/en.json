@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "DB Replicator",
+    "name": "Mirrorbase",
     "version": "Version {{version}} ({{commit}})",
     "versionBadge": "v{{version}}",
     "connecting": "Waiting for the app to start…"
@@ -91,7 +91,7 @@
       "submit": "Set PIN"
     },
     "lock": {
-      "title": "DB Replicator is locked",
+      "title": "Mirrorbase is locked",
       "hint": "Enter your PIN to continue.",
       "label": "PIN",
       "placeholder": "PIN",

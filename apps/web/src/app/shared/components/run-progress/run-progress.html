@@ -1,12 +1,12 @@
 @let r = run();
 <section
-  class="dr-panel flex flex-col gap-4 p-4"
+  class="mb-panel flex flex-col gap-4 p-4"
   [attr.aria-label]="'runs.progress' | translate"
   aria-live="polite"
 >
   <header class="flex flex-wrap items-center gap-x-3 gap-y-2">
     <div class="flex min-w-0 flex-1 basis-64 items-center gap-2 font-medium">
-      <span class="min-w-0" [drTruncate]="r.sourceName"
+      <span class="min-w-0" [mbTruncate]="r.sourceName"
         >{{ r.sourceName }}</span
       >
       <ng-icon
@@ -14,11 +14,11 @@
         class="text-muted-foreground shrink-0"
         aria-hidden="true"
       />
-      <span class="min-w-0" [drTruncate]="r.targetName"
+      <span class="min-w-0" [mbTruncate]="r.targetName"
         >{{ r.targetName }}</span
       >
     </div>
-    <dr-status-badge [status]="r.status" />
+    <mb-status-badge [status]="r.status" />
     @if (active() && cancellable()) {
     <button
       hlmBtn
@@ -49,27 +49,27 @@
     <li class="flex flex-wrap items-center gap-x-3 gap-y-1 p-3">
       <div class="min-w-0 flex-1 basis-56">
         <p class="flex min-w-0 items-center gap-2 text-sm font-medium">
-          <span [drTruncate]="db.source" class="min-w-0">{{ db.source }}</span>
+          <span [mbTruncate]="db.source" class="min-w-0">{{ db.source }}</span>
           @if (db.target !== db.source) {
           <ng-icon
             name="lucideArrowRight"
             class="text-muted-foreground shrink-0"
             aria-hidden="true"
           />
-          <span [drTruncate]="db.target" class="min-w-0">{{ db.target }}</span>
+          <span [mbTruncate]="db.target" class="min-w-0">{{ db.target }}</span>
           }
         </p>
         @if (db.status === 'failed') {
         <p class="text-destructive text-xs" role="alert">
           @if (errorKey(db.errorCode); as key) { {{ key | translate }} } @if
           (db.error) {
-          <span class="dr-mono text-muted-foreground block break-words"
+          <span class="mb-mono text-muted-foreground block break-words"
             >{{ db.error }}</span
           >
           }
         </p>
         } @else if (db.warnings > 0) {
-        <p class="dr-warning-text text-xs">
+        <p class="mb-warning-text text-xs">
           {{ 'runs.warnings' | translate: { count: db.warnings } }}
         </p>
         }
@@ -79,7 +79,7 @@
         >{{ bytes(db.bytes) }}</span
       >
       }
-      <dr-status-badge [status]="db.status" kind="database" />
+      <mb-status-badge [status]="db.status" kind="database" />
     </li>
     }
   </ul>

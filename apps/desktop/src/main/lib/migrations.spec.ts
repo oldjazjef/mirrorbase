@@ -11,7 +11,7 @@ describe('migration runner', () => {
   let db: Database.Database;
 
   beforeEach(() => {
-    dir = mkdtempSync(join(tmpdir(), 'dr-migrations-'));
+    dir = mkdtempSync(join(tmpdir(), 'mb-migrations-'));
     db = new Database(join(dir, 'test.db'));
   });
 

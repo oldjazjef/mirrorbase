@@ -1,6 +1,6 @@
-import { validateFields } from '@dbreplicator/db-plugin';
-import { postgresPlugin } from '@dbreplicator/plugin-postgres';
-import { sqlitePlugin } from '@dbreplicator/plugin-sqlite';
+import { validateFields } from '@mirrorbase/db-plugin';
+import { postgresPlugin } from '@mirrorbase/plugin-postgres';
+import { sqlitePlugin } from '@mirrorbase/plugin-sqlite';
 import { PluginRegistry } from './plugin-registry';
 
 const INSTALLED = [postgresPlugin, sqlitePlugin];

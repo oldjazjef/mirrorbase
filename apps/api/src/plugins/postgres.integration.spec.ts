@@ -9,7 +9,7 @@ import {
 import { replicationSetup } from '../replication/testing/replication-fixture';
 import { runReplication } from '../replication/application/run-replication';
 import { StartRunCommand } from '../replication/application/run.handlers';
-import { postgresPlugin } from '@dbreplicator/plugin-postgres';
+import { postgresPlugin } from '@mirrorbase/plugin-postgres';
 
 /**
  * The PostgreSQL plugin against a REAL server, through the real host (psql / pg_dump processes).

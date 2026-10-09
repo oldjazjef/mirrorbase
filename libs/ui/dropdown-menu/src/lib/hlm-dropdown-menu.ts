@@ -3,7 +3,7 @@ import { CdkMenu } from '@angular/cdk/menu';
 import { Directive, ElementRef, inject, input, numberAttribute, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { deriveMenuSideFromTransformOrigin, MENU_SIDE, type MenuSide } from '@spartan-ng/brain/core';
-import { classes } from '@dbreplicator/ui/utils';
+import { classes } from '@mirrorbase/ui/utils';
 
 @Directive({
 	selector: '[hlmDropdownMenu],hlm-dropdown-menu',

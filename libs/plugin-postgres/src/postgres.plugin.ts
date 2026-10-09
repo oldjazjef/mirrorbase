@@ -12,7 +12,7 @@ import {
   type RestoreResult,
   type TestResult,
   validateFields,
-} from '@dbreplicator/db-plugin';
+} from '@mirrorbase/db-plugin';
 import {
   clientUnavailable,
   FIELDS,

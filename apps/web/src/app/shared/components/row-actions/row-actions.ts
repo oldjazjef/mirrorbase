@@ -8,9 +8,9 @@ import {
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideEllipsisVertical } from '@ng-icons/lucide';
 import { TranslatePipe } from '@ngx-translate/core';
-import { HlmButtonImports } from '@dbreplicator/ui/button';
-import { HlmDropdownMenuImports } from '@dbreplicator/ui/dropdown-menu';
-import { HlmTooltipImports } from '@dbreplicator/ui/tooltip';
+import { HlmButtonImports } from '@mirrorbase/ui/button';
+import { HlmDropdownMenuImports } from '@mirrorbase/ui/dropdown-menu';
+import { HlmTooltipImports } from '@mirrorbase/ui/tooltip';
 
 /** One action of a table row. */
 export interface RowAction<Id extends string = string> {
@@ -32,13 +32,13 @@ export interface RowAction<Id extends string = string> {
  * opens a menu (icon + label, destructive actions last). Emits the chosen action's id.
  *
  * ```html
- * <td hlmTd class="dr-sticky-actions text-right">
- *   <dr-row-actions [actions]="actionsFor(file)" (selected)="act($event, file)" />
+ * <td hlmTd class="mb-sticky-actions text-right">
+ *   <mb-row-actions [actions]="actionsFor(file)" (selected)="act($event, file)" />
  * </td>
  * ```
  */
 @Component({
-  selector: 'dr-row-actions',
+  selector: 'mb-row-actions',
   imports: [
     NgIcon,
     TranslatePipe,

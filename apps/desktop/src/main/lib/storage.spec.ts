@@ -11,7 +11,7 @@ import {
 
 let dir: string;
 beforeEach(() => {
-  dir = mkdtempSync(join(tmpdir(), 'dr-storage-'));
+  dir = mkdtempSync(join(tmpdir(), 'mb-storage-'));
 });
 afterEach(() => rmSync(dir, { recursive: true, force: true }));
 

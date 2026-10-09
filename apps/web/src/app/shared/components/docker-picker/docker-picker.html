@@ -5,7 +5,7 @@
       <p hlmDialogDescription>{{ 'docker.description' | translate }}</p>
     </hlm-dialog-header>
 
-    <div class="dr-dialog-body" aria-live="polite">
+    <div class="mb-dialog-body" aria-live="polite">
       @if (connections.docker.isLoading() && !result()) {
       <hlm-skeleton class="h-12 w-full" />
       <hlm-skeleton class="h-12 w-full" />
@@ -31,12 +31,12 @@
             aria-hidden="true"
           />
           <div class="min-w-0 flex-1">
-            <p class="font-medium" [drTruncate]="item.containerName">
+            <p class="font-medium" [mbTruncate]="item.containerName">
               {{ item.containerName }}
             </p>
             <p
               class="text-muted-foreground text-xs"
-              [drTruncate]="item.summary"
+              [mbTruncate]="item.summary"
             >
               {{ item.summary }}
             </p>

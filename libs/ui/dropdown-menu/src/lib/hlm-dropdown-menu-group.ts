@@ -1,6 +1,6 @@
 import { CdkMenuGroup } from '@angular/cdk/menu';
 import { Directive } from '@angular/core';
-import { classes } from '@dbreplicator/ui/utils';
+import { classes } from '@mirrorbase/ui/utils';
 
 @Directive({
 	selector: '[hlmDropdownMenuGroup],hlm-dropdown-menu-group',

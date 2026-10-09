@@ -43,7 +43,7 @@ const require = createRequire(import.meta.url);
 
 // The one version source (scripts/build/version.mjs): DR_VERSION (CI: the release tag) or the
 // nearest tag, + the commit. Installers get the plain semver (`version`); the full
-// `X.Y.Z+<commit>` goes into package.json's `drBuild` (About dialog, Einstellungen → Speicherort).
+// `X.Y.Z+<commit>` goes into package.json's `mbBuild` (About dialog, Einstellungen → Speicherort).
 const { resolveVersion } = await import('../../../scripts/build/version.mjs');
 const build = resolveVersion();
 const version = build.version;
@@ -119,16 +119,16 @@ delete dependencies.dotenv;
 dependencies['better-sqlite3'] = installed('better-sqlite3');
 
 const manifest = {
-  name: 'db-replicator',
-  productName: 'DB Replicator',
+  name: 'mirrorbase',
+  productName: 'Mirrorbase',
   version,
   description: 'Copies databases between servers',
-  author: 'DB Replicator',
+  author: 'Mirrorbase',
   license: 'MIT',
   private: true,
   main: 'main.js',
   // Read by the main process (About, settings page): { version, commit, full, builtAt }.
-  drBuild: build,
+  mbBuild: build,
   dependencies: Object.fromEntries(
     Object.entries(dependencies).sort(([a], [b]) => a.localeCompare(b)),
   ),
@@ -202,5 +202,5 @@ if (upToDate) {
 }
 
 console.log(
-  `stage: ${out} ready (db-replicator ${build.full}, Electron ${electronVersion})`,
+  `stage: ${out} ready (mirrorbase ${build.full}, Electron ${electronVersion})`,
 );

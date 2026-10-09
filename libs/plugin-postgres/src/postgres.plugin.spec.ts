@@ -6,7 +6,7 @@ import {
   createFakeHost,
   type DockerContainer,
   type PluginConnection,
-} from '@dbreplicator/db-plugin';
+} from '@mirrorbase/db-plugin';
 import { POSTGRES_DUMP_FORMAT, postgresPlugin } from './postgres.plugin';
 
 const PASSWORD = 'Sup3r-Secret!';
@@ -27,7 +27,7 @@ const NO_LOCAL = (spec: CommandSpec) =>
 
 let work: string;
 beforeEach(() => {
-  work = mkdtempSync(join(tmpdir(), 'dr-pg-'));
+  work = mkdtempSync(join(tmpdir(), 'mb-pg-'));
 });
 afterEach(() => rmSync(work, { recursive: true, force: true }));
 
@@ -362,7 +362,7 @@ describe('postgres plugin in Docker mode with a work directory', () => {
       },
       { runAsUser: '1000:1000' },
     );
-    const dir = mkdtempSync(join(tmpdir(), 'dr-pg-docker-'));
+    const dir = mkdtempSync(join(tmpdir(), 'mb-pg-docker-'));
     try {
       const artifact = await postgresPlugin.dump(host, connection(), {
         database: 'shop',

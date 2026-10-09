@@ -17,10 +17,10 @@ import {
   lucideLoaderCircle,
 } from '@ng-icons/lucide';
 import { TranslatePipe } from '@ngx-translate/core';
-import { HlmButtonImports } from '@dbreplicator/ui/button';
-import { HlmDialogImports } from '@dbreplicator/ui/dialog';
-import { HlmInputImports } from '@dbreplicator/ui/input';
-import { HlmLabelImports } from '@dbreplicator/ui/label';
+import { HlmButtonImports } from '@mirrorbase/ui/button';
+import { HlmDialogImports } from '@mirrorbase/ui/dialog';
+import { HlmInputImports } from '@mirrorbase/ui/input';
+import { HlmLabelImports } from '@mirrorbase/ui/label';
 import { apiErrorCode } from '../../../core/api/api-error';
 import type {
   Connection,
@@ -53,7 +53,7 @@ export interface ConnectionPrefill {
  * Used by the Connections page and, to add one on the spot, by the Replicate page.
  */
 @Component({
-  selector: 'dr-connection-dialog',
+  selector: 'mb-connection-dialog',
   imports: [
     NgIcon,
     ReactiveFormsModule,
@@ -100,7 +100,7 @@ export class ConnectionDialog {
   protected readonly testResult = signal<TestResult | null>(null);
   protected readonly testFailed = signal(false);
   /** Ties the footer's Save button to the form above it. */
-  protected readonly formId = 'dr-connection-form';
+  protected readonly formId = 'mb-connection-form';
 
   protected readonly state = computed<'open' | 'closed'>(() =>
     this.open() ? 'open' : 'closed',

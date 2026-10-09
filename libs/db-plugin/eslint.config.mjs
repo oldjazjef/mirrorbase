@@ -30,7 +30,7 @@ export default [
                 'libs/db-plugin is pure TypeScript: no framework, no Node I/O. Plugins do I/O through HostContext.',
             },
             {
-              group: ['**/apps/**', '@dbreplicator/ui', '@dbreplicator/ui/*'],
+              group: ['**/apps/**', '@mirrorbase/ui', '@mirrorbase/ui/*'],
               message:
                 'libs/db-plugin must not depend on an app or on UI code.',
             },

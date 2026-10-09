@@ -1,4 +1,4 @@
-import type { DockerContainer } from '@dbreplicator/db-plugin';
+import type { DockerContainer } from '@mirrorbase/db-plugin';
 
 export type DockerUnavailableReason = 'notInstalled' | 'notRunning';
 

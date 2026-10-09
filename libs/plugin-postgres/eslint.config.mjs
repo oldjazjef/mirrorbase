@@ -1,7 +1,7 @@
 import baseConfig from '../../eslint.config.mjs';
 
 /**
- * A database plugin implements `DatabasePlugin` from @dbreplicator/db-plugin and nothing else of
+ * A database plugin implements `DatabasePlugin` from @mirrorbase/db-plugin and nothing else of
  * this workspace: no Nest, no Prisma, no Angular, no app code. The API discovers plugins; plugins
  * never reach into the API.
  */
@@ -22,11 +22,11 @@ export default [
                 'prisma',
                 '**/generated/prisma/**',
                 '**/apps/**',
-                '@dbreplicator/ui',
-                '@dbreplicator/ui/*',
+                '@mirrorbase/ui',
+                '@mirrorbase/ui/*',
               ],
               message:
-                'A plugin depends on @dbreplicator/db-plugin only — talk to the outside world through HostContext.',
+                'A plugin depends on @mirrorbase/db-plugin only — talk to the outside world through HostContext.',
             },
           ],
         },

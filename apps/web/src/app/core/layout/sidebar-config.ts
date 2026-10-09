@@ -1,5 +1,5 @@
 import type { ValueProvider } from '@angular/core';
-import { provideHlmSidebarConfig } from '@dbreplicator/ui/sidebar';
+import { provideHlmSidebarConfig } from '@mirrorbase/ui/sidebar';
 
 /** The cookie that remembers expanded/collapsed on desktop widths (as in etx). */
 export const SIDEBAR_COOKIE = 'dr_sidebar';

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { DatabasePlugin } from '@dbreplicator/db-plugin';
+import type { DatabasePlugin } from '@mirrorbase/db-plugin';
 import { notFound } from '../common/http/api-errors';
 
 /** DI token for the list of installed database plugins (see plugins.module.ts). */

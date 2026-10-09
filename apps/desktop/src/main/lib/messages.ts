@@ -32,7 +32,7 @@ export interface DesktopMessages {
 const MESSAGES: Record<DesktopLocale, DesktopMessages> = {
   en: {
     fatal: {
-      title: 'DB Replicator could not start',
+      title: 'Mirrorbase could not start',
       detail: (reason) =>
         `The app could not start.\n\n${reason}\n\nThe details are in the log file in the app's data folder.`,
     },
@@ -43,7 +43,7 @@ const MESSAGES: Record<DesktopLocale, DesktopMessages> = {
   },
   'de-CH': {
     fatal: {
-      title: 'DB Replicator konnte nicht gestartet werden',
+      title: 'Mirrorbase konnte nicht gestartet werden',
       detail: (reason) =>
         `Die App konnte nicht gestartet werden.\n\n${reason}\n\nDie Einzelheiten stehen in der Protokolldatei im Datenordner der App.`,
     },

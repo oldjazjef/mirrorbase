@@ -2,7 +2,7 @@ import { mkdtempSync, readdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import Database from 'better-sqlite3';
-import { sqlitePlugin } from '@dbreplicator/plugin-sqlite';
+import { sqlitePlugin } from '@mirrorbase/plugin-sqlite';
 import { CreateConnectionCommand } from '../../connections/application/connection.handlers';
 import { replicationSetup } from '../testing/replication-fixture';
 import { runReplication } from './run-replication';
@@ -15,7 +15,7 @@ import { StartRunCommand } from './run.handlers';
 describe('replicating SQLite → SQLite through the real pipeline', () => {
   let dir: string;
   beforeEach(() => {
-    dir = mkdtempSync(join(tmpdir(), 'dr-pipeline-'));
+    dir = mkdtempSync(join(tmpdir(), 'mb-pipeline-'));
   });
   afterEach(() => rmSync(dir, { recursive: true, force: true }));
 

@@ -1,7 +1,7 @@
 import type {
   DiscoveredEndpoint,
   DockerContainer,
-} from '@dbreplicator/db-plugin';
+} from '@mirrorbase/db-plugin';
 
 const IMAGE_HINT = /postgres|postgis|timescale|pgvector|supabase\/postgres/i;
 

@@ -6,14 +6,14 @@ import {
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import { HlmButtonImports } from '@dbreplicator/ui/button';
-import { HlmToasterImports } from '@dbreplicator/ui/sonner';
+import { HlmButtonImports } from '@mirrorbase/ui/button';
+import { HlmToasterImports } from '@mirrorbase/ui/sonner';
 import { LockScreen } from './core/pin/lock-screen/lock-screen';
 import { PinLockService } from './core/pin/pin-lock.service';
 import { ThemeService } from './core/theme/theme.service';
 
 @Component({
-  selector: 'dr-root',
+  selector: 'mb-root',
   imports: [
     RouterOutlet,
     LockScreen,

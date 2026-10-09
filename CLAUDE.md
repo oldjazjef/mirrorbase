@@ -1,4 +1,4 @@
-# DB Replicator
+# Mirrorbase
 
 Electron desktop app that copies a database from a saved source to a saved target. Same stack and
 architecture as `lazy-koins` (Nx monorepo, NestJS API running in-process, Angular web, Prisma +
@@ -10,7 +10,7 @@ Node 22.23.2, pnpm 11 (not npm), Nx 23 (daemon off, run with `NX_DAEMON=false`),
 Vitest everywhere (`pnpm test`, not through Nx), NestJS 11 + `@nestjs/cqrs`, Prisma 7 with
 `@prisma/adapter-better-sqlite3`, Angular 22 zoneless + spartan.ng + Tailwind v4 (needs
 `apps/web/.postcssrc.json`), ngx-translate (`en`, `de-CH`), Zod forms, Electron 42 + electron-builder.
-Prefix `dr`, scope `@dbreplicator`, app id `app.dbreplicator.desktop`.
+Prefix `mb`, scope `@mirrorbase`, app id `app.mirrorbase.desktop`.
 
 ## Commands
 
@@ -53,10 +53,10 @@ touch the network or the database of the app itself.
   environment (`PGPASSWORD`), never in arguments. All log text goes through `redactSecrets` /
   `redactConnectionStrings`.
 - PIN: scrypt hash, 4-8 digits, growing wait after wrong attempts, in-memory unlock sessions with a
-  sliding expiry (header `x-dbreplicator-unlock`). 423 `pinNotSet` / `pinLocked`. "Forgot PIN"
+  sliding expiry (header `x-mirrorbase-unlock`). 423 `pinNotSet` / `pinLocked`. "Forgot PIN"
   erases every saved password. The desktop locks on OS lock, suspend and idle (`LockWatch`).
 - The API listens on 127.0.0.1 only, with a per-launch access token; the window talks to it through
-  the `app://dbreplicator` protocol (same origin, strict CSP).
+  the `app://mirrorbase` protocol (same origin, strict CSP).
 
 ## Rules
 

@@ -1,7 +1,7 @@
 import { existsSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { PluginError } from '@dbreplicator/db-plugin';
+import { PluginError } from '@mirrorbase/db-plugin';
 import { CreateConnectionCommand } from '../../connections/application/connection.handlers';
 import {
   newEngine,
@@ -180,7 +180,7 @@ describe('runReplication', () => {
       new AbortController().signal,
     );
 
-    const root = join(tmpdir(), 'dbreplicator');
+    const root = join(tmpdir(), 'mirrorbase');
     const leftovers = existsSync(root)
       ? readdirSync(root).filter((name) => name.startsWith('run-'))
       : [];

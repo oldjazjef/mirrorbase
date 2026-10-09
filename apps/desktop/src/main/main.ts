@@ -30,7 +30,7 @@ import { reportError } from './report';
 
 // The packaged app and a dev run (`pnpm start:desktop`) must never share data.
 if (!app.isPackaged) {
-  app.setPath('userData', join(app.getPath('appData'), 'db-replicator-dev'));
+  app.setPath('userData', join(app.getPath('appData'), 'mirrorbase-dev'));
 }
 
 // One instance per user: two would open the same SQLite file with two writers.
@@ -42,20 +42,20 @@ registerAppScheme();
 
 // Windows ties notifications and the taskbar to an app user model id.
 if (process.platform === 'win32')
-  app.setAppUserModelId('app.dbreplicator.desktop');
+  app.setAppUserModelId('app.mirrorbase.desktop');
 
 /** main.js, preload.js, api/, web/ and migrations/ sit next to each other (scripts/stage.mjs). */
 const appDir = __dirname;
 
-/** `X.Y.Z+<commit>` - written into package.json's `drBuild` by scripts/stage.mjs. */
+/** `X.Y.Z+<commit>` - written into package.json's `mbBuild` by scripts/stage.mjs. */
 const fullVersion = ((): string => {
   try {
     const manifest = JSON.parse(
       readFileSync(join(appDir, 'package.json'), 'utf8'),
     ) as {
-      drBuild?: { full?: unknown };
+      mbBuild?: { full?: unknown };
     };
-    const full = manifest.drBuild?.full;
+    const full = manifest.mbBuild?.full;
     return typeof full === 'string' ? full : app.getVersion();
   } catch {
     return app.getVersion();
@@ -130,7 +130,7 @@ async function start(): Promise<void> {
   api = await startApi({
     appDir,
     dataDir,
-    workDir: join(app.getPath('temp'), 'db-replicator'),
+    workDir: join(app.getPath('temp'), 'mirrorbase'),
     encryptionKey: key.key,
   });
   handleAppScheme(join(appDir, 'web'), api);
@@ -158,7 +158,7 @@ function createWindow(): void {
     minWidth: 720,
     minHeight: 560,
     show: false,
-    title: 'DB Replicator',
+    title: 'Mirrorbase',
     backgroundColor: '#0e1419',
     webPreferences: {
       preload: join(appDir, 'preload.js'),
@@ -262,10 +262,10 @@ function buildMenu(): Menu {
       role: 'help',
       submenu: [
         {
-          label: 'About DB Replicator',
+          label: 'About Mirrorbase',
           click: () => {
             app.setAboutPanelOptions({
-              applicationName: 'DB Replicator',
+              applicationName: 'Mirrorbase',
               applicationVersion: fullVersion,
               copyright: messages().about.credits,
             });

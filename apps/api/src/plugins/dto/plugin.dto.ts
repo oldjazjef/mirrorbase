@@ -5,7 +5,7 @@ import type {
   FieldType,
   LocalizedText,
   TransferPlan,
-} from '@dbreplicator/db-plugin';
+} from '@mirrorbase/db-plugin';
 
 class LocalizedTextDto {
   @ApiProperty() en!: string;

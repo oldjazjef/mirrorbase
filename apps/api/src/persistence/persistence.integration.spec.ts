@@ -14,7 +14,7 @@ import { ConnectionNameTakenError } from '../connections/domain/connection';
 /**
  * The Prisma adapters against a real SQLite file with the real migrations - the only place that
  * can prove the unique name, the CHECK constraints, the foreign keys and the singleton PIN row.
- * `pnpm ci:integration` points DATABASE_URL at tmp/dbreplicator-test.db and migrates it first.
+ * `pnpm ci:integration` points DATABASE_URL at tmp/mirrorbase-test.db and migrates it first.
  */
 describe('persistence (SQLite, real migrations)', () => {
   let prisma: PrismaService;

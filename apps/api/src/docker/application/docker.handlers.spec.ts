@@ -1,6 +1,6 @@
-import type { DockerContainer } from '@dbreplicator/db-plugin';
-import { sqlitePlugin } from '@dbreplicator/plugin-sqlite';
-import { postgresPlugin } from '@dbreplicator/plugin-postgres';
+import type { DockerContainer } from '@mirrorbase/db-plugin';
+import { sqlitePlugin } from '@mirrorbase/plugin-sqlite';
+import { postgresPlugin } from '@mirrorbase/plugin-postgres';
 import { InMemoryConnectionRepository } from '../../connections/testing/in-memory-connection.repository';
 import { PluginRegistry } from '../../plugins/plugin-registry';
 import { DockerPort, DockerUnavailableError } from '../ports/docker.port';

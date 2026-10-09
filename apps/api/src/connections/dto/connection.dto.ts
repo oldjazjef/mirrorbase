@@ -8,7 +8,7 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
-import type { ConnectionConfig } from '@dbreplicator/db-plugin';
+import type { ConnectionConfig } from '@mirrorbase/db-plugin';
 import type { ConnectionTestResult } from '../application/connection.handlers';
 import { type Connection, MAX_NAME_LENGTH } from '../domain/connection';
 

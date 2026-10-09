@@ -8,20 +8,20 @@ import {
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronLeft } from '@ng-icons/lucide';
 import { TranslatePipe } from '@ngx-translate/core';
-import { HlmButtonImports } from '@dbreplicator/ui/button';
+import { HlmButtonImports } from '@mirrorbase/ui/button';
 
 /**
  * The page's single `<h1>`, with a back button on detail pages and an optional subtitle. Actions
  * (a "Neues Projekt" button) are projected into the right-hand slot. Pass translated text.
- * It stays at the top while the page content scrolls (user rule, `dr-page-header` in styles.css);
- * an element marked `drPageHeaderBelow` (a tab bar) goes under the title, inside the sticky part.
+ * It stays at the top while the page content scrolls (user rule, `mb-page-header` in styles.css);
+ * an element marked `mbPageHeaderBelow` (a tab bar) goes under the title, inside the sticky part.
  */
 @Component({
-  selector: 'dr-page-header',
+  selector: 'mb-page-header',
   imports: [NgIcon, TranslatePipe, ...HlmButtonImports],
   providers: [provideIcons({ lucideChevronLeft })],
   template: `
-    <header class="dr-page-header">
+    <header class="mb-page-header">
       <div class="flex flex-wrap items-center gap-3">
         @if (back()) {
           <button
@@ -45,7 +45,7 @@ import { HlmButtonImports } from '@dbreplicator/ui/button';
         <ng-content />
       </div>
       <!-- A tab bar under the title (project workspace), part of the sticky header. -->
-      <ng-content select="[drPageHeaderBelow]" />
+      <ng-content select="[mbPageHeaderBelow]" />
     </header>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

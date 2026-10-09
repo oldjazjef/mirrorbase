@@ -1,5 +1,5 @@
-import { type DatabasePlugin, PluginError } from '@dbreplicator/db-plugin';
-import { sqlitePlugin } from '@dbreplicator/plugin-sqlite';
+import { type DatabasePlugin, PluginError } from '@mirrorbase/db-plugin';
+import { sqlitePlugin } from '@mirrorbase/plugin-sqlite';
 import { connectionSetup } from '../testing/connection-fixture';
 import {
   CreateConnectionCommand,

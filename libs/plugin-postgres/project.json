@@ -4,8 +4,8 @@
   "sourceRoot": "libs/plugin-postgres/src",
   "projectType": "library",
   "tags": ["scope:plugin"],
-  "dr-note-no-test-target": "Deliberate — see the Testing section in CLAUDE.md. Tests run via `pnpm test` (root Vitest workspace) or `pnpm vitest run --project plugin-postgres`.",
-  "dr-note-no-build-target": "Consumed through the tsconfig.base.json path mapping (`@dbreplicator/plugin-postgres`) and bundled by the API, like libs/ui. `typecheck` is what `pnpm check` runs instead, because Vitest's esbuild transform does not type-check.",
+  "mb-note-no-test-target": "Deliberate — see the Testing section in CLAUDE.md. Tests run via `pnpm test` (root Vitest workspace) or `pnpm vitest run --project plugin-postgres`.",
+  "mb-note-no-build-target": "Consumed through the tsconfig.base.json path mapping (`@mirrorbase/plugin-postgres`) and bundled by the API, like libs/ui. `typecheck` is what `pnpm check` runs instead, because Vitest's esbuild transform does not type-check.",
   "targets": {
     "typecheck": {
       "executor": "nx:run-commands",

@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
 import { BrnLabel } from '@spartan-ng/brain/label';
-import { classes } from '@dbreplicator/ui/utils';
+import { classes } from '@mirrorbase/ui/utils';
 
 @Directive({
 	selector: '[hlmLabel]',

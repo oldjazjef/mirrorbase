@@ -6,7 +6,7 @@ import {
   type HostContext,
   type PluginConnection,
   PluginError,
-} from '@dbreplicator/db-plugin';
+} from '@mirrorbase/db-plugin';
 
 export const FIELDS: readonly FieldDescriptor[] = [
   {

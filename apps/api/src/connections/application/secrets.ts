@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type { PluginConnection } from '@dbreplicator/db-plugin';
+import type { PluginConnection } from '@mirrorbase/db-plugin';
 import { conflict } from '../../common/http/api-errors';
 import { SecretBox } from '../../common/crypto/secret-box';
 import type { Env } from '../../config/env';

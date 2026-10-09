@@ -17,7 +17,7 @@
       type="button"
       class="w-fit"
       [attr.aria-expanded]="advancedOpen()"
-      aria-controls="dr-advanced-fields"
+      aria-controls="mb-advanced-fields"
       (click)="toggleAdvanced()"
     >
       <ng-icon
@@ -29,7 +29,7 @@
       {{ 'connections.form.advanced' | translate }}
     </button>
     @if (advancedOpen()) {
-    <div id="dr-advanced-fields" class="grid gap-4 sm:grid-cols-2">
+    <div id="mb-advanced-fields" class="grid gap-4 sm:grid-cols-2">
       @for (field of advanced(); track field.key) {
       <ng-container
         [ngTemplateOutlet]="fieldTemplate"
@@ -44,21 +44,21 @@
   <!-- Inside the form group: formControlName finds its parent where the template is DECLARED. -->
   <ng-template #fieldTemplate let-field>
     <div
-      class="dr-field flex min-w-0 flex-col gap-1.5"
+      class="mb-field flex min-w-0 flex-col gap-1.5"
       [class.sm:col-span-2]="wide(field)"
     >
       @if (field.type === 'boolean') {
       <label class="flex items-center gap-2 text-sm">
         <input
           type="checkbox"
-          [id]="'dr-field-' + field.key"
+          [id]="'mb-field-' + field.key"
           [formControlName]="field.key"
         />
-        {{ field.label | drLocalized }}
+        {{ field.label | mbLocalized }}
       </label>
       } @else {
-      <label hlmLabel [for]="'dr-field-' + field.key">
-        {{ field.label | drLocalized }} @if (field.required) {
+      <label hlmLabel [for]="'mb-field-' + field.key">
+        {{ field.label | mbLocalized }} @if (field.required) {
         <span class="text-muted-foreground" aria-hidden="true">*</span>
         }
       </label>
@@ -66,14 +66,14 @@
       @switch (field.type) { @case ('select') {
       <select
         hlmInput
-        [id]="'dr-field-' + field.key"
+        [id]="'mb-field-' + field.key"
         [formControlName]="field.key"
       >
         <option value="">
           {{ 'connections.form.selectDefault' | translate }}
         </option>
         @for (option of field.options; track option.value) {
-        <option [value]="option.value">{{ option.label | drLocalized }}</option>
+        <option [value]="option.value">{{ option.label | mbLocalized }}</option>
         }
       </select>
       } @case ('password') {
@@ -81,7 +81,7 @@
         hlmInput
         type="password"
         autocomplete="new-password"
-        [id]="'dr-field-' + field.key"
+        [id]="'mb-field-' + field.key"
         [formControlName]="field.key"
         [attr.placeholder]="isSaved(field.key) ? ('connections.form.passwordKept' | translate) : null"
       />
@@ -106,13 +106,13 @@
         type="text"
         autocomplete="off"
         spellcheck="false"
-        [id]="'dr-field-' + field.key"
+        [id]="'mb-field-' + field.key"
         [formControlName]="field.key"
         [attr.inputmode]="field.type === 'number' ? 'numeric' : null"
         [attr.placeholder]="placeholder(field) ?? null"
       />
       } } } @if (field.help; as help) {
-      <p class="text-muted-foreground text-xs">{{ help | drLocalized }}</p>
+      <p class="text-muted-foreground text-xs">{{ help | mbLocalized }}</p>
       } @if (error(field.key); as message) {
       <p class="text-destructive text-sm" role="alert">
         {{ message | translate }}

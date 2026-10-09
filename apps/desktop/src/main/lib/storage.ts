@@ -9,7 +9,7 @@ import { join, resolve } from 'node:path';
 import { type DesktopLocale, isDesktopLocale } from './messages';
 
 /** The database file inside the data folder. */
-export const DATABASE_FILE = 'dbreplicator.db';
+export const DATABASE_FILE = 'mirrorbase.db';
 /** Where the shell's own settings live: in userData, never in the data folder itself. */
 export const CONFIG_FILE = 'desktop-config.json';
 

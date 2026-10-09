@@ -8,7 +8,7 @@ describe('desktopApiEnv', () => {
   });
 
   it('points the API at the data folder and hands it the key', () => {
-    expect(env['DATABASE_URL']).toMatch(/^file:.*dbreplicator\.db$/);
+    expect(env['DATABASE_URL']).toMatch(/^file:.*mirrorbase\.db$/);
     expect(env['SETTINGS_ENCRYPTION_KEY']).toBe('k'.repeat(64));
     expect(env['WORK_DIR']).toBe('/tmp/work');
   });

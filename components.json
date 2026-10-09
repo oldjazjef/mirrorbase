@@ -2,6 +2,6 @@
   "componentsPath": "libs/ui",
   "buildable": false,
   "generateAs": "library",
-  "importAlias": "@dbreplicator/ui",
+  "importAlias": "@mirrorbase/ui",
   "style": "vega"
 }

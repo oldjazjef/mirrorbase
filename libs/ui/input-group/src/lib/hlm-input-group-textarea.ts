@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
-import { HlmTextarea } from '@dbreplicator/ui/textarea';
-import { classes } from '@dbreplicator/ui/utils';
+import { HlmTextarea } from '@mirrorbase/ui/textarea';
+import { classes } from '@mirrorbase/ui/utils';
 
 @Directive({
 	selector: 'textarea[hlmInputGroupTextarea]',

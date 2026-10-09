@@ -3,8 +3,8 @@ import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input, 
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCircleCheck, lucideInfo, lucideLoader2, lucideOctagonX, lucideTriangleAlert } from '@ng-icons/lucide';
 import { BrnSonnerImports, type ToasterProps } from '@spartan-ng/brain/sonner';
-import { HlmButtonImports } from '@dbreplicator/ui/button';
-import { hlm } from '@dbreplicator/ui/utils';
+import { HlmButtonImports } from '@mirrorbase/ui/button';
+import { hlm } from '@mirrorbase/ui/utils';
 import type { ClassValue } from 'clsx';
 
 @Component({

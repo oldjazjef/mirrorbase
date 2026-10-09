@@ -13,7 +13,7 @@ const WORKSPACE_ROOT = resolve(__dirname, '../..');
 const TEST_TIMEZONE = 'UTC';
 process.env.TZ = TEST_TIMEZONE;
 
-/** Mirrors the `@dbreplicator/*` aliases from tsconfig.base.json into Vite's resolver. */
+/** Mirrors the `@mirrorbase/*` aliases from tsconfig.base.json into Vite's resolver. */
 function tsconfigPathAliases(): Record<string, string> {
   const tsconfig = JSON.parse(
     readFileSync(resolve(WORKSPACE_ROOT, 'tsconfig.base.json'), 'utf8'),

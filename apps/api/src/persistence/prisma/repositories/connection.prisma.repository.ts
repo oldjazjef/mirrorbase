@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { ConnectionConfig } from '@dbreplicator/db-plugin';
+import type { ConnectionConfig } from '@mirrorbase/db-plugin';
 import {
   type ConnectionPatch,
   ConnectionNameTakenError,

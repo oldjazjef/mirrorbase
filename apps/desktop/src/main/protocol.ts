@@ -35,7 +35,7 @@ const PAGE_HEADERS = {
 };
 
 /**
- * Serves `app://dbreplicator/…`: the web build from `webRoot`, the generated env.js, and `/api/…`
+ * Serves `app://mirrorbase/…`: the web build from `webRoot`, the generated env.js, and `/api/…`
  * forwarded to the in-process API with the per-launch access token (see web-protocol.ts).
  */
 export function handleAppScheme(webRoot: string, api: RunningApi): void {

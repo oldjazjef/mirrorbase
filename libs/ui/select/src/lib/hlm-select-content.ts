@@ -1,7 +1,7 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { BrnSelectContent, BrnSelectList } from '@spartan-ng/brain/select';
-import { classes, hlm } from '@dbreplicator/ui/utils';
+import { classes, hlm } from '@mirrorbase/ui/utils';
 import { HlmSelectScrollDown } from './hlm-select-scroll-down';
 import { HlmSelectScrollUp } from './hlm-select-scroll-up';
 

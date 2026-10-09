@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
-import { postgresPlugin } from '@dbreplicator/plugin-postgres';
-import { sqlitePlugin } from '@dbreplicator/plugin-sqlite';
+import { postgresPlugin } from '@mirrorbase/plugin-postgres';
+import { sqlitePlugin } from '@mirrorbase/plugin-sqlite';
 import { PluginHostFactory } from './plugin-host';
 import { DATABASE_PLUGINS, PluginRegistry } from './plugin-registry';
 import { PluginsController } from './plugins.controller';

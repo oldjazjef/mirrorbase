@@ -1,5 +1,5 @@
-import { sqlitePlugin } from '@dbreplicator/plugin-sqlite';
-import { postgresPlugin } from '@dbreplicator/plugin-postgres';
+import { sqlitePlugin } from '@mirrorbase/plugin-sqlite';
+import { postgresPlugin } from '@mirrorbase/plugin-postgres';
 import { cleanName, normalizeConfig, pickSecrets } from './connection';
 
 describe('normalizeConfig', () => {

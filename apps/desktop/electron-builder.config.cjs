@@ -22,9 +22,9 @@ const signing = Boolean(process.env.CSC_LINK);
 
 /** @type {import('electron-builder').Configuration} */
 module.exports = {
-  appId: 'app.dbreplicator.desktop',
-  productName: 'DB Replicator',
-  copyright: 'DB Replicator',
+  appId: 'app.mirrorbase.desktop',
+  productName: 'Mirrorbase',
+  copyright: 'Mirrorbase',
   electronVersion,
   directories: {
     output: path.join(repoRoot, 'dist/desktop'),

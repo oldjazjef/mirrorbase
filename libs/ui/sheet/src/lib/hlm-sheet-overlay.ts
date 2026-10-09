@@ -1,7 +1,7 @@
 import { Directive, computed, effect, input, untracked } from '@angular/core';
 import { injectCustomClassSettable } from '@spartan-ng/brain/core';
 import { BrnSheetOverlay } from '@spartan-ng/brain/sheet';
-import { hlm } from '@dbreplicator/ui/utils';
+import { hlm } from '@mirrorbase/ui/utils';
 import type { ClassValue } from 'clsx';
 
 @Directive({

@@ -4,7 +4,7 @@ import {
   type IQueryHandler,
   QueryHandler,
 } from '@nestjs/cqrs';
-import { planTransfer } from '@dbreplicator/db-plugin';
+import { planTransfer } from '@mirrorbase/db-plugin';
 import {
   badRequest,
   conflict,

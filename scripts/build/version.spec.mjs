@@ -76,7 +76,7 @@ describe('readGit / resolveVersion on a real repository', () => {
       const git = (...args) =>
         execFileSync('git', args, { cwd: dir, stdio: 'ignore' });
       git('init', '-q');
-      git('config', 'user.email', 'test@dbreplicator.dev');
+      git('config', 'user.email', 'test@mirrorbase.dev');
       git('config', 'user.name', 'test');
       git('config', 'commit.gpgsign', 'false');
       writeFileSync(join(dir, 'a.txt'), 'a');

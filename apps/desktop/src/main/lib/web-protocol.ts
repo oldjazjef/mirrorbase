@@ -2,13 +2,13 @@ import type { AddressInfo } from 'node:net';
 import { extname, join, normalize, resolve, sep } from 'node:path';
 
 /**
- * The window loads `app://dbreplicator/…`, a privileged custom scheme served by the main process:
+ * The window loads `app://mirrorbase/…`, a privileged custom scheme served by the main process:
  * the Angular build from disk, `/api/…` proxied to the in-process API on its random loopback
  * port. Same origin for both — no CORS, the app's `apiBaseUrl` stays empty — and a **stable**
  * origin across starts, so localStorage (theme, …) survives although the port changes.
  */
 export const APP_SCHEME = 'app';
-export const APP_HOST = 'dbreplicator';
+export const APP_HOST = 'mirrorbase';
 export const APP_ORIGIN = `${APP_SCHEME}://${APP_HOST}`;
 
 /**
@@ -69,7 +69,7 @@ export type Route =
   | { kind: 'forbidden' };
 
 /**
- * What a request for `app://dbreplicator<pathname>` is: the API, the generated env.js, a file of the
+ * What a request for `app://mirrorbase<pathname>` is: the API, the generated env.js, a file of the
  * web build, or the SPA's index.html (any other path without a file extension — Angular routes).
  * Never a file outside `webRoot` (`..`, encoded or not).
  */

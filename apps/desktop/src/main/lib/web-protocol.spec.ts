@@ -73,16 +73,16 @@ describe('protocol helpers', () => {
     const headers = forwardHeaders(
       [
         ['Content-Type', 'application/json'],
-        ['Host', 'dbreplicator'],
-        ['Origin', 'app://dbreplicator'],
-        ['x-dbreplicator-desktop', 'forged'],
+        ['Host', 'mirrorbase'],
+        ['Origin', 'app://mirrorbase'],
+        ['x-mirrorbase-desktop', 'forged'],
       ],
-      'x-dbreplicator-desktop',
+      'x-mirrorbase-desktop',
       'real',
     );
     expect(headers).toEqual({
       'content-type': 'application/json',
-      'x-dbreplicator-desktop': 'real',
+      'x-mirrorbase-desktop': 'real',
     });
   });
 

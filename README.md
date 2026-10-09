@@ -1,4 +1,4 @@
-# DB Replicator
+# Mirrorbase
 
 A small desktop app (Electron) that copies a database from a **source** to a **target**. Saved
 connections, passwords kept safe, a log of every run, running Docker databases to pick from, and

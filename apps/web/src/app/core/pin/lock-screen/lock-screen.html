@@ -1,23 +1,23 @@
 <div
-  class="dr-lock-screen"
+  class="mb-lock-screen"
   role="dialog"
   aria-modal="true"
-  aria-labelledby="dr-lock-title"
-  aria-describedby="dr-lock-hint"
+  aria-labelledby="mb-lock-title"
+  aria-describedby="mb-lock-hint"
 >
-  <div class="dr-lock-card">
+  <div class="mb-lock-card">
     <img [src]="logo" alt="" class="size-14" />
 
     @if (screen.pin.needsPin()) {
     <!-- First start (or after "PIN forgotten"): choose a PIN. -->
     <h1
-      id="dr-lock-title"
+      id="mb-lock-title"
       class="flex items-center gap-2 text-xl font-semibold"
     >
       <ng-icon name="lucideLock" size="18" aria-hidden="true" />
       {{ 'pin.setup.title' | translate }}
     </h1>
-    <p id="dr-lock-hint" class="text-muted-foreground text-center text-sm">
+    <p id="mb-lock-hint" class="text-muted-foreground text-center text-sm">
       {{ 'pin.setup.hint' | translate }}
     </p>
     <form
@@ -26,13 +26,13 @@
       (ngSubmit)="screen.setPin()"
     >
       <div class="flex flex-col gap-1.5">
-        <label hlmLabel for="dr-new-pin"
+        <label hlmLabel for="mb-new-pin"
           >{{ 'pin.setup.pin' | translate }}</label
         >
         <input
           #firstInput
           hlmInput
-          id="dr-new-pin"
+          id="mb-new-pin"
           type="password"
           inputmode="numeric"
           autocomplete="off"
@@ -46,12 +46,12 @@
         }
       </div>
       <div class="flex flex-col gap-1.5">
-        <label hlmLabel for="dr-new-pin-repeat"
+        <label hlmLabel for="mb-new-pin-repeat"
           >{{ 'pin.setup.repeat' | translate }}</label
         >
         <input
           hlmInput
-          id="dr-new-pin-repeat"
+          id="mb-new-pin-repeat"
           type="password"
           inputmode="numeric"
           autocomplete="off"
@@ -65,12 +65,12 @@
         }
       </div>
       <div class="flex flex-col gap-1.5">
-        <label hlmLabel for="dr-new-pin-autolock"
+        <label hlmLabel for="mb-new-pin-autolock"
           >{{ 'pin.setup.autoLock' | translate }}</label
         >
         <select
           hlmInput
-          id="dr-new-pin-autolock"
+          id="mb-new-pin-autolock"
           formControlName="autoLockMinutes"
         >
           @for (minutes of autoLockChoices; track minutes) {
@@ -92,13 +92,13 @@
     </form>
     } @else if (screen.forgotStep() === 'closed') {
     <h1
-      id="dr-lock-title"
+      id="mb-lock-title"
       class="flex items-center gap-2 text-xl font-semibold"
     >
       <ng-icon name="lucideLock" size="18" aria-hidden="true" />
       {{ 'pin.lock.title' | translate }}
     </h1>
-    <p id="dr-lock-hint" class="text-muted-foreground text-center text-sm">
+    <p id="mb-lock-hint" class="text-muted-foreground text-center text-sm">
       @if (screen.pin.lockReason(); as reason) { {{ 'pin.lock.reason.' + reason
       | translate }} } @else { {{ 'pin.lock.hint' | translate }} }
     </p>
@@ -106,21 +106,21 @@
       class="flex w-full flex-col items-center gap-4"
       (submit)="$event.preventDefault(); unlock()"
     >
-      <label hlmLabel for="dr-lock-pin" class="sr-only"
+      <label hlmLabel for="mb-lock-pin" class="sr-only"
         >{{ 'pin.lock.label' | translate }}</label
       >
       <input
         #firstInput
         hlmInput
-        id="dr-lock-pin"
-        class="dr-pin-input"
+        id="mb-lock-pin"
+        class="mb-pin-input"
         type="password"
         inputmode="numeric"
         autocomplete="off"
         maxlength="8"
         [value]="screen.value()"
         [attr.aria-invalid]="screen.problem() ? true : null"
-        [attr.aria-describedby]="screen.problem() ? 'dr-lock-error' : null"
+        [attr.aria-describedby]="screen.problem() ? 'mb-lock-error' : null"
         [placeholder]="'pin.lock.placeholder' | translate"
         (input)="typed($event)"
       />
@@ -135,7 +135,7 @@
       <div aria-live="assertive" class="min-h-10 text-center text-sm">
         @if (screen.problem(); as problem) {
         <p
-          id="dr-lock-error"
+          id="mb-lock-error"
           class="text-destructive flex items-center justify-center gap-2"
         >
           <ng-icon name="lucideCircleAlert" size="16" aria-hidden="true" />
@@ -154,15 +154,15 @@
     } @else {
     <section
       class="flex w-full flex-col gap-4"
-      aria-labelledby="dr-forgot-title"
+      aria-labelledby="mb-forgot-title"
     >
-      <h1 id="dr-lock-title" class="sr-only">
+      <h1 id="mb-lock-title" class="sr-only">
         {{ 'pin.lock.title' | translate }}
       </h1>
-      <h2 id="dr-forgot-title" class="font-semibold">
+      <h2 id="mb-forgot-title" class="font-semibold">
         {{ 'pin.forgot.title' | translate }}
       </h2>
-      <p id="dr-lock-hint" class="text-sm">
+      <p id="mb-lock-hint" class="text-sm">
         {{ 'pin.forgot.body' | translate }}
       </p>
       <ul class="text-muted-foreground list-disc pl-5 text-sm">
