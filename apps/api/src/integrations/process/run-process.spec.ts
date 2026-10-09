@@ -27,8 +27,8 @@ describe('runProcess', () => {
   it('hands the environment to the process', async () => {
     const result = await runProcess({
       command: node,
-      args: ['-e', 'console.log(process.env.DR_TEST)'],
-      env: { DR_TEST: 'secret-value' },
+      args: ['-e', 'console.log(process.env.MB_TEST)'],
+      env: { MB_TEST: 'secret-value' },
     });
     expect(result.stdout.trim()).toBe('secret-value');
   });

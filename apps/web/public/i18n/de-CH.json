@@ -28,7 +28,8 @@
     "settings": "Einstellungen",
     "lockNow": "Jetzt sperren",
     "toggleTheme": "Zwischen hell und dunkel wechseln",
-    "toggleSidebar": "Navigation ein- oder ausblenden"
+    "toggleSidebar": "Navigation ein- oder ausblenden",
+    "help": "Hilfe"
   },
   "validation": {
     "required": "Dieses Feld ist erforderlich.",
@@ -312,5 +313,126 @@
         "file": "In einer Datei gespeichert, die nur du lesen kannst (kein Schlüsselbund verfügbar)"
       }
     }
+  },
+  "help": {
+    "title": "Hilfe",
+    "subtitle": "Eine kurze Anleitung, Schritt für Schritt.",
+    "intro": "Mirrorbase kopiert eine Datenbank von einer gespeicherten Quelle in ein gespeichertes Ziel. Gehe beim ersten Mal die Schritte der Reihe nach durch; später brauchst du nur noch Replizieren.",
+    "stepOf": "Schritt {{number}} von {{total}}",
+    "where": "Wo: {{place}}",
+    "tips": "Tipps",
+    "open": "Öffnen: {{page}}",
+    "search": {
+      "label": "Hilfe durchsuchen",
+      "placeholder": "Suchen",
+      "clear": "Suche löschen",
+      "results": "{{count}} von {{total}} Abschnitten passen.",
+      "none": "Zu deiner Suche gibt es nichts."
+    },
+    "faq": {
+      "title": "Häufige Fragen",
+      "items": {
+        "databases": {
+          "question": "Welche Datenbanken werden unterstützt?",
+          "answer": "PostgreSQL und SQLite. Jeder Datenbanktyp ist ein Plugin, weitere Typen können folgen."
+        },
+        "mixed": {
+          "question": "Kann ich von PostgreSQL nach SQLite kopieren?",
+          "answer": "Noch nicht. Quelle und Ziel müssen vom gleichen Typ sein. Das Kopieren zwischen Typen ist geplant."
+        },
+        "forgotPin": {
+          "question": "Ich habe meine PIN vergessen.",
+          "answer": "Wähle auf dem Sperrbildschirm «PIN vergessen». Die App öffnet sich, aber alle gespeicherten Passwörter werden gelöscht und du gibst sie neu ein."
+        },
+        "data": {
+          "question": "Wo liegen meine Daten?",
+          "answer": "Gespeicherte Verbindungen, das Protokoll und die Einstellungen liegen auf diesem Computer. Passwörter sind verschlüsselt, der Schlüssel liegt im Schlüsselbund des Systems."
+        },
+        "overwrite": {
+          "question": "Überschreibt eine Kopie das Ziel?",
+          "answer": "Nur wenn du «Datenbanken ersetzen, die auf dem Ziel schon existieren» ankreuzt. Ohne diese Option wird eine bereits vorhandene Datenbank mit einem Fehler übersprungen."
+        }
+      }
+    },
+    "sections": {
+      "pin": {
+        "title": "App mit einer PIN schützen",
+        "purpose": "Die PIN ist der einzige Schutz. Sie sperrt die App beim Start, bei Inaktivität und wenn der Computer gesperrt wird.",
+        "where": "Einstellungen",
+        "steps": {
+          "setPin": "Wähle beim ersten Start eine PIN mit 4 bis 8 Ziffern und wiederhole sie.",
+          "lock": "Wähle in der Navigation «Jetzt sperren», um die App jederzeit zu sperren.",
+          "change": "Ändere die PIN oder die Inaktivitätszeit in den Einstellungen. Du brauchst die aktuelle PIN."
+        },
+        "tips": {
+          "autoLock": "Die Inaktivitätszeit kann von 1 bis 240 Minuten gewählt werden.",
+          "forgot": "Wer die PIN vergisst, verliert alle gespeicherten Passwörter."
+        }
+      },
+      "connections": {
+        "title": "Datenbanken speichern",
+        "purpose": "Eine Verbindung merkt sich, wo eine Datenbank liegt, damit du sie nicht jedes Mal eingibst.",
+        "where": "Verbindungen",
+        "steps": {
+          "add": "Wähle «Neue Verbindung», gib einen Namen ein und wähle den Datenbanktyp.",
+          "test": "Fülle die Felder aus, die der Typ verlangt, und teste die Verbindung, als Quelle oder als Ziel.",
+          "save": "Speichere. Die Verbindung erscheint nun in den Listen unter Replizieren."
+        },
+        "tips": {
+          "password": "Passwörter werden verschlüsselt gespeichert und erscheinen nie im Protokoll.",
+          "docker": "Bei einer Docker-Datenbank kannst du den Container auch auf der Seite Replizieren wählen."
+        }
+      },
+      "replicate": {
+        "title": "Datenbank kopieren",
+        "purpose": "Wähle eine gespeicherte Quelle und ein gespeichertes Ziel und starte die Kopie.",
+        "where": "Replizieren",
+        "steps": {
+          "pickSource": "Wähle unter Quelle die Verbindung, von der kopiert wird. Bei einem Server mit mehreren Datenbanken hakst du die zu kopierenden an.",
+          "pickTarget": "Wähle unter Ziel, wohin die Kopie geht.",
+          "start": "Wähle die Schaltfläche zum Kopieren und bestätige. Der Fortschritt erscheint darunter.",
+          "cancel": "Wähle «Abbrechen», um einen laufenden Lauf zu stoppen."
+        },
+        "tips": {
+          "sameType": "Quelle und Ziel müssen vom gleichen Datenbanktyp sein.",
+          "overwrite": "Kreuze «Datenbanken ersetzen, die auf dem Ziel schon existieren» nur an, wenn das Ziel ersetzt werden soll."
+        }
+      },
+      "docker": {
+        "title": "Laufende Docker-Datenbank nutzen",
+        "purpose": "Datenbanken, die auf diesem Computer in Docker laufen, wählst du aus, ohne ihre Adresse zu tippen.",
+        "where": "Replizieren",
+        "steps": {
+          "list": "Wähle «Aus Docker», um die Container aufzulisten, die gerade laufen.",
+          "pick": "Wähle einen aus, um Adresse und Port einzutragen. Ergänze Benutzer und Passwort."
+        },
+        "tips": {
+          "dockerRunning": "Docker muss laufen. Sonst sagt die Liste es dir."
+        }
+      },
+      "log": {
+        "title": "Protokoll lesen",
+        "purpose": "Jeder Lauf wird aufgezeichnet, mit jedem Schritt und jedem Fehler.",
+        "where": "Protokoll",
+        "steps": {
+          "open": "Öffne das Protokoll, um die Meldungen der App und jedes Laufs zu sehen.",
+          "select": "Wähle einen Lauf, um nur seine Meldungen zu sehen."
+        },
+        "tips": {
+          "secrets": "Passwörter sind im Protokoll verborgen."
+        }
+      }
+    },
+    "links": {
+      "settings": "Einstellungen",
+      "connections": "Verbindungen",
+      "replicate": "Replizieren",
+      "log": "Protokoll"
+    }
+  },
+  "support": {
+    "title": "Gefällt dir Mirrorbase?",
+    "text": "Es ist gratis. Wenn es dir Zeit spart, kannst du mir einen Kaffee spendieren.",
+    "button": "Buy me a coffee"
   }
 }

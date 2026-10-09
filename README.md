@@ -26,4 +26,6 @@ PostgreSQL copies need `psql` and `pg_dump` locally, or Docker (the app then run
 - Passwords never appear on a command line or in the log.
 - A PIN (4-8 digits) locks the app; there is no other sign-in. Forgetting it erases all saved passwords.
 
+Like it? [Buy me a coffee](https://buymeacoffee.com/hello.eme).
+
 Developer notes: [CLAUDE.md](CLAUDE.md). The original PowerShell script is kept in [legacy/](legacy/).

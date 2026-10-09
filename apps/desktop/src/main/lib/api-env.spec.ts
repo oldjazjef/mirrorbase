@@ -16,6 +16,6 @@ describe('desktopApiEnv', () => {
   it('runs as production without the API reference or a stray .env', () => {
     expect(env['NODE_ENV']).toBe('production');
     expect(env['API_DOCS']).toBe('false');
-    expect(env['DR_IGNORE_ENV_FILE']).toBe('true');
+    expect(env['MB_IGNORE_ENV_FILE']).toBe('true');
   });
 });

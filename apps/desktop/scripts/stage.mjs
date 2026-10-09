@@ -13,7 +13,7 @@
  *                         (Node ABI: API, tests) is never touched.
  *
  * Expects the web and API builds to exist (the Nx target `desktop:stage` depends on them).
- * Env: DR_VERSION (e.g. v1.2.3, the release tag) and DR_COMMIT — see scripts/build/version.mjs.
+ * Env: MB_VERSION (e.g. v1.2.3, the release tag) and MB_COMMIT — see scripts/build/version.mjs.
  */
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -41,7 +41,7 @@ const webDist = path.join(repoRoot, 'dist/apps/web-desktop/browser');
 const migrations = path.join(repoRoot, 'apps/api/prisma/migrations');
 const require = createRequire(import.meta.url);
 
-// The one version source (scripts/build/version.mjs): DR_VERSION (CI: the release tag) or the
+// The one version source (scripts/build/version.mjs): MB_VERSION (CI: the release tag) or the
 // nearest tag, + the commit. Installers get the plain semver (`version`); the full
 // `X.Y.Z+<commit>` goes into package.json's `mbBuild` (About dialog, Einstellungen → Speicherort).
 const { resolveVersion } = await import('../../../scripts/build/version.mjs');

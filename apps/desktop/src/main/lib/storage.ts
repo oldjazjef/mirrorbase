@@ -46,12 +46,12 @@ export function writeConfig(userData: string, config: DesktopConfig): void {
   renameSync(temp, target);
 }
 
-/** The data folder for this start: `DR_DATA_DIR` (tests, a portable setup), else `<userData>/data`. */
+/** The data folder for this start: `MB_DATA_DIR` (tests, a portable setup), else `<userData>/data`. */
 export function resolveDataDir(
   userData: string,
   env: Record<string, string | undefined> = {},
 ): string {
-  const override = env['DR_DATA_DIR'];
+  const override = env['MB_DATA_DIR'];
   if (override && override.trim().length > 0) return resolve(override.trim());
   return defaultDataDir(userData);
 }

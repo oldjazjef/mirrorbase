@@ -3,7 +3,7 @@ import { DATABASE_FILE } from './storage';
 
 /**
  * The environment the in-process API boots with (validated by apps/api/src/config/env.ts).
- * `DR_IGNORE_ENV_FILE` keeps a stray `.env` in the working directory out.
+ * `MB_IGNORE_ENV_FILE` keeps a stray `.env` in the working directory out.
  */
 export function desktopApiEnv(options: {
   dataDir: string;
@@ -19,6 +19,6 @@ export function desktopApiEnv(options: {
     // The window talks to the API through the app:// proxy, never cross-origin.
     CORS_ORIGINS: '',
     API_DOCS: 'false',
-    DR_IGNORE_ENV_FILE: 'true',
+    MB_IGNORE_ENV_FILE: 'true',
   };
 }

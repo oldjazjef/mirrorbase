@@ -28,7 +28,7 @@ import { AppController } from './app.controller';
       envFilePath: ['apps/api/.env.local', 'apps/api/.env', '.env'],
       // The desktop app (apps/desktop) sets every variable itself before it loads this module; a
       // stray .env in whatever directory it was started from must not leak in.
-      ignoreEnvFile: process.env['DR_IGNORE_ENV_FILE'] === 'true',
+      ignoreEnvFile: process.env['MB_IGNORE_ENV_FILE'] === 'true',
     }),
     // Per-IP hygiene (common/throttling).
     ThrottlerModule.forRootAsync({ useFactory: throttlerOptions }),

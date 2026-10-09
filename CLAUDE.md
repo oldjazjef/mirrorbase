@@ -67,6 +67,13 @@ touch the network or the database of the app itself.
 - Every bug fix gets a regression test. The gate is `pnpm check`; add checks there, not to CI alone.
 - Never commit `.data/`, `*.db`, dumps (`postgres_backups_*`) or `.env`. The pre-commit hook blocks them.
 
+## Help
+
+`/app/help` is a step-by-step guide. Its structure is `apps/web/src/app/features/help/help-content.ts`,
+its texts are the `help.*` keys in both message files. **A change to a page, button or flow updates
+the matching help texts.** The "Buy me a coffee" card (`support-card`, URL in `core/support.ts`)
+sits at the end of the help and the settings.
+
 ## Not built / open
 
 Creating a new local Docker container (the old script did), cross-engine copy, keeping dump files,

@@ -1,5 +1,6 @@
 import {
   lucideArrowLeftRight,
+  lucideCircleHelp,
   lucideDatabase,
   lucideScrollText,
   lucideSettings,
@@ -28,11 +29,13 @@ export const NAV_ITEMS: readonly NavItem[] = [
   },
   { path: '/app/log', labelKey: 'nav.log', icon: 'lucideScrollText' },
   { path: '/app/settings', labelKey: 'nav.settings', icon: 'lucideSettings' },
+  { path: '/app/help', labelKey: 'nav.help', icon: 'lucideCircleHelp' },
 ];
 
 /** The icons the navigation uses, registered once by the shell. */
 export const NAV_ICONS = {
   lucideArrowLeftRight,
+  lucideCircleHelp,
   lucideDatabase,
   lucideScrollText,
   lucideSettings,

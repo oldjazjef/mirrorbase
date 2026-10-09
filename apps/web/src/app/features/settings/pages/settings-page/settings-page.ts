@@ -7,6 +7,7 @@ import { HlmButtonImports } from '@mirrorbase/ui/button';
 import { HlmInputImports } from '@mirrorbase/ui/input';
 import { HlmLabelImports } from '@mirrorbase/ui/label';
 import { LOCALE_NAMES, SUPPORTED_LOCALES } from '../../../../core/i18n/locales';
+import { SupportCard } from '../../../../shared/components/support-card';
 import { PageHeader } from '../../../../shared/components/page-header';
 import {
   AUTO_LOCK_CHOICES,
@@ -20,6 +21,7 @@ import {
     ReactiveFormsModule,
     TranslatePipe,
     PageHeader,
+    SupportCard,
     ...HlmButtonImports,
     ...HlmInputImports,
     ...HlmLabelImports,

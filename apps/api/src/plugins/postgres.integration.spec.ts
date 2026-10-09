@@ -13,13 +13,13 @@ import { postgresPlugin } from '@mirrorbase/plugin-postgres';
 
 /**
  * The PostgreSQL plugin against a REAL server, through the real host (psql / pg_dump processes).
- * Needs a server: set DR_TEST_PG_HOST, DR_TEST_PG_PORT, DR_TEST_PG_USER, DR_TEST_PG_PASSWORD
+ * Needs a server: set MB_TEST_PG_HOST, MB_TEST_PG_PORT, MB_TEST_PG_USER, MB_TEST_PG_PASSWORD
  * (CI uses a service container). Without them the suite is skipped.
  */
-const HOST = process.env['DR_TEST_PG_HOST'];
-const PORT = process.env['DR_TEST_PG_PORT'] ?? '5432';
-const USER = process.env['DR_TEST_PG_USER'] ?? 'postgres';
-const PASSWORD = process.env['DR_TEST_PG_PASSWORD'] ?? '';
+const HOST = process.env['MB_TEST_PG_HOST'];
+const PORT = process.env['MB_TEST_PG_PORT'] ?? '5432';
+const USER = process.env['MB_TEST_PG_USER'] ?? 'postgres';
+const PASSWORD = process.env['MB_TEST_PG_PASSWORD'] ?? '';
 
 function psql(database: string, sql: string): string {
   return execFileSync(

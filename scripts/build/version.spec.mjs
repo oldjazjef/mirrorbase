@@ -40,22 +40,22 @@ describe('computeVersion', () => {
     ).toBe('1.2.3+abc1234.dirty');
   });
 
-  it('prefers DR_VERSION and the CI commit, and never calls a CI build dirty', () => {
+  it('prefers MB_VERSION and the CI commit, and never calls a CI build dirty', () => {
     const info = computeVersion({
-      env: { DR_VERSION: 'v2.0.0', GITHUB_SHA: 'fedcba9876543210' },
+      env: { MB_VERSION: 'v2.0.0', GITHUB_SHA: 'fedcba9876543210' },
       git: { tag: 'v1.2.3', sha: SHA, dirty: true },
     });
     expect(info.full).toBe('2.0.0+fedcba9');
     expect(
       computeVersion({
-        env: { DR_VERSION: '2.0.1+ignored', DR_COMMIT: '1111111222' },
+        env: { MB_VERSION: '2.0.1+ignored', MB_COMMIT: '1111111222' },
       }).full,
     ).toBe('2.0.1+1111111');
   });
 
-  it('refuses a malformed DR_VERSION and ignores a non-semver tag', () => {
-    expect(() => computeVersion({ env: { DR_VERSION: 'latest' } })).toThrow(
-      /DR_VERSION/,
+  it('refuses a malformed MB_VERSION and ignores a non-semver tag', () => {
+    expect(() => computeVersion({ env: { MB_VERSION: 'latest' } })).toThrow(
+      /MB_VERSION/,
     );
     expect(computeVersion({ git: { tag: 'vNext', sha: SHA } }).version).toBe(
       DEV_VERSION,
