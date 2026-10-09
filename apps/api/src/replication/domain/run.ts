@@ -17,7 +17,7 @@ export const DATABASE_STATUSES = [
 ] as const;
 export type DatabaseStatus = (typeof DATABASE_STATUSES)[number];
 
-/** How the data travels - see `planTransfer` in @dbreplicator/db-plugin. */
+/** How the data travels - see `planTransfer` in @mirrorbase/db-plugin. */
 export type RunStrategy = 'native' | 'interchange';
 
 /** One database of a run: where it comes from, where it goes, how far it got. */

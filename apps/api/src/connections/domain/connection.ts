@@ -2,7 +2,7 @@ import type {
   ConnectionConfig,
   DatabasePlugin,
   FieldValue,
-} from '@dbreplicator/db-plugin';
+} from '@mirrorbase/db-plugin';
 
 export const MAX_NAME_LENGTH = 80;
 

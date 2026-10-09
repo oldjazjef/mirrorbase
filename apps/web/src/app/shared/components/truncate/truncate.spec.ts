@@ -6,7 +6,7 @@ import { Truncate } from './truncate';
 
 @Component({
   imports: [Truncate],
-  template: `<span [drTruncate]="text()">{{ text() }}</span>`,
+  template: `<span [mbTruncate]="text()">{{ text() }}</span>`,
 })
 class Host {
   readonly text = signal(

@@ -9,17 +9,17 @@ import {
 import { replicationSetup } from '../replication/testing/replication-fixture';
 import { runReplication } from '../replication/application/run-replication';
 import { StartRunCommand } from '../replication/application/run.handlers';
-import { postgresPlugin } from '@dbreplicator/plugin-postgres';
+import { postgresPlugin } from '@mirrorbase/plugin-postgres';
 
 /**
  * The PostgreSQL plugin against a REAL server, through the real host (psql / pg_dump processes).
- * Needs a server: set DR_TEST_PG_HOST, DR_TEST_PG_PORT, DR_TEST_PG_USER, DR_TEST_PG_PASSWORD
+ * Needs a server: set MB_TEST_PG_HOST, MB_TEST_PG_PORT, MB_TEST_PG_USER, MB_TEST_PG_PASSWORD
  * (CI uses a service container). Without them the suite is skipped.
  */
-const HOST = process.env['DR_TEST_PG_HOST'];
-const PORT = process.env['DR_TEST_PG_PORT'] ?? '5432';
-const USER = process.env['DR_TEST_PG_USER'] ?? 'postgres';
-const PASSWORD = process.env['DR_TEST_PG_PASSWORD'] ?? '';
+const HOST = process.env['MB_TEST_PG_HOST'];
+const PORT = process.env['MB_TEST_PG_PORT'] ?? '5432';
+const USER = process.env['MB_TEST_PG_USER'] ?? 'postgres';
+const PASSWORD = process.env['MB_TEST_PG_PASSWORD'] ?? '';
 
 function psql(database: string, sql: string): string {
   return execFileSync(
@@ -46,7 +46,7 @@ function psql(database: string, sql: string): string {
 }
 
 const SUFFIX = `${Date.now()}`;
-const SHOP = `dr_shop_${SUFFIX}`;
+const SHOP = `mb_shop_${SUFFIX}`;
 const RESERVED = `authorization`;
 const COPY = (name: string) => `${name}_copy`;
 
@@ -203,18 +203,26 @@ describe.skipIf(!HOST)('postgres plugin against a real server', () => {
   });
 
   it('says what is wrong when the Docker client is chosen but Docker is not running', async () => {
-    const { s, source, target } = await setup('16', 'docker');
-    const run = await s.start.execute(
-      new StartRunCommand(
-        source.id,
-        target.id,
-        [{ source: RESERVED, target: COPY(RESERVED) }],
-        true,
-      ),
-    );
-    await runReplication(s.deps, run.id, new AbortController().signal);
-    const finished = (await s.runs.find(run.id))!;
-    expect(finished.status).toBe('failed');
-    expect(finished.databases[0]?.errorCode).toBe('clientToolsMissing');
+    // Make Docker unreachable on every machine: a CI runner has a running daemon, a laptop may not.
+    const before = process.env['DOCKER_HOST'];
+    process.env['DOCKER_HOST'] = 'unix:///nonexistent/mirrorbase-docker.sock';
+    try {
+      const { s, source, target } = await setup('16', 'docker');
+      const run = await s.start.execute(
+        new StartRunCommand(
+          source.id,
+          target.id,
+          [{ source: RESERVED, target: COPY(RESERVED) }],
+          true,
+        ),
+      );
+      await runReplication(s.deps, run.id, new AbortController().signal);
+      const finished = (await s.runs.find(run.id))!;
+      expect(finished.status).toBe('failed');
+      expect(finished.databases[0]?.errorCode).toBe('clientToolsMissing');
+    } finally {
+      if (before === undefined) delete process.env['DOCKER_HOST'];
+      else process.env['DOCKER_HOST'] = before;
+    }
   });
 });

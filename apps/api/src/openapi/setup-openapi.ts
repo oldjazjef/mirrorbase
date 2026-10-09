@@ -19,7 +19,7 @@ interface JsonResponse {
  * Builds the OpenAPI document and serves it as JSON and as the Scalar reference. No Swagger UI.
  *
  * There is no login: every data request carries the unlock token the PIN lock hands out
- * (`POST /api/pin/unlock`), sent in the `x-dbreplicator-unlock` header.
+ * (`POST /api/pin/unlock`), sent in the `x-mirrorbase-unlock` header.
  */
 export function setupOpenApi(
   app: INestApplication,
@@ -28,12 +28,12 @@ export function setupOpenApi(
   const document = SwaggerModule.createDocument(
     app,
     new DocumentBuilder()
-      .setTitle('DB Replicator API')
+      .setTitle('Mirrorbase API')
       .setDescription(
         [
           'Copy databases between servers: saved connections, database plugins, runs and their log.',
           '',
-          'Every data request needs the unlock token from `POST /api/pin/unlock` in `x-dbreplicator-unlock`.',
+          'Every data request needs the unlock token from `POST /api/pin/unlock` in `x-mirrorbase-unlock`.',
           'Passwords are never returned.',
         ].join('\n'),
       )
@@ -43,7 +43,7 @@ export function setupOpenApi(
         {
           type: 'apiKey',
           in: 'header',
-          name: 'x-dbreplicator-unlock',
+          name: 'x-mirrorbase-unlock',
           description: 'The unlock token returned by `POST /api/pin/unlock`.',
         },
         UNLOCK_SCHEME,
@@ -64,7 +64,7 @@ export function setupOpenApi(
     apiReference({
       // Scalar renders client-side from jsDelivr; set `cdn` to a self-hosted copy if blocked.
       url: `/${OPENAPI_JSON_PATH}`,
-      pageTitle: 'DB Replicator API',
+      pageTitle: 'Mirrorbase API',
       authentication: { preferredSecurityScheme: UNLOCK_SCHEME },
     }),
   );

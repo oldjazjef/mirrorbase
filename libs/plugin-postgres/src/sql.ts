@@ -1,4 +1,4 @@
-import { PluginError } from '@dbreplicator/db-plugin';
+import { PluginError } from '@mirrorbase/db-plugin';
 
 /** A PostgreSQL identifier, quoted: `"` doubled. */
 export function quoteIdent(name: string): string {

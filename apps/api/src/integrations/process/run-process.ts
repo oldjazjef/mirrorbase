@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import type { CommandResult } from '@dbreplicator/db-plugin';
+import type { CommandResult } from '@mirrorbase/db-plugin';
 
 /** Output beyond this is dropped (the head is kept): a pg_dump to stdout must not eat the heap. */
 const MAX_CAPTURE_BYTES = 4 * 1024 * 1024;

@@ -11,6 +11,7 @@ import {
   RUN_STATUSES,
   TRANSFER_REASONS,
 } from '../api/api.types';
+import { allHelpKeys } from '../../features/help/help-content';
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from './locales';
 
 /**
@@ -25,6 +26,7 @@ const I18N_DIR = fileURLToPath(
 );
 
 const DYNAMIC_KEYS = [
+  ...allHelpKeys(),
   ...RUN_STATUSES.map((status) => `runs.status.${status}`),
   ...DATABASE_STATUSES.map((status) => `runs.dbStatus.${status}`),
   ...LOG_LEVELS.map((level) => `log.levels.${level}`),
@@ -100,6 +102,8 @@ const KEY_ROOTS = new Set([
   'runs',
   'log',
   'settings',
+  'help',
+  'support',
 ]);
 
 function has(messages: unknown, key: string): boolean {

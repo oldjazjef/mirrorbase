@@ -2,12 +2,12 @@
   <div class="flex flex-wrap items-center gap-2">
     <label
       class="text-muted-foreground flex items-center gap-2 text-sm"
-      for="dr-log-level"
+      for="mb-log-level"
     >
       {{ 'log.level' | translate }}
       <select
         hlmInput
-        id="dr-log-level"
+        id="mb-log-level"
         class="h-8 w-auto"
         [value]="minLevel()"
         (change)="setLevel($any($event.target).value)"
@@ -35,7 +35,7 @@
 
   <div
     #scroller
-    class="dr-log"
+    class="mb-log"
     role="log"
     tabindex="0"
     [attr.aria-label]="'log.title' | translate"
@@ -50,14 +50,14 @@
       {{ 'log.empty' | translate }}
     </p>
     } @else { @for (entry of visible(); track entry.id) {
-    <div class="dr-log-line" [attr.data-level]="entry.level">
-      <time class="dr-log-time" [attr.datetime]="entry.at"
+    <div class="mb-log-line" [attr.data-level]="entry.level">
+      <time class="mb-log-time" [attr.datetime]="entry.at"
         >{{ clock(entry) }}</time
       >
-      <span class="dr-log-level"
+      <span class="mb-log-level"
         >{{ 'log.levels.' + entry.level | translate }}</span
       >
-      <span class="dr-log-message">{{ entry.message }}</span>
+      <span class="mb-log-message">{{ entry.message }}</span>
     </div>
     } }
   </div>

@@ -1,14 +1,14 @@
-<dr-page-header
+<mb-page-header
   [title]="'settings.title' | translate"
   [subtitle]="'settings.subtitle' | translate"
 />
 
 <div class="flex flex-col gap-6 p-6">
   <section
-    class="dr-panel flex flex-col gap-4 p-4"
-    aria-labelledby="dr-settings-security"
+    class="mb-panel flex flex-col gap-4 p-4"
+    aria-labelledby="mb-settings-security"
   >
-    <h2 id="dr-settings-security" class="text-lg font-semibold">
+    <h2 id="mb-settings-security" class="text-lg font-semibold">
       {{ 'settings.security.title' | translate }}
     </h2>
     <p class="text-muted-foreground text-sm">
@@ -23,7 +23,7 @@
       <h3 class="font-medium">{{ 'settings.pin.change' | translate }}</h3>
       @for (field of ['currentPin', 'pin', 'repeat']; track field) {
       <div class="flex flex-col gap-1.5">
-        <label hlmLabel [for]="'dr-pin-' + field"
+        <label hlmLabel [for]="'mb-pin-' + field"
           >{{ 'settings.pin.' + field | translate }}</label
         >
         <input
@@ -32,7 +32,7 @@
           inputmode="numeric"
           autocomplete="off"
           maxlength="8"
-          [id]="'dr-pin-' + field"
+          [id]="'mb-pin-' + field"
           [formControlName]="field"
         />
         @if (error($any(field)); as message) {
@@ -52,12 +52,12 @@
     </form>
 
     <div class="flex max-w-md flex-col gap-1.5">
-      <label hlmLabel for="dr-autolock"
+      <label hlmLabel for="mb-autolock"
         >{{ 'settings.autoLock.label' | translate }}</label
       >
       <select
         hlmInput
-        id="dr-autolock"
+        id="mb-autolock"
         [value]="service.autoLock()"
         (change)="service.setAutoLock(+$any($event.target).value)"
       >
@@ -86,19 +86,19 @@
   </section>
 
   <section
-    class="dr-panel flex flex-col gap-4 p-4"
-    aria-labelledby="dr-settings-language"
+    class="mb-panel flex flex-col gap-4 p-4"
+    aria-labelledby="mb-settings-language"
   >
-    <h2 id="dr-settings-language" class="text-lg font-semibold">
+    <h2 id="mb-settings-language" class="text-lg font-semibold">
       {{ 'settings.language.title' | translate }}
     </h2>
     <div class="flex max-w-md flex-col gap-1.5">
-      <label hlmLabel for="dr-language"
+      <label hlmLabel for="mb-language"
         >{{ 'settings.language.label' | translate }}</label
       >
       <select
         hlmInput
-        id="dr-language"
+        id="mb-language"
         (change)="service.language.use($any($event.target).value)"
       >
         @for (locale of locales; track locale) {
@@ -114,10 +114,10 @@
   </section>
 
   <section
-    class="dr-panel flex flex-col gap-3 p-4"
-    aria-labelledby="dr-settings-about"
+    class="mb-panel flex flex-col gap-3 p-4"
+    aria-labelledby="mb-settings-about"
   >
-    <h2 id="dr-settings-about" class="text-lg font-semibold">
+    <h2 id="mb-settings-about" class="text-lg font-semibold">
       {{ 'settings.about.title' | translate }}
     </h2>
     <dl class="grid max-w-2xl grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
@@ -129,7 +129,7 @@
       <dt class="text-muted-foreground">
         {{ 'settings.about.dataFolder' | translate }}
       </dt>
-      <dd class="dr-mono break-all">{{ storage.dataDir }}</dd>
+      <dd class="mb-mono break-all">{{ storage.dataDir }}</dd>
       <dt class="text-muted-foreground">
         {{ 'settings.about.passwordKey' | translate }}
       </dt>
@@ -154,4 +154,6 @@
     </div>
     }
   </section>
+
+  <mb-support-card />
 </div>

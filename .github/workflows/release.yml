@@ -1,0 +1,128 @@
+# Release: publish a version and build the desktop installers for it.
+#
+# - "Run workflow" on main (bump patch/minor/major, or an exact version) creates the next release
+#   itself - the tag lands on the commit you ran it on.
+# - Or publish a GitHub release (tag vX.Y.Z on a commit of main) by hand.
+#
+# Either way the same run builds the desktop app (Windows, macOS, Linux; `_desktop.yml`) and
+# attaches the installers to the release. The release notes get an install note for the (still
+# unsigned) app.
+name: Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version part to increase
+        type: choice
+        options: [patch, minor, major]
+        default: patch
+      version:
+        description: Exact version instead (e.g. v1.2.3), optional
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the release, append the desktop notes
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v5
+        if: github.event_name == 'workflow_dispatch'
+        with:
+          filter: tree:0
+          fetch-depth: 0
+
+      - name: Version
+        id: version
+        env:
+          EVENT: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          BUMP: ${{ inputs.bump }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          if [ "$EVENT" = release ]; then
+            tag="$RELEASE_TAG"
+          elif [ "$GITHUB_REF" != refs/heads/main ]; then
+            echo "::error::Run this workflow on main (got $GITHUB_REF)."
+            exit 1
+          elif [ -n "$VERSION" ]; then
+            tag="v${VERSION#v}"
+          else
+            latest="$(git tag --list 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || true)"
+            IFS=. read -r major minor patch <<<"${latest:-v0.0.0}"
+            major="${major#v}"
+            case "$BUMP" in
+              major) tag="v$((major + 1)).0.0" ;;
+              minor) tag="v$major.$((minor + 1)).0" ;;
+              *) tag="v$major.$minor.$((patch + 1))" ;;
+            esac
+            echo "Latest release: ${latest:-none}, next: $tag"
+          fi
+          if ! [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Release tag must look like v1.2.3 (got $tag)"
+            exit 1
+          fi
+          if [ "$EVENT" != release ] && git rev-parse --quiet --verify "refs/tags/$tag" > /dev/null; then
+            echo "::error::$tag already exists."
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Create release
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: gh release create "$TAG" --target "$GITHUB_SHA" --title "$TAG" --generate-notes
+
+      # Both paths: explain the unsigned desktop app. Idempotent: a re-run finds the marker.
+      - name: Desktop install notes
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          marker='<!-- mirrorbase-desktop-notes -->'
+          body="$(gh release view "$TAG" --json body --jq .body)"
+          if grep -qF -- "$marker" <<<"$body"; then
+            echo "Release $TAG already has the desktop install notes."
+            exit 0
+          fi
+          notes="$RUNNER_TEMP/release-notes.md"
+          {
+            if [ -n "$body" ]; then printf '%s\n\n' "$body"; fi
+            echo "$marker"
+            cat <<'EOF'
+          ## Desktop app
+
+          The installers appear under _Assets_ below a few minutes after publishing:
+          `Mirrorbase-Setup-<version>.exe` (Windows), `Mirrorbase-<version>-arm64.dmg` (Apple silicon),
+          `Mirrorbase-<version>-x64.dmg` (Intel Mac) and `Mirrorbase-<version>.AppImage` (Linux).
+          The app is **not signed** yet, so the operating system warns on the first start:
+
+          - **Windows (SmartScreen):** "Windows protected your PC" -> **More info** -> **Run anyway**.
+          - **macOS (Gatekeeper):** drag the app from the DMG into Applications, then right-click (or
+            Ctrl-click) the app in Finder -> **Open** -> **Open** again in the dialog. Or in Terminal:
+            `xattr -dr com.apple.quarantine "/Applications/Mirrorbase.app"`
+          - **Linux:** `chmod +x Mirrorbase-<version>.AppImage`, then run it.
+          EOF
+          } > "$notes"
+          gh release edit "$TAG" --notes-file "$notes"
+
+  desktop:
+    needs: release
+    permissions:
+      contents: write # upload the installers to the release
+    uses: ./.github/workflows/_desktop.yml
+    with:
+      tag: ${{ needs.release.outputs.tag }}
+    secrets: inherit

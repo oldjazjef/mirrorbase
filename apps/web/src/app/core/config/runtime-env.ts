@@ -9,12 +9,12 @@ export interface RuntimeEnv {
 
 declare global {
   interface Window {
-    __DR_ENV__?: Partial<RuntimeEnv>;
+    __MB_ENV__?: Partial<RuntimeEnv>;
   }
 }
 
 export function runtimeEnv(): RuntimeEnv {
-  const provided = window.__DR_ENV__ ?? {};
+  const provided = window.__MB_ENV__ ?? {};
   return {
     apiBaseUrl: readString(provided.apiBaseUrl, '').replace(/\/+$/, ''),
   };

@@ -8,8 +8,8 @@ import {
   DEFAULT_TOOLTIP_CONTENT_CLASSES,
   DEFAULT_TOOLTIP_SVG_CLASS,
   tooltipPositionVariants,
-} from '@dbreplicator/ui/tooltip';
-import { hlm } from '@dbreplicator/ui/utils';
+} from '@mirrorbase/ui/tooltip';
+import { hlm } from '@mirrorbase/ui/utils';
 
 /**
  * One line, cut with "…"; the full text appears in a tooltip — **only when it is actually cut**
@@ -17,7 +17,7 @@ import { hlm } from '@dbreplicator/ui/utils';
  *
  * ```html
  * <td hlmTd class="max-w-0">                     <!-- max-w-0: the cell may shrink below its text -->
- *   <span [drTruncate]="file.displayName">{{ file.displayName }}</span>
+ *   <span [mbTruncate]="file.displayName">{{ file.displayName }}</span>
  * </td>
  * ```
  *
@@ -26,7 +26,7 @@ import { hlm } from '@dbreplicator/ui/utils';
  * on the flexible column if the table is not fixed). Pass the same text as the content.
  */
 @Directive({
-  selector: '[drTruncate]',
+  selector: '[mbTruncate]',
   // HlmTooltip's look on brain's directive: the input of a host directive's own host directive
   // cannot be re-exposed, so HlmTooltip itself cannot be the host directive here.
   providers: [
@@ -41,7 +41,7 @@ import { hlm } from '@dbreplicator/ui/utils';
   hostDirectives: [
     {
       directive: BrnTooltip,
-      inputs: ['brnTooltip: drTruncate', 'position: drTruncatePosition'],
+      inputs: ['brnTooltip: mbTruncate', 'position: mbTruncatePosition'],
     },
   ],
   host: {

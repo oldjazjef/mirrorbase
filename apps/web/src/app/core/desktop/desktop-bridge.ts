@@ -1,5 +1,5 @@
 /**
- * The desktop shell's API (`window.dbreplicatorDesktop`, exposed by apps/desktop's preload
+ * The desktop shell's API (`window.mirrorbaseDesktop`, exposed by apps/desktop's preload
  * script). Absent in the browser. A mirror of `apps/desktop/src/shared/bridge.ts` - keep both in
  * step; the web app must not import from apps/desktop.
  */
@@ -30,11 +30,11 @@ export interface DesktopBridge {
 
 declare global {
   interface Window {
-    dbreplicatorDesktop?: DesktopBridge;
+    mirrorbaseDesktop?: DesktopBridge;
   }
 }
 
 /** The bridge when running inside the desktop app, otherwise null. */
 export function desktopBridge(): DesktopBridge | null {
-  return window.dbreplicatorDesktop ?? null;
+  return window.mirrorbaseDesktop ?? null;
 }

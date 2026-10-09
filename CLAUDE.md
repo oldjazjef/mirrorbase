@@ -1,4 +1,4 @@
-# DB Replicator
+# Mirrorbase
 
 Electron desktop app that copies a database from a saved source to a saved target. Same stack and
 architecture as `lazy-koins` (Nx monorepo, NestJS API running in-process, Angular web, Prisma +
@@ -10,7 +10,7 @@ Node 22.23.2, pnpm 11 (not npm), Nx 23 (daemon off, run with `NX_DAEMON=false`),
 Vitest everywhere (`pnpm test`, not through Nx), NestJS 11 + `@nestjs/cqrs`, Prisma 7 with
 `@prisma/adapter-better-sqlite3`, Angular 22 zoneless + spartan.ng + Tailwind v4 (needs
 `apps/web/.postcssrc.json`), ngx-translate (`en`, `de-CH`), Zod forms, Electron 42 + electron-builder.
-Prefix `dr`, scope `@dbreplicator`, app id `app.dbreplicator.desktop`.
+Prefix `mb`, scope `@mirrorbase`, app id `app.mirrorbase.desktop`.
 
 ## Commands
 
@@ -53,10 +53,10 @@ touch the network or the database of the app itself.
   environment (`PGPASSWORD`), never in arguments. All log text goes through `redactSecrets` /
   `redactConnectionStrings`.
 - PIN: scrypt hash, 4-8 digits, growing wait after wrong attempts, in-memory unlock sessions with a
-  sliding expiry (header `x-dbreplicator-unlock`). 423 `pinNotSet` / `pinLocked`. "Forgot PIN"
+  sliding expiry (header `x-mirrorbase-unlock`). 423 `pinNotSet` / `pinLocked`. "Forgot PIN"
   erases every saved password. The desktop locks on OS lock, suspend and idle (`LockWatch`).
 - The API listens on 127.0.0.1 only, with a per-launch access token; the window talks to it through
-  the `app://dbreplicator` protocol (same origin, strict CSP).
+  the `app://mirrorbase` protocol (same origin, strict CSP).
 
 ## Rules
 
@@ -67,10 +67,25 @@ touch the network or the database of the app itself.
 - Every bug fix gets a regression test. The gate is `pnpm check`; add checks there, not to CI alone.
 - Never commit `.data/`, `*.db`, dumps (`postgres_backups_*`) or `.env`. The pre-commit hook blocks them.
 
+## Help
+
+`/app/help` is a step-by-step guide. Its structure is `apps/web/src/app/features/help/help-content.ts`,
+its texts are the `help.*` keys in both message files. **A change to a page, button or flow updates
+the matching help texts.** The "Buy me a coffee" card (`support-card`, URL in `core/support.ts`)
+sits at the end of the help and the settings.
+
+## CI and releases
+
+Same shape as lazy-koins. `.github/workflows/ci.yml`: `check` (= `pnpm ci:verify`) and `integration`
+(`pnpm ci:integration`, with a Postgres 16 service container and `MB_TEST_PG_*`). **The gate lives in
+`package.json`**; add checks there, never to the YAML alone. `release.yml` ("Run workflow" on main
+or a hand-published release) creates the tag and calls `_desktop.yml`, which builds the installers
+(Windows, macOS, Linux; version = tag via `MB_VERSION`) and attaches them to the release. Unsigned.
+
 ## Not built / open
 
 Creating a new local Docker container (the old script did), cross-engine copy, keeping dump files,
-CI workflows and Dockerfiles, code signing and auto-update.
+Dockerfiles, code signing and auto-update.
 
 ## Gotchas
 

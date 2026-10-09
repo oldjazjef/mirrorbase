@@ -10,7 +10,7 @@ import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideArrowRight, lucideScrollText } from '@ng-icons/lucide';
 import { TranslatePipe } from '@ngx-translate/core';
-import { HlmSkeletonImports } from '@dbreplicator/ui/skeleton';
+import { HlmSkeletonImports } from '@mirrorbase/ui/skeleton';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import { EmptyState } from '../../../../shared/components/empty-state';
 import { LogViewer } from '../../../../shared/components/log-viewer';
@@ -23,7 +23,7 @@ import { LogPageService } from './log-page.service';
 const REFRESH_MS = 3000;
 
 @Component({
-  selector: 'dr-log-page',
+  selector: 'mb-log-page',
   imports: [
     DatePipe,
     RouterLink,

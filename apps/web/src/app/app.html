@@ -4,11 +4,11 @@
   <router-outlet />
 </div>
 @if (showLock()) {
-<dr-lock-screen />
+<mb-lock-screen />
 } } @else {
 <!-- The API did not answer (yet): the desktop shell starts it in-process, so this is brief. -->
-<div class="dr-lock-screen" role="status">
-  <div class="dr-lock-card">
+<div class="mb-lock-screen" role="status">
+  <div class="mb-lock-card">
     <p class="text-muted-foreground text-sm">
       {{ 'app.connecting' | translate }}
     </p>

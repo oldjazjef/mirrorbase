@@ -10,7 +10,7 @@ import {
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideArrowRight, lucideX } from '@ng-icons/lucide';
 import { TranslatePipe } from '@ngx-translate/core';
-import { HlmButtonImports } from '@dbreplicator/ui/button';
+import { HlmButtonImports } from '@mirrorbase/ui/button';
 import { isActiveRun, type Run } from '../../../core/api/api.types';
 import { LanguageService } from '../../../core/i18n/language.service';
 import { formatBytes, formatDuration } from '../../format/format';
@@ -22,7 +22,7 @@ import { Truncate } from '../truncate';
  * same component shows a run that is in progress and one from the history.
  */
 @Component({
-  selector: 'dr-run-progress',
+  selector: 'mb-run-progress',
   imports: [
     DatePipe,
     NgIcon,

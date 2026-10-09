@@ -8,7 +8,7 @@ import { type RowAction, RowActions } from './row-actions';
 @Component({
   imports: [RowActions],
   host: { '(click)': 'rowClicks = rowClicks + 1' },
-  template: `<dr-row-actions
+  template: `<mb-row-actions
     [actions]="actions()"
     (selected)="picked.push($event)"
   />`,

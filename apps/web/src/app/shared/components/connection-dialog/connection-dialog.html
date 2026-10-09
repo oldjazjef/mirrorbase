@@ -10,7 +10,7 @@
       </p>
     </hlm-dialog-header>
 
-    <div class="dr-dialog-body">
+    <div class="mb-dialog-body">
       @if (plugins.resource.error()) {
       <p class="text-destructive text-sm" role="alert">
         {{ 'connections.dialog.pluginsFailed' | translate }}
@@ -24,12 +24,12 @@
       >
         <div class="grid gap-4 sm:grid-cols-2">
           <div class="flex min-w-0 flex-col gap-1.5">
-            <label hlmLabel for="dr-conn-name"
+            <label hlmLabel for="mb-conn-name"
               >{{ 'connections.form.name' | translate }}</label
             >
             <input
               hlmInput
-              id="dr-conn-name"
+              id="mb-conn-name"
               type="text"
               autocomplete="off"
               formControlName="name"
@@ -43,12 +43,12 @@
             }
           </div>
           <div class="flex min-w-0 flex-col gap-1.5">
-            <label hlmLabel for="dr-conn-type"
+            <label hlmLabel for="mb-conn-type"
               >{{ 'connections.form.type' | translate }}</label
             >
             <select
               hlmInput
-              id="dr-conn-type"
+              id="mb-conn-type"
               [disabled]="editing()"
               [value]="pluginId()"
               (change)="choosePlugin($any($event.target).value)"
@@ -62,10 +62,10 @@
           </div>
         </div>
         <p class="text-muted-foreground -mt-2 text-sm">
-          {{ current.description | drLocalized }}
+          {{ current.description | mbLocalized }}
         </p>
 
-        <dr-plugin-fields
+        <mb-plugin-fields
           [fields]="current.fields"
           [form]="form()"
           [savedSecrets]="savedSecrets()"
@@ -87,7 +87,7 @@
             @if (testing()) {
             <ng-icon
               name="lucideLoaderCircle"
-              class="dr-spin"
+              class="mb-spin"
               aria-hidden="true"
             />
             {{ 'connections.dialog.testing' | translate }} } @else { {{
@@ -95,12 +95,12 @@
           </button>
           <label
             class="text-muted-foreground flex items-center gap-2 text-sm"
-            for="dr-test-role"
+            for="mb-test-role"
           >
             {{ 'connections.dialog.testAs' | translate }}
             <select
               hlmInput
-              id="dr-test-role"
+              id="mb-test-role"
               class="h-8 w-auto"
               [value]="testRole()"
               (change)="testRole.set($any($event.target).value)"
@@ -115,7 +115,7 @@
           </label>
         </div>
         @if (testResult(); as result) { @if (result.ok) {
-        <p class="dr-ok-text flex items-center gap-2 text-sm">
+        <p class="mb-ok-text flex items-center gap-2 text-sm">
           <ng-icon name="lucideCircleCheck" aria-hidden="true" />
           {{ 'connections.dialog.testOk' | translate }} @if
           (result.serverVersion) {
@@ -135,7 +135,7 @@
             'connections.dialog.testFailed' | translate }} } @if
             (result.message) {
             <span
-              class="dr-mono text-muted-foreground block break-words text-xs"
+              class="mb-mono text-muted-foreground block break-words text-xs"
               >{{ result.message }}</span
             >
             }

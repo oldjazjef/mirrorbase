@@ -41,7 +41,7 @@ export class ReplicationExecutor implements OnModuleInit {
     const pruned = await this.logs.pruneOld();
     app.write(
       'info',
-      `DB Replicator started${pruned > 0 ? ` (${pruned} old log entries removed)` : ''}`,
+      `Mirrorbase started${pruned > 0 ? ` (${pruned} old log entries removed)` : ''}`,
     );
     await app.flush();
   }

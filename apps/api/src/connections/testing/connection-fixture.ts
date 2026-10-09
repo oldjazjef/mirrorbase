@@ -1,7 +1,7 @@
 import type { ConfigService } from '@nestjs/config';
-import { postgresPlugin } from '@dbreplicator/plugin-postgres';
-import { sqlitePlugin } from '@dbreplicator/plugin-sqlite';
-import type { DatabasePlugin } from '@dbreplicator/db-plugin';
+import { postgresPlugin } from '@mirrorbase/plugin-postgres';
+import { sqlitePlugin } from '@mirrorbase/plugin-sqlite';
+import type { DatabasePlugin } from '@mirrorbase/db-plugin';
 import type { Env } from '../../config/env';
 import { LogService } from '../../logs/log.service';
 import { InMemoryLogRepository } from '../../logs/testing/in-memory-log.repository';

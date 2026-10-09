@@ -22,7 +22,7 @@ import { PinSessions } from './pin/application/pin-sessions';
 const GLOBAL_PREFIX = 'api';
 
 /** The header the desktop shell adds to every request when it passes `accessToken`. */
-export const DESKTOP_ACCESS_HEADER = 'x-dbreplicator-desktop';
+export const DESKTOP_ACCESS_HEADER = 'x-mirrorbase-desktop';
 
 /**
  * Overrides for one process. The dev server (`main.ts`) passes none and gets exactly the
@@ -38,7 +38,7 @@ export interface BootstrapOptions {
    */
   shutdownHooks?: boolean;
   /**
-   * When set, every request must carry this value in `x-dbreplicator-desktop`, or it gets a 403.
+   * When set, every request must carry this value in `x-mirrorbase-desktop`, or it gets a 403.
    * Loopback is reachable by every other program and every web page on the machine - this
    * per-launch secret, known only to the desktop shell that proxies the window's requests,
    * closes that door. (The PIN lock then protects the data from whoever is at the keyboard.)

@@ -1,7 +1,7 @@
 import { isAbsolute, resolve } from 'node:path';
 
 /**
- * `DATABASE_URL` (`file:./.data/dbreplicator.db`, `file:/data/dbreplicator.db`) → an absolute file path.
+ * `DATABASE_URL` (`file:./.data/mirrorbase.db`, `file:/data/mirrorbase.db`) → an absolute file path.
  *
  * One rule for every consumer: a relative path resolves against the **working directory**. Left
  * alone, the Prisma CLI resolves it against the folder of prisma.config.ts while the app resolves it

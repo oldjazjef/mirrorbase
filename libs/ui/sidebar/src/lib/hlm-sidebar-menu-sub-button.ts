@@ -1,6 +1,6 @@
 import { type BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, Directive, inject, input } from '@angular/core';
-import { classes } from '@dbreplicator/ui/utils';
+import { classes } from '@mirrorbase/ui/utils';
 import { HlmSidebarService } from './hlm-sidebar.service';
 import { injectHlmSidebarConfig } from './hlm-sidebar.token';
 

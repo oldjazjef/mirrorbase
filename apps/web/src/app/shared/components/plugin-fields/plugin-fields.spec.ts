@@ -54,7 +54,7 @@ const MADE_UP: FieldDescriptor[] = [
 
 @Component({
   imports: [PluginFields],
-  template: `<dr-plugin-fields
+  template: `<mb-plugin-fields
     [fields]="fields"
     [form]="form()"
     [savedSecrets]="saved()"
@@ -115,20 +115,20 @@ describe('PluginFields', () => {
       ]),
     );
     expect(
-      el.querySelector('input#dr-field-endpoint')?.getAttribute('type'),
+      el.querySelector('input#mb-field-endpoint')?.getAttribute('type'),
     ).toBe('text');
-    expect(el.querySelector('input#dr-field-token')?.getAttribute('type')).toBe(
+    expect(el.querySelector('input#mb-field-token')?.getAttribute('type')).toBe(
       'password',
     );
     expect(
-      el.querySelector('input#dr-field-token')?.getAttribute('autocomplete'),
+      el.querySelector('input#mb-field-token')?.getAttribute('autocomplete'),
     ).toBe('new-password');
-    expect(el.querySelector('input#dr-field-tls')?.getAttribute('type')).toBe(
+    expect(el.querySelector('input#mb-field-tls')?.getAttribute('type')).toBe(
       'checkbox',
     );
-    expect(el.querySelector('select#dr-field-region')).not.toBeNull();
+    expect(el.querySelector('select#mb-field-region')).not.toBeNull();
     expect(
-      [...el.querySelectorAll('select#dr-field-region option')].map((o) =>
+      [...el.querySelectorAll('select#mb-field-region option')].map((o) =>
         o.textContent?.trim(),
       ),
     ).toEqual(['connections.form.selectDefault', 'Europe', 'United States']);
@@ -138,20 +138,20 @@ describe('PluginFields', () => {
   it('shows a default as the placeholder', () => {
     const { el } = render();
     expect(
-      el.querySelector('input#dr-field-timeout')?.getAttribute('placeholder'),
+      el.querySelector('input#mb-field-timeout')?.getAttribute('placeholder'),
     ).toBe('30');
   });
 
   it('keeps advanced fields behind a disclosure', () => {
     const { fixture, el } = render();
-    expect(el.querySelector('#dr-field-cacheDir')).toBeNull();
+    expect(el.querySelector('#mb-field-cacheDir')).toBeNull();
     (
       el.querySelector(
-        'button[aria-controls="dr-advanced-fields"]',
+        'button[aria-controls="mb-advanced-fields"]',
       ) as HTMLButtonElement
     ).click();
     fixture.detectChanges();
-    expect(el.querySelector('#dr-field-cacheDir')).not.toBeNull();
+    expect(el.querySelector('#mb-field-cacheDir')).not.toBeNull();
   });
 
   it('shows the Zod message under a field once it was touched', () => {
@@ -170,7 +170,7 @@ describe('PluginFields', () => {
     host.form.set(build(['token']));
     fixture.detectChanges();
     expect(
-      el.querySelector('input#dr-field-token')?.getAttribute('placeholder'),
+      el.querySelector('input#mb-field-token')?.getAttribute('placeholder'),
     ).toBe('connections.form.passwordKept');
     (el.querySelector('button[class*="px-0"]') as HTMLButtonElement).click();
     expect(host.forgot).toBe('token');

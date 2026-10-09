@@ -9,7 +9,7 @@ import { join, resolve } from 'node:path';
 import { type DesktopLocale, isDesktopLocale } from './messages';
 
 /** The database file inside the data folder. */
-export const DATABASE_FILE = 'dbreplicator.db';
+export const DATABASE_FILE = 'mirrorbase.db';
 /** Where the shell's own settings live: in userData, never in the data folder itself. */
 export const CONFIG_FILE = 'desktop-config.json';
 
@@ -46,12 +46,12 @@ export function writeConfig(userData: string, config: DesktopConfig): void {
   renameSync(temp, target);
 }
 
-/** The data folder for this start: `DR_DATA_DIR` (tests, a portable setup), else `<userData>/data`. */
+/** The data folder for this start: `MB_DATA_DIR` (tests, a portable setup), else `<userData>/data`. */
 export function resolveDataDir(
   userData: string,
   env: Record<string, string | undefined> = {},
 ): string {
-  const override = env['DR_DATA_DIR'];
+  const override = env['MB_DATA_DIR'];
   if (override && override.trim().length > 0) return resolve(override.trim());
   return defaultDataDir(userData);
 }

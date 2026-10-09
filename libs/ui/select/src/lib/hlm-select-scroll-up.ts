@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronUp } from '@ng-icons/lucide';
 import { BrnSelectScrollUp } from '@spartan-ng/brain/select';
-import { classes } from '@dbreplicator/ui/utils';
+import { classes } from '@mirrorbase/ui/utils';
 
 @Component({
 	selector: 'hlm-select-scroll-up',

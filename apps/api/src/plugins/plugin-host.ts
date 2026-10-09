@@ -10,7 +10,7 @@ import {
   type LogLevel,
   redactConnectionStrings,
   redactSecrets,
-} from '@dbreplicator/db-plugin';
+} from '@mirrorbase/db-plugin';
 import type { Env } from '../config/env';
 import { runProcess } from '../integrations/process/run-process';
 import { type LogWriter, LogService } from '../logs/log.service';
@@ -50,7 +50,7 @@ export class PluginHostFactory {
     const directories: string[] = [];
     const root =
       this.config.get('WORK_DIR', { infer: true }) ||
-      join(tmpdir(), 'dbreplicator');
+      join(tmpdir(), 'mirrorbase');
     const uid = process.getuid?.();
     const gid = process.getgid?.();
 

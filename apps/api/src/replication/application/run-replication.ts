@@ -1,5 +1,5 @@
 import { rm } from 'node:fs/promises';
-import { PluginError } from '@dbreplicator/db-plugin';
+import { PluginError } from '@mirrorbase/db-plugin';
 import { ConnectionSecrets } from '../../connections/application/secrets';
 import { ConnectionRepositoryPort } from '../../connections/ports/connection.repository.port';
 import { PluginHostFactory } from '../../plugins/plugin-host';

@@ -1,7 +1,7 @@
 import { type BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { HlmSkeletonImports } from '@dbreplicator/ui/skeleton';
-import { classes } from '@dbreplicator/ui/utils';
+import { HlmSkeletonImports } from '@mirrorbase/ui/skeleton';
+import { classes } from '@mirrorbase/ui/utils';
 
 @Component({
 	selector: 'hlm-sidebar-menu-skeleton,div[hlmSidebarMenuSkeleton]',

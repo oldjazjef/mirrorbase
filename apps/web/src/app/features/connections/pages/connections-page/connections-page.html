@@ -1,4 +1,4 @@
-<dr-page-header
+<mb-page-header
   [title]="'connections.title' | translate"
   [subtitle]="'connections.subtitle' | translate"
 >
@@ -6,7 +6,7 @@
     <ng-icon name="lucidePlus" aria-hidden="true" />
     {{ 'connections.new' | translate }}
   </button>
-</dr-page-header>
+</mb-page-header>
 
 <div class="flex flex-col gap-6 p-6">
   @if (service.data.resource.isLoading() && !service.data.resource.hasValue()) {
@@ -16,7 +16,7 @@
     }
   </div>
   } @else if (service.data.resource.error()) {
-  <dr-empty-state [message]="'connections.loadFailed' | translate">
+  <mb-empty-state [message]="'connections.loadFailed' | translate">
     <button
       hlmBtn
       variant="outline"
@@ -25,15 +25,15 @@
     >
       {{ 'common.retry' | translate }}
     </button>
-  </dr-empty-state>
+  </mb-empty-state>
   } @else if (service.isEmpty()) {
-  <dr-empty-state [message]="'connections.empty' | translate">
+  <mb-empty-state [message]="'connections.empty' | translate">
     <button hlmBtn type="button" (click)="service.openNew()">
       {{ 'connections.new' | translate }}
     </button>
-  </dr-empty-state>
+  </mb-empty-state>
   } @else {
-  <div hlmTableContainer class="dr-panel">
+  <div hlmTableContainer class="mb-panel">
     <table hlmTable class="table-fixed">
       <colgroup>
         <col />
@@ -56,7 +56,7 @@
           <th hlmTh class="hidden xl:table-cell">
             {{ 'connections.columns.lastUsed' | translate }}
           </th>
-          <th hlmTh class="dr-sticky-actions text-right">
+          <th hlmTh class="mb-sticky-actions text-right">
             <span class="sr-only">{{ 'common.actions' | translate }}</span>
           </th>
         </tr>
@@ -68,7 +68,7 @@
             <button
               type="button"
               class="font-medium hover:underline"
-              [drTruncate]="row.connection.name"
+              [mbTruncate]="row.connection.name"
               (click)="service.openEdit(row.connection)"
             >
               {{ row.connection.name }}
@@ -76,7 +76,7 @@
             @if (row.connection.dockerName; as docker) {
             <span class="text-muted-foreground flex items-center gap-1 text-xs">
               <ng-icon name="lucideBox" size="12" aria-hidden="true" />
-              <span [drTruncate]="docker">{{ docker }}</span>
+              <span [mbTruncate]="docker">{{ docker }}</span>
             </span>
             }
           </td>
@@ -84,7 +84,7 @@
             <span hlmBadge variant="secondary">{{ row.pluginName }}</span>
           </td>
           <td hlmTd class="hidden max-w-0 md:table-cell">
-            <span class="dr-mono text-sm" [drTruncate]="row.target"
+            <span class="mb-mono text-sm" [mbTruncate]="row.target"
               >{{ row.target }}</span
             >
           </td>
@@ -99,8 +99,8 @@
             : undefined : language.current() }} } @else { {{
             'connections.neverUsed' | translate }} }
           </td>
-          <td hlmTd class="dr-sticky-actions text-right">
-            <dr-row-actions [actions]="actions" (selected)="act($event, row)" />
+          <td hlmTd class="mb-sticky-actions text-right">
+            <mb-row-actions [actions]="actions" (selected)="act($event, row)" />
           </td>
         </tr>
         }
@@ -109,9 +109,9 @@
   </div>
   }
 
-  <section class="flex flex-col gap-3" aria-labelledby="dr-docker-heading">
+  <section class="flex flex-col gap-3" aria-labelledby="mb-docker-heading">
     <div class="flex flex-wrap items-center gap-2">
-      <h2 id="dr-docker-heading" class="text-lg font-semibold">
+      <h2 id="mb-docker-heading" class="text-lg font-semibold">
         {{ 'docker.title' | translate }}
       </h2>
     </div>
@@ -120,15 +120,15 @@
     </p>
     @if (service.data.docker.hasValue()) { @let docker =
     service.data.docker.value(); @if (!docker.available) {
-    <p class="text-muted-foreground dr-panel p-4 text-sm">
+    <p class="text-muted-foreground mb-panel p-4 text-sm">
       {{ 'docker.unavailable.' + docker.reason | translate }}
     </p>
     } @else if (docker.items.length === 0) {
-    <p class="text-muted-foreground dr-panel p-4 text-sm">
+    <p class="text-muted-foreground mb-panel p-4 text-sm">
       {{ 'docker.empty' | translate }}
     </p>
     } @else {
-    <ul class="dr-panel flex flex-col divide-y">
+    <ul class="mb-panel flex flex-col divide-y">
       @for (item of docker.items; track item.containerId + item.pluginId) {
       <li class="flex min-w-0 flex-wrap items-center gap-3 p-3">
         <ng-icon
@@ -137,10 +137,10 @@
           aria-hidden="true"
         />
         <div class="min-w-0 flex-1 basis-48">
-          <p class="font-medium" [drTruncate]="item.containerName">
+          <p class="font-medium" [mbTruncate]="item.containerName">
             {{ item.containerName }}
           </p>
-          <p class="text-muted-foreground text-xs" [drTruncate]="item.summary">
+          <p class="text-muted-foreground text-xs" [mbTruncate]="item.summary">
             {{ item.summary }}
           </p>
         </div>
@@ -170,7 +170,7 @@
   </section>
 </div>
 
-<dr-connection-dialog
+<mb-connection-dialog
   [open]="service.dialogOpen()"
   [connection]="service.editing()"
   [prefill]="service.prefill()"
@@ -190,7 +190,7 @@
         {{ 'connections.delete.body' | translate: { name: target.name } }}
       </p>
     </hlm-dialog-header>
-    <div class="dr-dialog-body">
+    <div class="mb-dialog-body">
       <p class="text-muted-foreground text-sm">
         {{ 'connections.delete.note' | translate }}
       </p>

@@ -46,7 +46,7 @@ export default [
         }
     },
     {
-        // db-replicator: the generated hlm.ts asserts non-null on purpose (17 times). Vendored code is
+        // mirrorbase: the generated hlm.ts asserts non-null on purpose (17 times). Vendored code is
         // not edited (CLAUDE.md), so its one lint opinion is switched off here, keeping `pnpm lint`
         // free of warnings. Re-add after a spartan migrate-* generator rewrites this file.
         files: [

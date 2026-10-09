@@ -27,4 +27,4 @@ const bridge: DesktopBridge = {
   },
 };
 
-contextBridge.exposeInMainWorld('dbreplicatorDesktop', bridge);
+contextBridge.exposeInMainWorld('mirrorbaseDesktop', bridge);

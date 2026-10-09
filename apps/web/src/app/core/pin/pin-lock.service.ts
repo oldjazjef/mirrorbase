@@ -13,7 +13,7 @@ import type { PinReset, PinStatus, PinUnlocked } from '../api/api.types';
 import { desktopBridge } from '../desktop/desktop-bridge';
 
 /** The header that carries the unlock token on every API request. */
-export const UNLOCK_HEADER = 'x-dbreplicator-unlock';
+export const UNLOCK_HEADER = 'x-mirrorbase-unlock';
 
 /** What went wrong with a PIN attempt, for the lock screen. */
 export interface PinProblem {

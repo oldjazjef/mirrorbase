@@ -9,7 +9,7 @@ import {
   PluginError,
   type PluginConnection,
   type TestResult,
-} from '@dbreplicator/db-plugin';
+} from '@mirrorbase/db-plugin';
 import {
   badRequest,
   conflict,

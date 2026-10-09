@@ -1,4 +1,4 @@
-<dr-page-header
+<mb-page-header
   [title]="'replicate.title' | translate"
   [subtitle]="'replicate.subtitle' | translate"
 />
@@ -7,26 +7,26 @@
   <div class="grid gap-6 lg:grid-cols-2">
     @for (side of sides; track side) {
     <section
-      class="dr-panel flex flex-col gap-4 p-4"
-      [attr.aria-labelledby]="'dr-side-' + side"
+      class="mb-panel flex flex-col gap-4 p-4"
+      [attr.aria-labelledby]="'mb-side-' + side"
     >
       <h2
-        [id]="'dr-side-' + side"
+        [id]="'mb-side-' + side"
         class="flex items-center gap-2 text-lg font-semibold"
       >
-        <span class="dr-step" aria-hidden="true"
+        <span class="mb-step" aria-hidden="true"
           >{{ side === 'source' ? '1' : '2' }}</span
         >
         {{ 'replicate.' + side | translate }}
       </h2>
 
       <div class="flex flex-col gap-1.5">
-        <label hlmLabel [for]="'dr-pick-' + side"
+        <label hlmLabel [for]="'mb-pick-' + side"
           >{{ 'replicate.chooseConnection' | translate }}</label
         >
         <select
           hlmInput
-          [id]="'dr-pick-' + side"
+          [id]="'mb-pick-' + side"
           [value]="selected(side)"
           [disabled]="service.runActive()"
           (change)="service.choose(side, $any($event.target).value)"
@@ -77,7 +77,7 @@
           <dt class="sr-only">
             {{ 'connections.columns.target' | translate }}
           </dt>
-          <dd class="dr-mono min-w-0 flex-1" [drTruncate]="summary(chosen)">
+          <dd class="mb-mono min-w-0 flex-1" [mbTruncate]="summary(chosen)">
             {{ summary(chosen) }}
           </dd>
         </div>
@@ -94,7 +94,7 @@
 
   @if (service.plan()?.kind === 'unsupported') {
   <p
-    class="dr-panel flex items-start gap-2 border-destructive/40 p-4 text-sm"
+    class="mb-panel flex items-start gap-2 border-destructive/40 p-4 text-sm"
     role="alert"
   >
     <ng-icon
@@ -107,15 +107,15 @@
   }
 
   <section
-    class="dr-panel flex flex-col gap-4 p-4"
-    aria-labelledby="dr-databases-heading"
+    class="mb-panel flex flex-col gap-4 p-4"
+    aria-labelledby="mb-databases-heading"
   >
     <div class="flex flex-wrap items-center gap-2">
       <h2
-        id="dr-databases-heading"
+        id="mb-databases-heading"
         class="flex flex-1 items-center gap-2 text-lg font-semibold"
       >
-        <span class="dr-step" aria-hidden="true">3</span>
+        <span class="mb-step" aria-hidden="true">3</span>
         {{ 'replicate.databases' | translate }}
       </h2>
       @if (service.source()) {
@@ -179,13 +179,13 @@
             [disabled]="service.runActive()"
             (change)="service.toggle(db.name)"
           />
-          <span class="min-w-0" [drTruncate]="db.name">{{ db.name }}</span>
+          <span class="min-w-0" [mbTruncate]="db.name">{{ db.name }}</span>
         </label>
         } @else {
         <!-- One database, copied by definition: nothing to tick. -->
         <span
           class="min-w-0 flex-1 basis-56 text-sm font-medium"
-          [drTruncate]="db.name"
+          [mbTruncate]="db.name"
           >{{ db.name }}</span
         >
         } @if (service.namesMatter() && db.selected) {
@@ -212,14 +212,14 @@
   </section>
 
   <section
-    class="dr-panel flex flex-col gap-4 p-4"
-    aria-labelledby="dr-start-heading"
+    class="mb-panel flex flex-col gap-4 p-4"
+    aria-labelledby="mb-start-heading"
   >
     <h2
-      id="dr-start-heading"
+      id="mb-start-heading"
       class="flex items-center gap-2 text-lg font-semibold"
     >
-      <span class="dr-step" aria-hidden="true">4</span>
+      <span class="mb-step" aria-hidden="true">4</span>
       {{ 'replicate.start' | translate }}
     </h2>
     <label class="flex items-start gap-2 text-sm">
@@ -245,7 +245,7 @@
         (click)="service.requestStart()"
       >
         @if (service.starting()) {
-        <ng-icon name="lucideLoaderCircle" class="dr-spin" aria-hidden="true" />
+        <ng-icon name="lucideLoaderCircle" class="mb-spin" aria-hidden="true" />
         } @else {
         <ng-icon name="lucidePlay" aria-hidden="true" />
         } {{ 'replicate.startButton' | translate: { count:
@@ -258,7 +258,7 @@
   </section>
 
   @if (service.run(); as run) {
-  <dr-run-progress [run]="run" (cancelRequested)="service.cancelRun()" />
+  <mb-run-progress [run]="run" (cancelRequested)="service.cancelRun()" />
   @if (!service.runActive()) {
   <div class="flex flex-wrap gap-2">
     <a
@@ -283,14 +283,14 @@
   } }
 </div>
 
-<dr-connection-dialog
+<mb-connection-dialog
   [open]="dialogOpen()"
   [prefill]="service.prefill()"
   (closed)="service.closeDialog()"
   (saved)="service.savedHere($event)"
 />
 
-<dr-docker-picker
+<mb-docker-picker
   [open]="dockerOpen()"
   (closed)="service.dockerSide.set(null)"
   (picked)="service.pickedFromDocker($event)"
@@ -308,8 +308,8 @@
         service.target()?.name ?? '' } }}
       </p>
     </hlm-dialog-header>
-    <div class="dr-dialog-body">
-      <ul class="dr-mono list-disc pl-5 text-sm">
+    <div class="mb-dialog-body">
+      <ul class="mb-mono list-disc pl-5 text-sm">
         @for (db of service.selection(); track db.name) {
         <li>{{ service.namesMatter() ? db.target : db.name }}</li>
         }

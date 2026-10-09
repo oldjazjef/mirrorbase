@@ -11,9 +11,9 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronRight } from '@ng-icons/lucide';
 import { TranslatePipe } from '@ngx-translate/core';
-import { HlmButtonImports } from '@dbreplicator/ui/button';
-import { HlmInputImports } from '@dbreplicator/ui/input';
-import { HlmLabelImports } from '@dbreplicator/ui/label';
+import { HlmButtonImports } from '@mirrorbase/ui/button';
+import { HlmInputImports } from '@mirrorbase/ui/input';
+import { HlmLabelImports } from '@mirrorbase/ui/label';
 import type { FieldDescriptor } from '../../../core/api/api.types';
 import { LocalizedPipe } from '../../plugins/localized.pipe';
 import { placeholderOf } from '../../plugins/plugin-schema';
@@ -24,7 +24,7 @@ import { placeholderOf } from '../../plugins/plugin-schema';
  * here without touching the web app. Validation lives in the form's Zod validator.
  */
 @Component({
-  selector: 'dr-plugin-fields',
+  selector: 'mb-plugin-fields',
   imports: [
     NgTemplateOutlet,
     NgIcon,

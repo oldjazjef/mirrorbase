@@ -31,7 +31,7 @@ import {
 import { AllowWhileLocked, unlockTokenOf } from './pin-lock.guard';
 import { PinService } from './pin.service';
 
-/** The request's unlock token (`x-dbreplicator-unlock`), if any. */
+/** The request's unlock token (`x-mirrorbase-unlock`), if any. */
 const UnlockToken = createParamDecorator(
   (_data: unknown, context: ExecutionContext): string | undefined =>
     unlockTokenOf(

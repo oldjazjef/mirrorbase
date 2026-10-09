@@ -1,5 +1,5 @@
 /**
- * The window's only access to the desktop shell: `window.dbreplicatorDesktop`, exposed by the
+ * The window's only access to the desktop shell: `window.mirrorbaseDesktop`, exposed by the
  * preload script through contextBridge. Keep it minimal and typed - every function is an IPC call
  * the main process validates. The web app mirrors these types in
  * `apps/web/src/app/core/desktop/desktop-bridge.ts` (it must not import from apps/desktop).
@@ -35,10 +35,10 @@ export interface DesktopBridge {
 }
 
 export const IPC = {
-  storageInfo: 'dr:storage:info',
-  storageReveal: 'dr:storage:reveal',
+  storageInfo: 'mb:storage:info',
+  storageReveal: 'mb:storage:reveal',
   /** main → window: the app was locked (reason). */
-  locked: 'dr:lock:locked',
-  lockIdleMinutes: 'dr:lock:idle-minutes',
-  localeSet: 'dr:locale:set',
+  locked: 'mb:lock:locked',
+  lockIdleMinutes: 'mb:lock:idle-minutes',
+  localeSet: 'mb:locale:set',
 } as const;

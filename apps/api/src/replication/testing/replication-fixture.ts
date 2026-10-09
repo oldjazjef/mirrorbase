@@ -6,7 +6,7 @@ import {
   PluginError,
   type PluginConnection,
   type RestoreRequest,
-} from '@dbreplicator/db-plugin';
+} from '@mirrorbase/db-plugin';
 import { connectionSetup } from '../../connections/testing/connection-fixture';
 import type { ReplicationDeps } from '../application/run-replication';
 import {

@@ -38,7 +38,7 @@ const KEY = 'a'.repeat(64);
 let dir: string;
 
 beforeEach(() => {
-  dir = mkdtempSync(join(tmpdir(), 'dr-key-'));
+  dir = mkdtempSync(join(tmpdir(), 'mb-key-'));
 });
 afterEach(() => rmSync(dir, { recursive: true, force: true }));
 

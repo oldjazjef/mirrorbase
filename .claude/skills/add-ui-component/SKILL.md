@@ -11,7 +11,7 @@ npx nx g @spartan-ng/cli:ui --name=<component> --no-interactive
 npx nx run-many -t lint --fix                            # peerDependencies for the new lib
 ```
 
-- It creates `libs/ui/<component>/` as an Nx library imported as `@dbreplicator/ui/<component>`, adds
+- It creates `libs/ui/<component>/` as an Nx library imported as `@mirrorbase/ui/<component>`, adds
   the path to `tsconfig.base.json`, and runs `pnpm install`.
 - `components.json` at the root configures the generator; if it prompts, that file is missing.
 - If the generator fails with "does not export the ignore checkers", `@nx/devkit` drifted from

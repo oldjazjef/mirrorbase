@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucidePanelLeft } from '@ng-icons/lucide';
-import { HlmButton, provideBrnButtonConfig } from '@dbreplicator/ui/button';
+import { HlmButton, provideBrnButtonConfig } from '@mirrorbase/ui/button';
 import { HlmSidebarService } from './hlm-sidebar.service';
 
 @Component({

@@ -13,11 +13,11 @@ import {
   lucideTrash2,
 } from '@ng-icons/lucide';
 import { TranslatePipe } from '@ngx-translate/core';
-import { HlmBadge } from '@dbreplicator/ui/badge';
-import { HlmButtonImports } from '@dbreplicator/ui/button';
-import { HlmDialogImports } from '@dbreplicator/ui/dialog';
-import { HlmSkeletonImports } from '@dbreplicator/ui/skeleton';
-import { HlmTableImports } from '@dbreplicator/ui/table';
+import { HlmBadge } from '@mirrorbase/ui/badge';
+import { HlmButtonImports } from '@mirrorbase/ui/button';
+import { HlmDialogImports } from '@mirrorbase/ui/dialog';
+import { HlmSkeletonImports } from '@mirrorbase/ui/skeleton';
+import { HlmTableImports } from '@mirrorbase/ui/table';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import { ConnectionDialog } from '../../../../shared/components/connection-dialog';
 import { EmptyState } from '../../../../shared/components/empty-state';
@@ -35,7 +35,7 @@ import {
 type RowActionId = 'edit' | 'delete';
 
 @Component({
-  selector: 'dr-connections-page',
+  selector: 'mb-connections-page',
   imports: [
     DatePipe,
     NgIcon,

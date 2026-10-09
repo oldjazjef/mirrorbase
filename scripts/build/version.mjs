@@ -3,14 +3,14 @@
  * THE version of a build — one source of truth for the API, the web app, the desktop app and the
  * container images. Format `X.Y.Z+<shortsha>`:
  *
- *   release build (CI, DR_VERSION=v1.2.3)     1.2.3+abc1234
+ *   release build (CI, MB_VERSION=v1.2.3)     1.2.3+abc1234
  *   local build, nearest tag v1.2.3           1.2.3+abc1234
  *   no tag reachable                          0.0.0-dev+abc1234
  *   uncommitted changes (local only)          1.2.3+abc1234.dirty
  *
  * Inputs, strongest first:
- *   DR_VERSION   `v1.2.3` / `1.2.3` (CI: the release tag). A `+…` suffix is ignored.
- *   DR_COMMIT    the commit (Docker builds — the image has no .git), else GITHUB_SHA (CI), else
+ *   MB_VERSION   `v1.2.3` / `1.2.3` (CI: the release tag). A `+…` suffix is ignored.
+ *   MB_COMMIT    the commit (Docker builds — the image has no .git), else GITHUB_SHA (CI), else
  *                `git rev-parse HEAD`. Shortened to 7 characters.
  *   git          nearest `vX.Y.Z` tag (`git describe --tags --abbrev=0`), dirty working tree.
  *
@@ -33,14 +33,14 @@ export const DEV_VERSION = '0.0.0-dev';
  * @param {{ env?: Record<string, string | undefined>, git?: { tag?: string | null, sha?: string | null, dirty?: boolean }, now?: Date }} input
  */
 export function computeVersion({ env = {}, git = {}, now = new Date() } = {}) {
-  const fromEnv = (env.DR_VERSION ?? '').trim().replace(/^v/, '').split('+')[0];
+  const fromEnv = (env.MB_VERSION ?? '').trim().replace(/^v/, '').split('+')[0];
   if (fromEnv && !SEMVER.test(fromEnv)) {
-    throw new Error(`DR_VERSION must look like v1.2.3 (got ${env.DR_VERSION})`);
+    throw new Error(`MB_VERSION must look like v1.2.3 (got ${env.MB_VERSION})`);
   }
   const tag = (git.tag ?? '').replace(/^v/, '');
   const version = fromEnv || (SEMVER.test(tag) ? tag : DEV_VERSION);
 
-  const ciSha = (env.DR_COMMIT || env.GITHUB_SHA || '').trim();
+  const ciSha = (env.MB_COMMIT || env.GITHUB_SHA || '').trim();
   const commit = (ciSha || git.sha || 'unknown').slice(0, 7);
   // A CI/Docker build is by definition clean; locally, uncommitted changes are flagged.
   const dirty = !ciSha && git.dirty === true;

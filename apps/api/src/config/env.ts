@@ -46,14 +46,14 @@ export class Env {
   PORT = 3333;
 
   /**
-   * SQLite file: `file:./.data/dbreplicator.db` (relative = against the working directory).
+   * SQLite file: `file:./.data/mirrorbase.db` (relative = against the working directory).
    * Checked here so a leftover `postgres://` URL fails at boot with a clear message rather than
    * at the first query.
    */
   @IsString()
   @Matches(/^file:.+/, {
     message:
-      'DATABASE_URL must be a SQLite file URL, e.g. file:./.data/dbreplicator.db',
+      'DATABASE_URL must be a SQLite file URL, e.g. file:./.data/mirrorbase.db',
   })
   DATABASE_URL!: string;
 

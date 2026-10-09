@@ -5,7 +5,7 @@ import { app, dialog } from 'electron';
 /**
  * Shows an error the user must see (native dialog) and records it with its stack in
  * `<userData>/logs/main.log`, so a report can include more than the dialog's text.
- * `DR_NO_DIALOGS=1` (automated runs) logs only.
+ * `MB_NO_DIALOGS=1` (automated runs) logs only.
  */
 export function reportError(
   title: string,
@@ -26,5 +26,5 @@ export function reportError(
   } catch {
     // Logging must never hide the dialog.
   }
-  if (process.env['DR_NO_DIALOGS'] !== '1') dialog.showErrorBox(title, detail);
+  if (process.env['MB_NO_DIALOGS'] !== '1') dialog.showErrorBox(title, detail);
 }

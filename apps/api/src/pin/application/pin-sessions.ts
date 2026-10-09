@@ -4,7 +4,7 @@ import type { AppPin } from '../domain/pin';
 import { AppPinRepositoryPort } from '../ports/app-pin.repository.port';
 
 /** The header that carries the unlock token on every data request. */
-export const UNLOCK_HEADER = 'x-dbreplicator-unlock';
+export const UNLOCK_HEADER = 'x-mirrorbase-unlock';
 
 /** At most this many open sessions (windows); the oldest goes first. */
 const MAX_SESSIONS = 5;
@@ -18,7 +18,7 @@ export class PinClock {
 }
 
 export interface UnlockGrant {
-  /** Opaque, 256 bits; sent back in `x-dbreplicator-unlock`. */
+  /** Opaque, 256 bits; sent back in `x-mirrorbase-unlock`. */
   readonly token: string;
   /** ISO timestamp; every request with the token moves it on (sliding). */
   readonly expiresAt: string;

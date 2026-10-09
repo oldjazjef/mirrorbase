@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
-import { HlmInput } from '@dbreplicator/ui/input';
-import { classes } from '@dbreplicator/ui/utils';
+import { HlmInput } from '@mirrorbase/ui/input';
+import { classes } from '@mirrorbase/ui/utils';
 
 @Directive({
 	selector: 'input[hlmInputGroupInput]',

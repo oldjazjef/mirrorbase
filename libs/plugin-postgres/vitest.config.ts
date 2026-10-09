@@ -6,10 +6,7 @@ export default defineConfig({
   // Workspace libs are consumed through the tsconfig path alias; Vitest needs it spelled out.
   resolve: {
     alias: {
-      '@dbreplicator/db-plugin': resolve(
-        __dirname,
-        '../db-plugin/src/index.ts',
-      ),
+      '@mirrorbase/db-plugin': resolve(__dirname, '../db-plugin/src/index.ts'),
     },
   },
   test: {

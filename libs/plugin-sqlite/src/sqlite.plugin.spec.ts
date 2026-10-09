@@ -12,13 +12,13 @@ import {
   createFakeHost,
   PluginError,
   type PluginConnection,
-} from '@dbreplicator/db-plugin';
+} from '@mirrorbase/db-plugin';
 import { SQLITE_DUMP_FORMAT, sqlitePlugin } from './sqlite.plugin';
 
 let dir: string;
 
 beforeEach(() => {
-  dir = mkdtempSync(join(tmpdir(), 'dr-sqlite-'));
+  dir = mkdtempSync(join(tmpdir(), 'mb-sqlite-'));
 });
 afterEach(() => rmSync(dir, { recursive: true, force: true }));
 

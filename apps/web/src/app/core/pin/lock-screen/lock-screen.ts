@@ -11,9 +11,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCircleAlert, lucideLock } from '@ng-icons/lucide';
 import { TranslatePipe } from '@ngx-translate/core';
-import { HlmButtonImports } from '@dbreplicator/ui/button';
-import { HlmInputImports } from '@dbreplicator/ui/input';
-import { HlmLabelImports } from '@dbreplicator/ui/label';
+import { HlmButtonImports } from '@mirrorbase/ui/button';
+import { HlmInputImports } from '@mirrorbase/ui/input';
+import { HlmLabelImports } from '@mirrorbase/ui/label';
 import { AUTO_LOCK_CHOICES, LockScreenService } from './lock-screen.service';
 
 /**
@@ -21,7 +21,7 @@ import { AUTO_LOCK_CHOICES, LockScreenService } from './lock-screen.service';
  * later start - and every auto-lock - asks for it again. There is no other login in this app.
  */
 @Component({
-  selector: 'dr-lock-screen',
+  selector: 'mb-lock-screen',
   imports: [
     NgIcon,
     ReactiveFormsModule,

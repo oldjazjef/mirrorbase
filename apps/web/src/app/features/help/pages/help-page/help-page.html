@@ -1,0 +1,113 @@
+<mb-page-header
+  [title]="'help.title' | translate"
+  [subtitle]="'help.subtitle' | translate"
+/>
+
+<div class="flex max-w-3xl flex-col gap-6 p-6">
+  <p class="text-muted-foreground text-sm">{{ 'help.intro' | translate }}</p>
+
+  <div class="flex flex-col gap-2" role="search">
+    <label hlmLabel for="mb-help-search"
+      >{{ 'help.search.label' | translate }}</label
+    >
+    <div class="flex gap-2">
+      <input
+        #search
+        hlmInput
+        id="mb-help-search"
+        type="search"
+        class="min-w-0 flex-1"
+        autocomplete="off"
+        [value]="service.query()"
+        [placeholder]="'help.search.placeholder' | translate"
+        (input)="service.query.set(search.value)"
+      />
+      @if (service.searching()) {
+      <button
+        hlmBtn
+        variant="ghost"
+        size="icon"
+        type="button"
+        [attr.aria-label]="'help.search.clear' | translate"
+        (click)="service.query.set(''); search.focus()"
+      >
+        <ng-icon name="lucideX" size="16" aria-hidden="true" />
+      </button>
+      }
+    </div>
+    <p class="text-muted-foreground text-xs" role="status" data-help-results>
+      @if (service.nothingFound()) { {{ 'help.search.none' | translate }} }
+      @else if (service.searching()) { {{ 'help.search.results' | translate: {
+      count: service.visibleSections().length, total: service.total } }} }
+    </p>
+  </div>
+
+  @for (section of service.visibleSections(); track section.id) {
+  <section
+    class="mb-panel flex flex-col gap-3 p-4"
+    [id]="section.id"
+    [attr.aria-labelledby]="'mb-help-' + section.id"
+  >
+    <p class="text-muted-foreground text-xs font-medium uppercase">
+      {{ 'help.stepOf' | translate: { number: section.number, total:
+      service.total } }}
+    </p>
+    <h2 [id]="'mb-help-' + section.id" class="text-lg font-semibold">
+      {{ 'help.sections.' + section.id + '.title' | translate }}
+    </h2>
+    <p class="text-sm">
+      {{ 'help.sections.' + section.id + '.purpose' | translate }}
+    </p>
+    <p class="text-muted-foreground text-sm">
+      {{ 'help.where' | translate: { place: ('help.sections.' + section.id +
+      '.where' | translate) } }}
+    </p>
+    <ol class="flex list-decimal flex-col gap-1.5 pl-5 text-sm">
+      @for (step of section.steps; track step) {
+      <li>
+        {{ 'help.sections.' + section.id + '.steps.' + step | translate }}
+      </li>
+      }
+    </ol>
+    @if (section.tips.length > 0) {
+    <div class="flex flex-col gap-1">
+      <h3 class="text-sm font-medium">{{ 'help.tips' | translate }}</h3>
+      <ul
+        class="text-muted-foreground flex list-disc flex-col gap-1 pl-5 text-sm"
+      >
+        @for (tip of section.tips; track tip) {
+        <li>
+          {{ 'help.sections.' + section.id + '.tips.' + tip | translate }}
+        </li>
+        }
+      </ul>
+    </div>
+    } @for (link of section.links; track link.id) {
+    <div>
+      <a hlmBtn variant="outline" size="sm" [routerLink]="link.path">
+        {{ 'help.open' | translate: { page: ('help.links.' + link.id |
+        translate) } }}
+      </a>
+    </div>
+    }
+  </section>
+  } @if (service.visibleFaq().length > 0) {
+  <section class="flex flex-col gap-3" aria-labelledby="mb-help-faq">
+    <h2 id="mb-help-faq" class="text-lg font-semibold">
+      {{ 'help.faq.title' | translate }}
+    </h2>
+    @for (id of service.visibleFaq(); track id) {
+    <details class="mb-panel p-4">
+      <summary class="cursor-pointer font-medium">
+        {{ 'help.faq.items.' + id + '.question' | translate }}
+      </summary>
+      <p class="text-muted-foreground mt-2 text-sm">
+        {{ 'help.faq.items.' + id + '.answer' | translate }}
+      </p>
+    </details>
+    }
+  </section>
+  }
+
+  <mb-support-card />
+</div>

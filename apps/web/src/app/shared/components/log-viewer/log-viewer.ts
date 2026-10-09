@@ -14,8 +14,8 @@ import {
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCopy } from '@ng-icons/lucide';
 import { TranslatePipe } from '@ngx-translate/core';
-import { HlmButtonImports } from '@dbreplicator/ui/button';
-import { HlmInputImports } from '@dbreplicator/ui/input';
+import { HlmButtonImports } from '@mirrorbase/ui/button';
+import { HlmInputImports } from '@mirrorbase/ui/input';
 import {
   LOG_LEVELS,
   type LogEntry,
@@ -40,7 +40,7 @@ const LEVEL_RANK: Readonly<Record<LogLevel, number>> = {
  * lines every 1.5 s and follows the end unless the person scrolled up to read.
  */
 @Component({
-  selector: 'dr-log-viewer',
+  selector: 'mb-log-viewer',
   imports: [NgIcon, TranslatePipe, ...HlmButtonImports, ...HlmInputImports],
   providers: [provideIcons({ lucideCopy })],
   templateUrl: './log-viewer.html',

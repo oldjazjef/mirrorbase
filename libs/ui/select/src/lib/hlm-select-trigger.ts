@@ -4,7 +4,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronDown } from '@ng-icons/lucide';
 import { BrnFieldControlDescribedBy } from '@spartan-ng/brain/field';
 import { BrnSelectTrigger } from '@spartan-ng/brain/select';
-import { hlm } from '@dbreplicator/ui/utils';
+import { hlm } from '@mirrorbase/ui/utils';
 import type { ClassValue } from 'clsx';
 
 @Component({

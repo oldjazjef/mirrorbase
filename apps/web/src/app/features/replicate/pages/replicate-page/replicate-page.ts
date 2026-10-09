@@ -17,12 +17,12 @@ import {
   lucideRefreshCw,
 } from '@ng-icons/lucide';
 import { TranslatePipe } from '@ngx-translate/core';
-import { HlmBadge } from '@dbreplicator/ui/badge';
-import { HlmButtonImports } from '@dbreplicator/ui/button';
-import { HlmDialogImports } from '@dbreplicator/ui/dialog';
-import { HlmInputImports } from '@dbreplicator/ui/input';
-import { HlmLabelImports } from '@dbreplicator/ui/label';
-import { HlmSkeletonImports } from '@dbreplicator/ui/skeleton';
+import { HlmBadge } from '@mirrorbase/ui/badge';
+import { HlmButtonImports } from '@mirrorbase/ui/button';
+import { HlmDialogImports } from '@mirrorbase/ui/dialog';
+import { HlmInputImports } from '@mirrorbase/ui/input';
+import { HlmLabelImports } from '@mirrorbase/ui/label';
+import { HlmSkeletonImports } from '@mirrorbase/ui/skeleton';
 import type { Connection } from '../../../../core/api/api.types';
 import { ConnectionDialog } from '../../../../shared/components/connection-dialog';
 import { DockerPicker } from '../../../../shared/components/docker-picker';
@@ -33,7 +33,7 @@ import { summarizeConfig } from '../../../../shared/format/format';
 import { type Side, ReplicatePageService } from './replicate-page.service';
 
 @Component({
-  selector: 'dr-replicate-page',
+  selector: 'mb-replicate-page',
   imports: [
     RouterLink,
     NgIcon,
@@ -85,7 +85,7 @@ export class ReplicatePage {
       this.lastRunId = id;
       queueMicrotask(() =>
         this.host.nativeElement
-          .querySelector('dr-run-progress')
+          .querySelector('mb-run-progress')
           ?.scrollIntoView?.({ behavior: 'smooth', block: 'nearest' }),
       );
     });

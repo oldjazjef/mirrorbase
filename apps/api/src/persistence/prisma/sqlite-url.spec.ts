@@ -5,8 +5,8 @@ describe('sqliteFilePath', () => {
   // `resolve` on the expectation too: on Windows `/repo` resolves to `C:\repo` (surf-lend's copy of
   // this spec only ever ran on Linux and hard-coded the POSIX form).
   it('resolves relative paths against the working directory', () => {
-    expect(sqliteFilePath('file:./.data/dbreplicator.db', '/repo')).toBe(
-      resolve('/repo', '.data/dbreplicator.db'),
+    expect(sqliteFilePath('file:./.data/mirrorbase.db', '/repo')).toBe(
+      resolve('/repo', '.data/mirrorbase.db'),
     );
     expect(sqliteFilePath('file:dev.db', '/repo')).toBe(
       resolve('/repo', 'dev.db'),
@@ -15,8 +15,8 @@ describe('sqliteFilePath', () => {
 
   it('keeps absolute paths and drops query parameters', () => {
     expect(
-      sqliteFilePath('file:/data/dbreplicator.db?connection_limit=1', '/repo'),
-    ).toBe('/data/dbreplicator.db');
+      sqliteFilePath('file:/data/mirrorbase.db?connection_limit=1', '/repo'),
+    ).toBe('/data/mirrorbase.db');
   });
 
   it('rejects anything that is not a file URL', () => {

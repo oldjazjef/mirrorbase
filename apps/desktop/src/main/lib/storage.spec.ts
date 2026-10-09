@@ -11,7 +11,7 @@ import {
 
 let dir: string;
 beforeEach(() => {
-  dir = mkdtempSync(join(tmpdir(), 'dr-storage-'));
+  dir = mkdtempSync(join(tmpdir(), 'mb-storage-'));
 });
 afterEach(() => rmSync(dir, { recursive: true, force: true }));
 
@@ -31,12 +31,12 @@ describe('desktop config', () => {
 });
 
 describe('resolveDataDir', () => {
-  it('defaults to <userData>/data and takes DR_DATA_DIR over it', () => {
+  it('defaults to <userData>/data and takes MB_DATA_DIR over it', () => {
     expect(resolveDataDir('/u', {})).toBe(defaultDataDir('/u'));
-    expect(resolveDataDir('/u', { DR_DATA_DIR: '  /elsewhere ' })).toBe(
+    expect(resolveDataDir('/u', { MB_DATA_DIR: '  /elsewhere ' })).toBe(
       resolve('/elsewhere'),
     );
-    expect(resolveDataDir('/u', { DR_DATA_DIR: '   ' })).toBe(
+    expect(resolveDataDir('/u', { MB_DATA_DIR: '   ' })).toBe(
       defaultDataDir('/u'),
     );
   });

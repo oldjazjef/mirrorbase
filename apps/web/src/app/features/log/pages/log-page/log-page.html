@@ -1,4 +1,4 @@
-<dr-page-header
+<mb-page-header
   [title]="'log.title' | translate"
   [subtitle]="'log.subtitle' | translate"
 />
@@ -10,8 +10,8 @@
   >
     <a
       routerLink="/app/log"
-      class="dr-list-item"
-      [class.dr-list-item-active]="service.selectedId() === null"
+      class="mb-list-item"
+      [class.mb-list-item-active]="service.selectedId() === null"
       [attr.aria-current]="service.selectedId() === null ? 'page' : null"
     >
       <ng-icon name="lucideScrollText" aria-hidden="true" />
@@ -33,12 +33,12 @@
     <a
       routerLink="/app/log"
       [queryParams]="{ run: item.id }"
-      class="dr-list-item flex-col items-stretch"
-      [class.dr-list-item-active]="service.selectedId() === item.id"
+      class="mb-list-item flex-col items-stretch"
+      [class.mb-list-item-active]="service.selectedId() === item.id"
       [attr.aria-current]="service.selectedId() === item.id ? 'page' : null"
     >
       <span class="flex min-w-0 items-center gap-2 text-sm font-medium">
-        <span class="min-w-0" [drTruncate]="item.sourceName"
+        <span class="min-w-0" [mbTruncate]="item.sourceName"
           >{{ item.sourceName }}</span
         >
         <ng-icon
@@ -46,7 +46,7 @@
           class="text-muted-foreground shrink-0"
           aria-hidden="true"
         />
-        <span class="min-w-0" [drTruncate]="item.targetName"
+        <span class="min-w-0" [mbTruncate]="item.targetName"
           >{{ item.targetName }}</span
         >
       </span>
@@ -54,7 +54,7 @@
         <span class="text-muted-foreground text-xs">
           {{ item.createdAt | date: 'short' : undefined : language.current() }}
         </span>
-        <dr-status-badge [status]="item.status" />
+        <mb-status-badge [status]="item.status" />
       </span>
     </a>
     } }
@@ -62,12 +62,12 @@
 
   <section class="flex min-h-0 min-w-0 flex-col gap-4">
     @if (service.selected(); as run) {
-    <dr-run-progress [run]="run" [cancellable]="false" />
-    <dr-log-viewer [runId]="run.id" [live]="service.live()" />
+    <mb-run-progress [run]="run" [cancellable]="false" />
+    <mb-log-viewer [runId]="run.id" [live]="service.live()" />
     } @else if (service.selectedId() !== null && service.loaded()) {
-    <dr-empty-state [message]="'log.runGone' | translate" />
+    <mb-empty-state [message]="'log.runGone' | translate" />
     } @else {
-    <dr-log-viewer [runId]="null" [live]="true" />
+    <mb-log-viewer [runId]="null" [live]="true" />
     }
   </section>
 </div>

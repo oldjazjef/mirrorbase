@@ -3,7 +3,7 @@
 // dist/desktop: Windows NSIS (x64), macOS dmg (arm64 + x64), Linux AppImage (x64).
 // Run via `pnpm build:desktop`.
 //
-// Version: scripts/build/version.mjs (DR_VERSION = the release tag), already written into the
+// Version: scripts/build/version.mjs (MB_VERSION = the release tag), already written into the
 // staged package.json.
 //
 // Signing: none yet (open decision, see CLAUDE.md). electron-builder picks it up from the
@@ -22,9 +22,9 @@ const signing = Boolean(process.env.CSC_LINK);
 
 /** @type {import('electron-builder').Configuration} */
 module.exports = {
-  appId: 'app.dbreplicator.desktop',
-  productName: 'DB Replicator',
-  copyright: 'DB Replicator',
+  appId: 'app.mirrorbase.desktop',
+  productName: 'Mirrorbase',
+  copyright: 'Mirrorbase',
   electronVersion,
   directories: {
     output: path.join(repoRoot, 'dist/desktop'),

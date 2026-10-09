@@ -1,6 +1,6 @@
 import { Directive, inject } from '@angular/core';
 import { BrnSelectValue } from '@spartan-ng/brain/select';
-import { classes } from '@dbreplicator/ui/utils';
+import { classes } from '@mirrorbase/ui/utils';
 
 @Directive({
 	selector: '[hlmSelectValue],hlm-select-value',

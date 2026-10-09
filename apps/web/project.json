@@ -2,9 +2,9 @@
   "name": "web",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "dr-note-no-test-target": "Deliberate \u2014 see the Testing section in CLAUDE.md. Vitest fails inside Nx's run-commands spawn, so tests run via `pnpm test` or `pnpm vitest run --project web`.",
-  "dr-note-desktop-build": "build:desktop = the build the desktop app serves via app:// (apps/desktop), into dist/apps/web-desktop. Production, but without critical-CSS inlining: its `onload` handler would need inline script under the desktop's strict CSP.",
-  "prefix": "dr",
+  "mb-note-no-test-target": "Deliberate \u2014 see the Testing section in CLAUDE.md. Vitest fails inside Nx's run-commands spawn, so tests run via `pnpm test` or `pnpm vitest run --project web`.",
+  "mb-note-desktop-build": "build:desktop = the build the desktop app serves via app:// (apps/desktop), into dist/apps/web-desktop. Production, but without critical-CSS inlining: its `onload` handler would need inline script under the desktop's strict CSP.",
+  "prefix": "mb",
   "sourceRoot": "apps/web/src",
   "tags": [],
   "targets": {
@@ -91,7 +91,7 @@
     },
     "typecheck": {
       "executor": "nx:run-commands",
-      "dr-note": "The Angular build type-checks the app; this covers the specs too (Vitest's transform does not type-check).",
+      "mb-note": "The Angular build type-checks the app; this covers the specs too (Vitest's transform does not type-check).",
       "cache": true,
       "inputs": ["default", "^default"],
       "options": {
@@ -100,5 +100,5 @@
       }
     }
   },
-  "dr-note-bundle-budget": "The initial bundle is ~1.1 MB raw (Angular, zod, locale data, spartan). It is loaded from disk by the desktop app, so raw size is not a transfer cost; the budget only catches an accidental doubling."
+  "mb-note-bundle-budget": "The initial bundle is ~1.1 MB raw (Angular, zod, locale data, spartan). It is loaded from disk by the desktop app, so raw size is not a transfer cost; the budget only catches an accidental doubling."
 }

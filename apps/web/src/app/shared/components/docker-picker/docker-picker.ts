@@ -9,10 +9,10 @@ import {
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideBox, lucideRefreshCw } from '@ng-icons/lucide';
 import { TranslatePipe } from '@ngx-translate/core';
-import { HlmBadge } from '@dbreplicator/ui/badge';
-import { HlmButtonImports } from '@dbreplicator/ui/button';
-import { HlmDialogImports } from '@dbreplicator/ui/dialog';
-import { HlmSkeletonImports } from '@dbreplicator/ui/skeleton';
+import { HlmBadge } from '@mirrorbase/ui/badge';
+import { HlmButtonImports } from '@mirrorbase/ui/button';
+import { HlmDialogImports } from '@mirrorbase/ui/dialog';
+import { HlmSkeletonImports } from '@mirrorbase/ui/skeleton';
 import type { DockerDatabase } from '../../../core/api/api.types';
 import { ConnectionsService } from '../../../core/connections/connections.service';
 import { Truncate } from '../truncate';
@@ -23,7 +23,7 @@ import { Truncate } from '../truncate';
  * password is never read from the container) or selects the connection that already exists.
  */
 @Component({
-  selector: 'dr-docker-picker',
+  selector: 'mb-docker-picker',
   imports: [
     NgIcon,
     HlmBadge,

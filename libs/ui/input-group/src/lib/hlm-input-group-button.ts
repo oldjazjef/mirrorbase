@@ -1,6 +1,6 @@
 import { Directive, input } from '@angular/core';
-import { HlmButton, provideBrnButtonConfig } from '@dbreplicator/ui/button';
-import { classes } from '@dbreplicator/ui/utils';
+import { HlmButton, provideBrnButtonConfig } from '@mirrorbase/ui/button';
+import { classes } from '@mirrorbase/ui/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const inputGroupAddonVariants = cva('gap-2 text-sm flex items-center shadow-none', {

@@ -6,7 +6,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
-import { planTransfer } from '@dbreplicator/db-plugin';
+import { planTransfer } from '@mirrorbase/db-plugin';
 import { UNLOCK_SCHEME } from '../openapi/security-schemes';
 import { PluginDto, TransferPlanDto } from './dto/plugin.dto';
 import { PluginRegistry } from './plugin-registry';

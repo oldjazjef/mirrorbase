@@ -3,10 +3,10 @@ import type { LocalizedText } from '../../core/api/api.types';
 import { LanguageService } from '../../core/i18n/language.service';
 
 /**
- * `{{ field.label | drLocalized }}` - the text a database plugin ships in the app's language,
+ * `{{ field.label | mbLocalized }}` - the text a database plugin ships in the app's language,
  * English when the plugin has no translation. Impure: it follows a language switch.
  */
-@Pipe({ name: 'drLocalized', pure: false })
+@Pipe({ name: 'mbLocalized', pure: false })
 export class LocalizedPipe implements PipeTransform {
   private readonly language = inject(LanguageService);
 

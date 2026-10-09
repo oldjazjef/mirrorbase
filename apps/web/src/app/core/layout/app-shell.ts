@@ -15,9 +15,9 @@ import {
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideLock, lucideMoon, lucideSun } from '@ng-icons/lucide';
 import { TranslatePipe } from '@ngx-translate/core';
-import { HlmBadge } from '@dbreplicator/ui/badge';
-import { HlmButtonImports } from '@dbreplicator/ui/button';
-import { HlmSidebarImports, HlmSidebarService } from '@dbreplicator/ui/sidebar';
+import { HlmBadge } from '@mirrorbase/ui/badge';
+import { HlmButtonImports } from '@mirrorbase/ui/button';
+import { HlmSidebarImports, HlmSidebarService } from '@mirrorbase/ui/sidebar';
 import { filter, map } from 'rxjs';
 import { PinLockService } from '../pin/pin-lock.service';
 import { ThemeService } from '../theme/theme.service';
@@ -31,7 +31,7 @@ import { isNavActive, NAV_ICONS, NAV_ITEMS, type NavItem } from './nav-config';
  * scrolls. Ported from lazy-koins' / etx's shell, without a user menu: there is no account.
  */
 @Component({
-  selector: 'dr-app-shell',
+  selector: 'mb-app-shell',
   imports: [
     RouterOutlet,
     RouterLink,

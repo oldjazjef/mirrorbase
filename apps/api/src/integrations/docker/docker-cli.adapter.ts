@@ -1,7 +1,4 @@
-import type {
-  DockerContainer,
-  DockerPortBinding,
-} from '@dbreplicator/db-plugin';
+import type { DockerContainer, DockerPortBinding } from '@mirrorbase/db-plugin';
 import {
   DockerPort,
   DockerUnavailableError,

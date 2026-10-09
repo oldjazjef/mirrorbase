@@ -5,7 +5,7 @@ import {
   input,
 } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { HlmBadge } from '@dbreplicator/ui/badge';
+import { HlmBadge } from '@mirrorbase/ui/badge';
 import type { DatabaseStatus, RunStatus } from '../../../core/api/api.types';
 
 type Tone = 'neutral' | 'active' | 'ok' | 'bad';
@@ -27,12 +27,12 @@ const TONES: Readonly<Record<RunStatus | DatabaseStatus, Tone>> = {
  * always written out, and the active states carry a spinner dot.
  */
 @Component({
-  selector: 'dr-status-badge',
+  selector: 'mb-status-badge',
   imports: [HlmBadge, TranslatePipe],
   template: `
     <span hlmBadge variant="outline" [class]="toneClass()">
       @if (tone() === 'active') {
-        <span class="dr-spinner" aria-hidden="true"></span>
+        <span class="mb-spinner" aria-hidden="true"></span>
       }
       {{ labelKey() | translate }}
     </span>
@@ -46,7 +46,7 @@ export class StatusBadge {
 
   protected readonly tone = computed(() => TONES[this.status()]);
   protected readonly toneClass = computed(
-    () => `dr-status dr-status-${this.tone()}`,
+    () => `mb-status mb-status-${this.tone()}`,
   );
   protected readonly labelKey = computed(() =>
     this.kind() === 'run'

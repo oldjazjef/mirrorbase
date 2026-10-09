@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "DB Replicator",
+    "name": "Mirrorbase",
     "version": "Version {{version}} ({{commit}})",
     "versionBadge": "v{{version}}",
     "connecting": "Waiting for the app to start…"
@@ -28,7 +28,8 @@
     "settings": "Settings",
     "lockNow": "Lock now",
     "toggleTheme": "Switch between light and dark",
-    "toggleSidebar": "Show or hide the navigation"
+    "toggleSidebar": "Show or hide the navigation",
+    "help": "Help"
   },
   "validation": {
     "required": "This field is required.",
@@ -91,7 +92,7 @@
       "submit": "Set PIN"
     },
     "lock": {
-      "title": "DB Replicator is locked",
+      "title": "Mirrorbase is locked",
       "hint": "Enter your PIN to continue.",
       "label": "PIN",
       "placeholder": "PIN",
@@ -312,5 +313,126 @@
         "file": "Stored in a file only you can read (no keychain available)"
       }
     }
+  },
+  "help": {
+    "title": "Help",
+    "subtitle": "A short guide, step by step.",
+    "intro": "Mirrorbase copies a database from a saved source to a saved target. Follow the steps in order the first time; later you only need Replicate.",
+    "stepOf": "Step {{number}} of {{total}}",
+    "where": "Where: {{place}}",
+    "tips": "Tips",
+    "open": "Open: {{page}}",
+    "search": {
+      "label": "Search the help",
+      "placeholder": "Search",
+      "clear": "Clear the search",
+      "results": "{{count}} of {{total}} sections match.",
+      "none": "Nothing matches your search."
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": {
+        "databases": {
+          "question": "Which databases are supported?",
+          "answer": "PostgreSQL and SQLite. Every database type is a plugin, so more types can follow."
+        },
+        "mixed": {
+          "question": "Can I copy from PostgreSQL to SQLite?",
+          "answer": "Not yet. Source and target must be the same type. Copying between types is planned."
+        },
+        "forgotPin": {
+          "question": "I forgot my PIN.",
+          "answer": "Choose Forgot PIN on the lock screen. The app unlocks, but every saved password is erased and you enter them again."
+        },
+        "data": {
+          "question": "Where is my data?",
+          "answer": "Saved connections, the log and the settings are stored on this computer. Passwords are encrypted and the key is kept in the system keychain."
+        },
+        "overwrite": {
+          "question": "Does a copy overwrite the target?",
+          "answer": "Only if you tick “Replace databases that already exist on the target”. Without it, a database that exists already is skipped with an error."
+        }
+      }
+    },
+    "sections": {
+      "pin": {
+        "title": "Protect the app with a PIN",
+        "purpose": "The PIN is the only protection. It locks the app when you start it, when you are away and when the computer locks.",
+        "where": "Settings",
+        "steps": {
+          "setPin": "On first start, choose a PIN of 4 to 8 digits and repeat it.",
+          "lock": "Choose Lock now in the navigation to lock the app at any time.",
+          "change": "Change the PIN or the idle time in Settings. You need the current PIN."
+        },
+        "tips": {
+          "autoLock": "The idle time can be set from 1 to 240 minutes.",
+          "forgot": "Forgetting the PIN erases all saved passwords."
+        }
+      },
+      "connections": {
+        "title": "Save your databases",
+        "purpose": "A connection stores where a database lives, so you do not enter it every time.",
+        "where": "Connections",
+        "steps": {
+          "add": "Choose New connection, give it a name and pick the database type.",
+          "test": "Fill in the fields the type asks for and test the connection, as source or as target.",
+          "save": "Save. The connection now appears in the lists of Replicate."
+        },
+        "tips": {
+          "password": "Passwords are saved encrypted and never appear in the log.",
+          "docker": "For a Docker database you can also pick the container on the Replicate page."
+        }
+      },
+      "replicate": {
+        "title": "Copy a database",
+        "purpose": "Pick a saved source and a saved target, then start the copy.",
+        "where": "Replicate",
+        "steps": {
+          "pickSource": "Under Source, choose the connection to copy from. For a server with several databases, tick the ones to copy.",
+          "pickTarget": "Under Target, choose where the copy goes.",
+          "start": "Choose the copy button and confirm. Progress shows below.",
+          "cancel": "Choose Cancel to stop a run that is in progress."
+        },
+        "tips": {
+          "sameType": "Source and target must be the same database type.",
+          "overwrite": "Tick “Replace databases that already exist on the target” only when you want the target replaced."
+        }
+      },
+      "docker": {
+        "title": "Use a running Docker database",
+        "purpose": "Databases running in Docker on this computer can be picked without typing their address.",
+        "where": "Replicate",
+        "steps": {
+          "list": "Choose From Docker to list the containers that are running now.",
+          "pick": "Pick one to fill in its address and port. Add the user and password."
+        },
+        "tips": {
+          "dockerRunning": "Docker must be running. If it is not, the list says so."
+        }
+      },
+      "log": {
+        "title": "Read the log",
+        "purpose": "Every run is recorded, with each step and any error.",
+        "where": "Log",
+        "steps": {
+          "open": "Open Log to see the messages of the app and of every run.",
+          "select": "Select a run to see only its messages."
+        },
+        "tips": {
+          "secrets": "Passwords are hidden in the log."
+        }
+      }
+    },
+    "links": {
+      "settings": "Settings",
+      "connections": "Connections",
+      "replicate": "Replicate",
+      "log": "Log"
+    }
+  },
+  "support": {
+    "title": "Like Mirrorbase?",
+    "text": "It is free. If it saves you time, you can buy me a coffee.",
+    "button": "Buy me a coffee"
   }
 }

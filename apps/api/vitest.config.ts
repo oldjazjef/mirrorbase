@@ -14,15 +14,15 @@ export default defineConfig({
   // Workspace libs are consumed through the tsconfig path alias, as webpack does.
   resolve: {
     alias: {
-      '@dbreplicator/db-plugin': resolve(
+      '@mirrorbase/db-plugin': resolve(
         __dirname,
         '../../libs/db-plugin/src/index.ts',
       ),
-      '@dbreplicator/plugin-postgres': resolve(
+      '@mirrorbase/plugin-postgres': resolve(
         __dirname,
         '../../libs/plugin-postgres/src/index.ts',
       ),
-      '@dbreplicator/plugin-sqlite': resolve(
+      '@mirrorbase/plugin-sqlite': resolve(
         __dirname,
         '../../libs/plugin-sqlite/src/index.ts',
       ),

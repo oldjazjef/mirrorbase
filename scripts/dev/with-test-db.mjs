@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Runs a command with DATABASE_URL pointed at the integration-test database — a throwaway SQLite
- * file at <repo>/tmp/dbreplicator-test.db — unless something already set DATABASE_URL.
+ * file at <repo>/tmp/mirrorbase-test.db — unless something already set DATABASE_URL.
  *
  * WHY: the integration suite writes into whatever DATABASE_URL names, and apps/api/.env names your
  * development database. A variable set in the environment wins over every .env file (dotenv never
@@ -24,7 +24,7 @@ const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   '../..',
 );
-const testDb = path.join(repoRoot, 'tmp', 'dbreplicator-test.db');
+const testDb = path.join(repoRoot, 'tmp', 'mirrorbase-test.db');
 
 const [command, ...args] = process.argv.slice(2);
 

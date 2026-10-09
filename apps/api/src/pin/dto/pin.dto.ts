@@ -35,7 +35,7 @@ export class PinStatusDto {
 export class PinUnlockedDto {
   @ApiProperty({ type: PinStatusDto }) status!: PinStatusDto;
   @ApiProperty({
-    description: 'Send in `x-dbreplicator-unlock` on every data request',
+    description: 'Send in `x-mirrorbase-unlock` on every data request',
   })
   token!: string;
   @ApiProperty({ format: 'date-time' }) expiresAt!: string;

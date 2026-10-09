@@ -1,8 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  redactConnectionStrings,
-  redactSecrets,
-} from '@dbreplicator/db-plugin';
+import { redactConnectionStrings, redactSecrets } from '@mirrorbase/db-plugin';
 import type { LogCriteria, LogEntry, LogLevel } from './domain/log-entry';
 import { LogRepositoryPort } from './ports/log.repository.port';
 

@@ -3,8 +3,8 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/desktop/src",
   "projectType": "application",
-  "dr-note-no-test-target": "Deliberate, as everywhere — tests run via `pnpm test` or `pnpm vitest run --project desktop` (see CLAUDE.md, Testing).",
-  "dr-note-no-build-target": "No `build` target on purpose: `pnpm check` runs `nx run-many -t build`, and staging the app installs dependencies and fetches a native module. `typecheck` keeps the code in the gate; `stage`/`package` run on demand and in .github/workflows/_desktop.yml.",
+  "mb-note-no-test-target": "Deliberate, as everywhere — tests run via `pnpm test` or `pnpm vitest run --project desktop` (see CLAUDE.md, Testing).",
+  "mb-note-no-build-target": "No `build` target on purpose: `pnpm check` runs `nx run-many -t build`, and staging the app installs dependencies and fetches a native module. `typecheck` keeps the code in the gate; `stage`/`package` run on demand and in .github/workflows/_desktop.yml.",
   "implicitDependencies": ["api", "web"],
   "targets": {
     "typecheck": {

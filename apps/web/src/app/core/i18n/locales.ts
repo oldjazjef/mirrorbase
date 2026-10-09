@@ -36,7 +36,7 @@ export function browserLocale(
 
 /** Where the last used language is kept on this device. */
 // A template literal: i18n-keys.spec.ts reads quoted dotted literals as translation keys.
-export const LOCALE_STORAGE_KEY = `dr.locale`;
+export const LOCALE_STORAGE_KEY = `mb.locale`;
 
 /** The language at start: the one used last on this device, else the browser's. */
 export function initialLocale(): SupportedLocale {

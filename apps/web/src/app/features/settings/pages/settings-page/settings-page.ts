@@ -3,10 +3,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideFolderOpen, lucideLock } from '@ng-icons/lucide';
 import { TranslatePipe } from '@ngx-translate/core';
-import { HlmButtonImports } from '@dbreplicator/ui/button';
-import { HlmInputImports } from '@dbreplicator/ui/input';
-import { HlmLabelImports } from '@dbreplicator/ui/label';
+import { HlmButtonImports } from '@mirrorbase/ui/button';
+import { HlmInputImports } from '@mirrorbase/ui/input';
+import { HlmLabelImports } from '@mirrorbase/ui/label';
 import { LOCALE_NAMES, SUPPORTED_LOCALES } from '../../../../core/i18n/locales';
+import { SupportCard } from '../../../../shared/components/support-card';
 import { PageHeader } from '../../../../shared/components/page-header';
 import {
   AUTO_LOCK_CHOICES,
@@ -14,12 +15,13 @@ import {
 } from './settings-page.service';
 
 @Component({
-  selector: 'dr-settings-page',
+  selector: 'mb-settings-page',
   imports: [
     NgIcon,
     ReactiveFormsModule,
     TranslatePipe,
     PageHeader,
+    SupportCard,
     ...HlmButtonImports,
     ...HlmInputImports,
     ...HlmLabelImports,

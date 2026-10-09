@@ -10,9 +10,9 @@ import {
 import { join } from 'node:path';
 
 /** The key that seals the saved passwords, protected by the operating system's keychain. */
-export const SEALED_KEY_FILE = 'dbreplicator.key.enc';
+export const SEALED_KEY_FILE = 'mirrorbase.key.enc';
 /** The fallback where no keychain exists: the key itself, readable only by the owner. */
-export const PLAIN_KEY_FILE = 'dbreplicator.key';
+export const PLAIN_KEY_FILE = 'mirrorbase.key';
 
 /**
  * What the OS keychain can do for us. In the app this is Electron's `safeStorage` (Windows DPAPI,
