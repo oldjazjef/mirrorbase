@@ -1,0 +1,7 @@
+#!/bin/sh
+# Local databases (.data/) hold saved connections and sealed credentials, and postgres_backups_*
+# hold full database dumps. Neither may ever be committed - not even with `git add -f`.
+if git diff --cached --name-only --diff-filter=ACMR | grep -E '(^|/)(\.data/|postgres_backups_)|\.db$' >/dev/null; then
+  echo "pre-commit: a local database or a database dump is staged - it must never be committed." >&2
+  exit 1
+fi

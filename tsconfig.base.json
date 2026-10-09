@@ -1,0 +1,42 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "target": "es2022",
+    "module": "esnext",
+    "lib": ["es2022", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "paths": {
+      "@dbreplicator/db-plugin": ["./libs/db-plugin/src/index.ts"],
+      "@dbreplicator/plugin-postgres": ["./libs/plugin-postgres/src/index.ts"],
+      "@dbreplicator/plugin-sqlite": ["./libs/plugin-sqlite/src/index.ts"],
+      "@dbreplicator/ui/badge": ["./libs/ui/badge/src/index.ts"],
+      "@dbreplicator/ui/button": ["./libs/ui/button/src/index.ts"],
+      "@dbreplicator/ui/card": ["./libs/ui/card/src/index.ts"],
+      "@dbreplicator/ui/dialog": ["./libs/ui/dialog/src/index.ts"],
+      "@dbreplicator/ui/dropdown-menu": [
+        "./libs/ui/dropdown-menu/src/index.ts"
+      ],
+      "@dbreplicator/ui/input": ["./libs/ui/input/src/index.ts"],
+      "@dbreplicator/ui/input-group": ["./libs/ui/input-group/src/index.ts"],
+      "@dbreplicator/ui/label": ["./libs/ui/label/src/index.ts"],
+      "@dbreplicator/ui/popover": ["./libs/ui/popover/src/index.ts"],
+      "@dbreplicator/ui/select": ["./libs/ui/select/src/index.ts"],
+      "@dbreplicator/ui/separator": ["./libs/ui/separator/src/index.ts"],
+      "@dbreplicator/ui/sheet": ["./libs/ui/sheet/src/index.ts"],
+      "@dbreplicator/ui/sidebar": ["./libs/ui/sidebar/src/index.ts"],
+      "@dbreplicator/ui/skeleton": ["./libs/ui/skeleton/src/index.ts"],
+      "@dbreplicator/ui/sonner": ["./libs/ui/sonner/src/index.ts"],
+      "@dbreplicator/ui/table": ["./libs/ui/table/src/index.ts"],
+      "@dbreplicator/ui/textarea": ["./libs/ui/textarea/src/index.ts"],
+      "@dbreplicator/ui/tooltip": ["./libs/ui/tooltip/src/index.ts"],
+      "@dbreplicator/ui/utils": ["./libs/ui/utils/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

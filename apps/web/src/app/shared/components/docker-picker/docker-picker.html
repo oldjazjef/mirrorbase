@@ -1,0 +1,80 @@
+<hlm-dialog [state]="state()" (stateChanged)="onStateChanged($event)">
+  <hlm-dialog-content *hlmDialogPortal class="sm:max-w-xl">
+    <hlm-dialog-header>
+      <h3 hlmDialogTitle>{{ 'docker.title' | translate }}</h3>
+      <p hlmDialogDescription>{{ 'docker.description' | translate }}</p>
+    </hlm-dialog-header>
+
+    <div class="dr-dialog-body" aria-live="polite">
+      @if (connections.docker.isLoading() && !result()) {
+      <hlm-skeleton class="h-12 w-full" />
+      <hlm-skeleton class="h-12 w-full" />
+      } @else if (connections.docker.error()) {
+      <p class="text-destructive text-sm" role="alert">
+        {{ 'docker.failed' | translate }}
+      </p>
+      } @else if (result(); as docker) { @if (!docker.available) {
+      <p class="text-muted-foreground text-sm">
+        {{ 'docker.unavailable.' + docker.reason | translate }}
+      </p>
+      } @else if (docker.items.length === 0) {
+      <p class="text-muted-foreground text-sm">
+        {{ 'docker.empty' | translate }}
+      </p>
+      } @else {
+      <ul class="flex flex-col divide-y rounded-md border">
+        @for (item of docker.items; track item.containerId + item.pluginId) {
+        <li class="flex min-w-0 items-center gap-3 p-3">
+          <ng-icon
+            name="lucideBox"
+            class="text-muted-foreground shrink-0"
+            aria-hidden="true"
+          />
+          <div class="min-w-0 flex-1">
+            <p class="font-medium" [drTruncate]="item.containerName">
+              {{ item.containerName }}
+            </p>
+            <p
+              class="text-muted-foreground text-xs"
+              [drTruncate]="item.summary"
+            >
+              {{ item.summary }}
+            </p>
+          </div>
+          <span hlmBadge variant="secondary">{{ item.pluginName }}</span>
+          @if (item.savedConnectionId) {
+          <button
+            hlmBtn
+            variant="outline"
+            size="sm"
+            type="button"
+            (click)="picked.emit(item)"
+          >
+            {{ 'docker.useSaved' | translate: { name:
+            nameOf(item.savedConnectionId) } }}
+          </button>
+          } @else {
+          <button hlmBtn size="sm" type="button" (click)="picked.emit(item)">
+            {{ 'docker.add' | translate }}
+          </button>
+          }
+        </li>
+        }
+      </ul>
+      <p class="text-muted-foreground text-xs">
+        {{ 'docker.passwordNote' | translate }}
+      </p>
+      } }
+    </div>
+
+    <hlm-dialog-footer>
+      <button hlmBtn variant="outline" type="button" (click)="refresh()">
+        <ng-icon name="lucideRefreshCw" aria-hidden="true" />
+        {{ 'docker.refresh' | translate }}
+      </button>
+      <button hlmBtn variant="outline" type="button" hlmDialogClose>
+        {{ 'common.close' | translate }}
+      </button>
+    </hlm-dialog-footer>
+  </hlm-dialog-content>
+</hlm-dialog>

@@ -1,0 +1,331 @@
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css';
+
+/* The `@theme inline` token mappings, `dark` + `data-*` variants, tw-animate-css and the CDK
+   overlay styles. This file supplies only the token VALUES below - never redeclare mappings. */
+@import '@spartan-ng/brain/hlm-tailwind-preset.css';
+
+/* Tailwind auto-detects sources next to this file; the UI libs sit outside that tree. */
+@source '../../../libs';
+
+/*
+ * DB Replicator palette - calm and technical: cool slate greys, a deep teal primary, quiet
+ * surfaces, a modest radius and Inter (self-hosted via @fontsource-variable/inter, see
+ * project.json - no font CDN). The ONLY place colours live: components use semantic classes
+ * (`bg-primary`, `text-muted-foreground`, the `dr-*` classes below), and the
+ * `no-hardcoded-design-values` lint rule rejects raw colours in templates.
+ *
+ * Text colours are chosen for >= 4.5:1 contrast on their backgrounds in both modes.
+ */
+:root {
+  color-scheme: light;
+
+  --font-sans:
+    'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --radius: 0.5rem;
+  --background: #f6f8fa;
+  --foreground: #14202b;
+  --card: #ffffff;
+  --card-foreground: #14202b;
+  --popover: #ffffff;
+  --popover-foreground: #14202b;
+  --primary: #0f5c63;
+  --primary-foreground: #f2fafa;
+  --secondary: #e4eef0;
+  --secondary-foreground: #0f4a50;
+  --muted: #edf1f4;
+  --muted-foreground: #526071;
+  --accent: #e2eef0;
+  --accent-foreground: #0d4348;
+  --destructive: #b42318;
+  --border: #dbe2e8;
+  --input: #cbd5dd;
+  --ring: #2f8a93;
+  --chart-1: #0f5c63;
+  --chart-2: #3a7ca5;
+  --chart-3: #b7791f;
+  --chart-4: #7a5aa6;
+  --chart-5: #8a96a8;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #14202b;
+  --sidebar-primary: #0f5c63;
+  --sidebar-primary-foreground: #f2fafa;
+  --sidebar-accent: #e4eef0;
+  --sidebar-accent-foreground: #0f4a50;
+  --sidebar-border: #dbe2e8;
+  --sidebar-ring: #2f8a93;
+
+  /* Status colours (run and database states, the log levels). */
+  --status-ok: #1f7a4a;
+  --status-ok-bg: #e3f3ea;
+  --status-active: #0f5c63;
+  --status-active-bg: #e0f0f2;
+  --status-bad: #b42318;
+  --status-bad-bg: #fbe9e7;
+  --warning-text: #8a5a00;
+}
+
+:root.dark {
+  color-scheme: dark;
+
+  --background: #0e1419;
+  --foreground: #e3e9ef;
+  --card: #151d25;
+  --card-foreground: #e3e9ef;
+  --popover: #151d25;
+  --popover-foreground: #e3e9ef;
+  --primary: #6fc3cb;
+  --primary-foreground: #08242a;
+  --secondary: #20303a;
+  --secondary-foreground: #cfe6e9;
+  --muted: #1b252e;
+  --muted-foreground: #9aa8b6;
+  --accent: #213540;
+  --accent-foreground: #d6eaed;
+  --destructive: #f97066;
+  --border: #29343f;
+  --input: #34414d;
+  --ring: #5fb0b8;
+  --chart-1: #6fc3cb;
+  --chart-2: #7db4d6;
+  --chart-3: #e0b25a;
+  --chart-4: #b49be0;
+  --chart-5: #8f9bad;
+  --sidebar: #151d25;
+  --sidebar-foreground: #e3e9ef;
+  --sidebar-primary: #6fc3cb;
+  --sidebar-primary-foreground: #08242a;
+  --sidebar-accent: #20303a;
+  --sidebar-accent-foreground: #cfe6e9;
+  --sidebar-border: #29343f;
+  --sidebar-ring: #5fb0b8;
+
+  --status-ok: #4fbf83;
+  --status-ok-bg: #12301f;
+  --status-active: #6fc3cb;
+  --status-active-bg: #12303a;
+  --status-bad: #f97066;
+  --status-bad-bg: #3a1a17;
+  --warning-text: #e8bf4a;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply tracking-tight;
+  }
+
+  /*
+   * Native <select> dropdowns: hlmInput gives the select a transparent background and the light
+   * foreground in dark mode; the options inherit that text colour but get the OS's light-grey list
+   * background (Windows), so they were unreadable. Give the list explicit theme colours.
+   */
+  select option,
+  select optgroup {
+    @apply bg-popover text-popover-foreground;
+  }
+
+  select option:checked {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  select option:disabled {
+    @apply text-muted-foreground;
+  }
+}
+
+@layer components {
+  /*
+   * Dialogs (user rule): three fixed regions - the header at the top, the footer with the action
+   * buttons across the full width at the bottom, and between them the body, the ONLY part that
+   * scrolls. Every dialog wraps its content in `<div class="dr-dialog-body">` between
+   * `<hlm-dialog-header>` and `<hlm-dialog-footer>` (all three direct children of
+   * `<hlm-dialog-content>`). The `!` overrides hlm's own padding/grid (libs/ui stays untouched).
+   */
+  hlm-dialog-content {
+    @apply flex! max-h-[calc(100dvh-2rem)] flex-col! gap-0! overflow-hidden! p-0!;
+  }
+
+  hlm-dialog-content > hlm-dialog-header {
+    @apply shrink-0 border-b px-6 pt-6 pb-4 pr-12;
+  }
+
+  hlm-dialog-content > .dr-dialog-body {
+    @apply flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-6 py-4;
+  }
+
+  hlm-dialog-content > hlm-dialog-footer {
+    @apply bg-muted/40 w-full shrink-0 border-t px-6 py-4;
+  }
+
+  /* The app name in the sidebar header. */
+  .dr-brand {
+    @apply font-semibold tracking-tight;
+  }
+
+  /* A surface: the card look without the card's padding rules. */
+  .dr-panel {
+    @apply bg-card text-card-foreground rounded-xl border shadow-xs;
+  }
+
+  .dr-mono {
+    font-family: var(--font-mono);
+  }
+
+  .dr-warning-text {
+    color: var(--warning-text);
+  }
+
+  .dr-ok-text {
+    color: var(--status-ok);
+  }
+
+  /* The number in front of a step's heading. */
+  .dr-step {
+    @apply bg-primary text-primary-foreground inline-flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold;
+  }
+
+  /* An entry in the run list of the log page. */
+  .dr-list-item {
+    @apply hover:bg-muted flex min-w-0 items-center gap-2 rounded-lg border px-3 py-2 transition-colors;
+  }
+
+  .dr-list-item-active {
+    @apply bg-accent text-accent-foreground border-ring/50;
+  }
+
+  /* Status badges: colour AND text (see StatusBadge). */
+  .dr-status {
+    @apply gap-1.5;
+  }
+
+  .dr-status-ok {
+    color: var(--status-ok);
+    background: var(--status-ok-bg);
+    border-color: transparent;
+  }
+
+  .dr-status-active {
+    color: var(--status-active);
+    background: var(--status-active-bg);
+    border-color: transparent;
+  }
+
+  .dr-status-bad {
+    color: var(--status-bad);
+    background: var(--status-bad-bg);
+    border-color: transparent;
+  }
+
+  .dr-status-neutral {
+    @apply text-muted-foreground;
+  }
+
+  .dr-spinner {
+    @apply inline-block size-2.5 animate-spin rounded-full border-2 border-current border-t-transparent;
+  }
+
+  .dr-spin {
+    @apply animate-spin;
+  }
+
+  /* The log: monospace lines, the level carried by text and colour. */
+  .dr-log {
+    @apply bg-card min-h-48 flex-1 overflow-auto rounded-lg border py-1 text-xs;
+    max-height: calc(100dvh - 22rem);
+    font-family: var(--font-mono);
+  }
+
+  .dr-log-line {
+    @apply flex gap-3 px-3 py-0.5;
+  }
+
+  .dr-log-line:hover {
+    @apply bg-muted/60;
+  }
+
+  .dr-log-time {
+    @apply text-muted-foreground shrink-0 tabular-nums;
+  }
+
+  .dr-log-level {
+    @apply w-12 shrink-0 font-semibold uppercase;
+  }
+
+  .dr-log-message {
+    @apply min-w-0 break-words whitespace-pre-wrap;
+  }
+
+  .dr-log-line[data-level='debug'] .dr-log-level,
+  .dr-log-line[data-level='debug'] .dr-log-message {
+    @apply text-muted-foreground;
+  }
+
+  .dr-log-line[data-level='warn'] .dr-log-level {
+    color: var(--warning-text);
+  }
+
+  .dr-log-line[data-level='error'] .dr-log-level,
+  .dr-log-line[data-level='error'] .dr-log-message {
+    color: var(--status-bad);
+  }
+
+  /*
+   * The shell: the page scrolls inside `.dr-scroll-area`, never the window, so the sidebar and
+   * the top bar stay put. `.dr-scroll-content` is the inline-size container the sticky page
+   * header measures against.
+   */
+  .dr-scroll-area {
+    @apply min-h-0 flex-1 overflow-y-auto;
+  }
+
+  .dr-scroll-content {
+    container-type: inline-size;
+    @apply min-h-full;
+  }
+
+  .dr-page-header {
+    @apply bg-background/95 sticky top-0 z-10 border-b px-6 py-4 backdrop-blur;
+    width: 100cqw;
+  }
+
+  /* The actions column of a table: the interaction area never moves or wraps. */
+  .dr-sticky-actions {
+    @apply sticky right-0 bg-inherit;
+  }
+
+  /* The lock screen: full screen over the app. */
+  .dr-lock-screen {
+    @apply bg-background fixed inset-0 z-1200 flex items-center justify-center p-4;
+  }
+
+  .dr-lock-card {
+    @apply bg-card flex w-full max-w-sm flex-col items-center gap-4 rounded-xl border p-8 shadow-lg;
+  }
+
+  .dr-pin-input {
+    @apply h-12 text-center text-2xl tracking-[0.5em];
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dr-spinner,
+  .dr-spin {
+    animation: none;
+  }
+}

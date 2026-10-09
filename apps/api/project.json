@@ -1,0 +1,100 @@
+{
+  "name": "api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api/src",
+  "projectType": "application",
+  "dr-note-no-test-target": "Deliberate — see the Testing section in CLAUDE.md. Vitest fails inside Nx's run-commands spawn (Nx 23.1 ↔ Vitest 4, found in etx-working-time-manager), so a `test` target here would fail on every invocation. Tests run via `pnpm test` (root Vitest workspace) or `pnpm vitest run --project api`.",
+  "dr-note-db-deploy-vs-migrate": "db:deploy runs `prisma migrate deploy`: applies pending migrations, never prompts, never resets. db:migrate runs `prisma migrate dev`, which diffs schema.prisma against the history and writes a new migration. There is deliberately no db:push target. All db:* targets run from the repo root with --config: a relative DATABASE_URL (file:./.data/dbreplicator.db) resolves against the working directory — see src/persistence/prisma/sqlite-url.ts.",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["db:generate"],
+      "options": {
+        "commands": [
+          "webpack-cli build",
+          "node ../../scripts/build/complete-api-package-json.mjs"
+        ],
+        "parallel": false,
+        "env": { "NODE_ENV": "production" },
+        "cwd": "apps/api"
+      },
+      "configurations": {
+        "development": { "env": { "NODE_ENV": "development" } }
+      }
+    },
+    "build-desktop": {
+      "dr-note": "The API as a library for the desktop app (src/desktop.ts → dist/apps/desktop-api/main.js + package.json). See apps/desktop and CLAUDE.md, Desktop.",
+      "executor": "nx:run-commands",
+      "dependsOn": ["db:generate"],
+      "options": {
+        "commands": [
+          "webpack-cli build --config webpack.desktop.config.js",
+          "node ../../scripts/build/complete-api-package-json.mjs dist/apps/desktop-api"
+        ],
+        "parallel": false,
+        "env": { "NODE_ENV": "production" },
+        "cwd": "apps/api"
+      }
+    },
+    "db:generate": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/prisma/schema.prisma",
+        "{projectRoot}/prisma.config.ts"
+      ],
+      "outputs": ["{projectRoot}/src/generated"],
+      "options": {
+        "command": "prisma generate --config apps/api/prisma.config.ts",
+        "cwd": "."
+      }
+    },
+    "db:deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate deploy --config apps/api/prisma.config.ts",
+        "cwd": "."
+      }
+    },
+    "db:migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate dev --config apps/api/prisma.config.ts",
+        "cwd": "."
+      }
+    },
+    "db:studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma studio --config apps/api/prisma.config.ts",
+        "cwd": "."
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "api:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": { "buildTarget": "api:build:development" },
+        "production": { "buildTarget": "api:build:production" }
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dr-note": "Vitest's esbuild/SWC transform does not type-check; the webpack build does, but typecheck also covers the specs.",
+      "cache": true,
+      "dependsOn": ["db:generate"],
+      "inputs": ["default", "^default"],
+      "options": {
+        "command": "tsc -p apps/api/tsconfig.spec.json --noEmit",
+        "cwd": "."
+      }
+    }
+  },
+  "tags": []
+}

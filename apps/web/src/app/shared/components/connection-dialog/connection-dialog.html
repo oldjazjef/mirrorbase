@@ -1,0 +1,167 @@
+<hlm-dialog [state]="state()" (stateChanged)="onStateChanged($event)">
+  <hlm-dialog-content *hlmDialogPortal class="sm:max-w-2xl">
+    <hlm-dialog-header>
+      <h3 hlmDialogTitle>
+        {{ (editing() ? 'connections.dialog.editTitle' :
+        'connections.dialog.newTitle') | translate }}
+      </h3>
+      <p hlmDialogDescription>
+        {{ 'connections.dialog.description' | translate }}
+      </p>
+    </hlm-dialog-header>
+
+    <div class="dr-dialog-body">
+      @if (plugins.resource.error()) {
+      <p class="text-destructive text-sm" role="alert">
+        {{ 'connections.dialog.pluginsFailed' | translate }}
+      </p>
+      } @else if (plugin(); as current) {
+      <form
+        class="flex flex-col gap-4"
+        [formGroup]="form()"
+        (ngSubmit)="save()"
+        [id]="formId"
+      >
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="flex min-w-0 flex-col gap-1.5">
+            <label hlmLabel for="dr-conn-name"
+              >{{ 'connections.form.name' | translate }}</label
+            >
+            <input
+              hlmInput
+              id="dr-conn-name"
+              type="text"
+              autocomplete="off"
+              formControlName="name"
+              [attr.placeholder]="'connections.form.namePlaceholder' | translate"
+            />
+            @if (form().get('name')?.touched &&
+            form().get('name')?.errors?.['zod']; as message) {
+            <p class="text-destructive text-sm" role="alert">
+              {{ message | translate }}
+            </p>
+            }
+          </div>
+          <div class="flex min-w-0 flex-col gap-1.5">
+            <label hlmLabel for="dr-conn-type"
+              >{{ 'connections.form.type' | translate }}</label
+            >
+            <select
+              hlmInput
+              id="dr-conn-type"
+              [disabled]="editing()"
+              [value]="pluginId()"
+              (change)="choosePlugin($any($event.target).value)"
+            >
+              @for (option of selectable(); track option.id) {
+              <option [value]="option.id" [selected]="option.id === pluginId()">
+                {{ option.name }}
+              </option>
+              }
+            </select>
+          </div>
+        </div>
+        <p class="text-muted-foreground -mt-2 text-sm">
+          {{ current.description | drLocalized }}
+        </p>
+
+        <dr-plugin-fields
+          [fields]="current.fields"
+          [form]="form()"
+          [savedSecrets]="savedSecrets()"
+          [forgotten]="forgotten()"
+          (forget)="forget($event)"
+        />
+      </form>
+
+      <div class="flex flex-col gap-2 rounded-md border p-3" aria-live="polite">
+        <div class="flex flex-wrap items-center gap-2">
+          <button
+            hlmBtn
+            variant="outline"
+            size="sm"
+            type="button"
+            [disabled]="testing() || busy()"
+            (click)="test()"
+          >
+            @if (testing()) {
+            <ng-icon
+              name="lucideLoaderCircle"
+              class="dr-spin"
+              aria-hidden="true"
+            />
+            {{ 'connections.dialog.testing' | translate }} } @else { {{
+            'connections.dialog.test' | translate }} }
+          </button>
+          <label
+            class="text-muted-foreground flex items-center gap-2 text-sm"
+            for="dr-test-role"
+          >
+            {{ 'connections.dialog.testAs' | translate }}
+            <select
+              hlmInput
+              id="dr-test-role"
+              class="h-8 w-auto"
+              [value]="testRole()"
+              (change)="testRole.set($any($event.target).value)"
+            >
+              <option value="source" [selected]="testRole() === 'source'">
+                {{ 'connections.dialog.roleSource' | translate }}
+              </option>
+              <option value="target" [selected]="testRole() === 'target'">
+                {{ 'connections.dialog.roleTarget' | translate }}
+              </option>
+            </select>
+          </label>
+        </div>
+        @if (testResult(); as result) { @if (result.ok) {
+        <p class="dr-ok-text flex items-center gap-2 text-sm">
+          <ng-icon name="lucideCircleCheck" aria-hidden="true" />
+          {{ 'connections.dialog.testOk' | translate }} @if
+          (result.serverVersion) {
+          <span class="font-medium">{{ result.serverVersion }}</span> }
+        </p>
+        @if (result.message) {
+        <p class="text-muted-foreground text-xs">{{ result.message }}</p>
+        } } @else {
+        <p class="text-destructive flex items-start gap-2 text-sm" role="alert">
+          <ng-icon
+            name="lucideCircleAlert"
+            class="mt-0.5 shrink-0"
+            aria-hidden="true"
+          />
+          <span class="min-w-0">
+            @if (testMessageKey(); as key) { {{ key | translate }} } @else { {{
+            'connections.dialog.testFailed' | translate }} } @if
+            (result.message) {
+            <span
+              class="dr-mono text-muted-foreground block break-words text-xs"
+              >{{ result.message }}</span
+            >
+            }
+          </span>
+        </p>
+        } }
+      </div>
+      } @else {
+      <p class="text-muted-foreground text-sm">
+        {{ 'common.loading' | translate }}
+      </p>
+      }
+    </div>
+
+    <hlm-dialog-footer>
+      <button hlmBtn variant="outline" type="button" hlmDialogClose>
+        {{ 'common.cancel' | translate }}
+      </button>
+      <button
+        hlmBtn
+        type="submit"
+        [attr.form]="formId"
+        [disabled]="busy() || !plugin()"
+      >
+        {{ 'common.save' | translate }}
+      </button>
+    </hlm-dialog-footer>
+  </hlm-dialog-content>
+</hlm-dialog>

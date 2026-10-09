@@ -1,0 +1,157 @@
+<dr-page-header
+  [title]="'settings.title' | translate"
+  [subtitle]="'settings.subtitle' | translate"
+/>
+
+<div class="flex flex-col gap-6 p-6">
+  <section
+    class="dr-panel flex flex-col gap-4 p-4"
+    aria-labelledby="dr-settings-security"
+  >
+    <h2 id="dr-settings-security" class="text-lg font-semibold">
+      {{ 'settings.security.title' | translate }}
+    </h2>
+    <p class="text-muted-foreground text-sm">
+      {{ 'settings.security.description' | translate }}
+    </p>
+
+    <form
+      class="flex max-w-md flex-col gap-4"
+      [formGroup]="service.form"
+      (ngSubmit)="service.changePin()"
+    >
+      <h3 class="font-medium">{{ 'settings.pin.change' | translate }}</h3>
+      @for (field of ['currentPin', 'pin', 'repeat']; track field) {
+      <div class="flex flex-col gap-1.5">
+        <label hlmLabel [for]="'dr-pin-' + field"
+          >{{ 'settings.pin.' + field | translate }}</label
+        >
+        <input
+          hlmInput
+          type="password"
+          inputmode="numeric"
+          autocomplete="off"
+          maxlength="8"
+          [id]="'dr-pin-' + field"
+          [formControlName]="field"
+        />
+        @if (error($any(field)); as message) {
+        <p class="text-destructive text-sm" role="alert">
+          {{ message | translate }}
+        </p>
+        }
+      </div>
+      } @if (service.problem(); as problem) {
+      <p class="text-destructive text-sm" role="alert">
+        {{ 'pin.errors.' + problem.code | translate }}
+      </p>
+      }
+      <button hlmBtn type="submit" class="w-fit">
+        {{ 'settings.pin.submit' | translate }}
+      </button>
+    </form>
+
+    <div class="flex max-w-md flex-col gap-1.5">
+      <label hlmLabel for="dr-autolock"
+        >{{ 'settings.autoLock.label' | translate }}</label
+      >
+      <select
+        hlmInput
+        id="dr-autolock"
+        [value]="service.autoLock()"
+        (change)="service.setAutoLock(+$any($event.target).value)"
+      >
+        @for (minutes of autoLockChoices; track minutes) {
+        <option [value]="minutes" [selected]="minutes === service.autoLock()">
+          {{ 'settings.autoLock.minutes' | translate: { count: minutes } }}
+        </option>
+        }
+      </select>
+      <p class="text-muted-foreground text-xs">
+        {{ 'settings.autoLock.hint' | translate }}
+      </p>
+    </div>
+
+    <div>
+      <button
+        hlmBtn
+        variant="outline"
+        type="button"
+        (click)="service.pin.lock()"
+      >
+        <ng-icon name="lucideLock" aria-hidden="true" />
+        {{ 'nav.lockNow' | translate }}
+      </button>
+    </div>
+  </section>
+
+  <section
+    class="dr-panel flex flex-col gap-4 p-4"
+    aria-labelledby="dr-settings-language"
+  >
+    <h2 id="dr-settings-language" class="text-lg font-semibold">
+      {{ 'settings.language.title' | translate }}
+    </h2>
+    <div class="flex max-w-md flex-col gap-1.5">
+      <label hlmLabel for="dr-language"
+        >{{ 'settings.language.label' | translate }}</label
+      >
+      <select
+        hlmInput
+        id="dr-language"
+        (change)="service.language.use($any($event.target).value)"
+      >
+        @for (locale of locales; track locale) {
+        <option
+          [value]="locale"
+          [selected]="locale === service.language.current()"
+        >
+          {{ localeNames[locale] }}
+        </option>
+        }
+      </select>
+    </div>
+  </section>
+
+  <section
+    class="dr-panel flex flex-col gap-3 p-4"
+    aria-labelledby="dr-settings-about"
+  >
+    <h2 id="dr-settings-about" class="text-lg font-semibold">
+      {{ 'settings.about.title' | translate }}
+    </h2>
+    <dl class="grid max-w-2xl grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
+      <dt class="text-muted-foreground">
+        {{ 'settings.about.version' | translate }}
+      </dt>
+      <dd>{{ service.version.info()?.full ?? '–' }}</dd>
+      @if (service.storage(); as storage) {
+      <dt class="text-muted-foreground">
+        {{ 'settings.about.dataFolder' | translate }}
+      </dt>
+      <dd class="dr-mono break-all">{{ storage.dataDir }}</dd>
+      <dt class="text-muted-foreground">
+        {{ 'settings.about.passwordKey' | translate }}
+      </dt>
+      <dd>
+        {{ 'settings.about.keyProtection.' + storage.keyProtection | translate
+        }}
+      </dd>
+      }
+    </dl>
+    @if (service.desktop()) {
+    <div>
+      <button
+        hlmBtn
+        variant="outline"
+        size="sm"
+        type="button"
+        (click)="service.reveal()"
+      >
+        <ng-icon name="lucideFolderOpen" aria-hidden="true" />
+        {{ 'settings.about.reveal' | translate }}
+      </button>
+    </div>
+    }
+  </section>
+</div>

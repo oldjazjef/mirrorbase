@@ -1,0 +1,106 @@
+<div hlmSidebarWrapper class="h-dvh overflow-hidden">
+  <hlm-sidebar collapsible="icon">
+    <div hlmSidebarHeader class="py-3">
+      <a
+        routerLink="/app"
+        class="flex min-w-0 items-center gap-2 rounded-md p-1 outline-hidden focus-visible:ring-2"
+        [attr.aria-label]="'app.name' | translate"
+      >
+        <img [src]="logo" alt="" class="size-7 shrink-0" />
+        <span
+          class="flex min-w-0 items-center gap-1.5 group-data-[collapsible=icon]:hidden"
+        >
+          <span class="dr-brand truncate text-base"
+            >{{ 'app.name' | translate }}</span
+          >
+          @if (version.info(); as build) {
+          <span
+            hlmBadge
+            variant="outline"
+            class="text-muted-foreground shrink-0 font-normal"
+            data-app-version
+            [attr.title]="'app.version' | translate: { version: build.version, commit: build.commit }"
+          >
+            {{ 'app.versionBadge' | translate: { version: build.version } }}
+          </span>
+          }
+        </span>
+      </a>
+    </div>
+
+    <div hlmSidebarContent>
+      <nav
+        hlmSidebarGroup
+        data-main-nav
+        [attr.aria-label]="'nav.label' | translate"
+      >
+        <div hlmSidebarGroupContent>
+          <ul hlmSidebarMenu>
+            @for (item of items; track item.path) {
+            <li hlmSidebarMenuItem>
+              @let active = isActive(item);
+              <a
+                hlmSidebarMenuButton
+                [routerLink]="item.path"
+                [isActive]="active"
+                [attr.aria-current]="active ? 'page' : null"
+                [tooltip]="item.labelKey | translate"
+              >
+                <ng-icon [name]="item.icon" aria-hidden="true" />
+                <span>{{ item.labelKey | translate }}</span>
+              </a>
+            </li>
+            }
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div hlmSidebarFooter>
+      <ul hlmSidebarMenu>
+        <li hlmSidebarMenuItem>
+          <button
+            hlmSidebarMenuButton
+            type="button"
+            data-lock-now
+            [tooltip]="'nav.lockNow' | translate"
+            (click)="lockNow()"
+          >
+            <ng-icon name="lucideLock" aria-hidden="true" />
+            <span>{{ 'nav.lockNow' | translate }}</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </hlm-sidebar>
+
+  <main hlmSidebarInset class="min-w-0">
+    <div class="flex h-12 shrink-0 items-center gap-2 border-b px-3">
+      <button
+        hlmSidebarTrigger
+        type="button"
+        [attr.aria-label]="'nav.toggleSidebar' | translate"
+      ></button>
+      <span class="flex-1"></span>
+      <button
+        hlmBtn
+        variant="ghost"
+        size="icon"
+        type="button"
+        data-theme-toggle
+        [attr.aria-label]="'nav.toggleTheme' | translate"
+        (click)="theme.toggle()"
+      >
+        <ng-icon
+          [name]="dark() ? 'lucideSun' : 'lucideMoon'"
+          aria-hidden="true"
+        />
+      </button>
+    </div>
+    <div class="dr-scroll-area">
+      <div class="dr-scroll-content">
+        <router-outlet />
+      </div>
+    </div>
+  </main>
+</div>

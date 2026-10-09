@@ -1,0 +1,316 @@
+{
+  "app": {
+    "name": "DB Replicator",
+    "version": "Version {{version}} ({{commit}})",
+    "versionBadge": "v{{version}}",
+    "connecting": "Warte, bis die App gestartet ist…"
+  },
+  "common": {
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "retry": "Erneut versuchen",
+    "back": "Zurück",
+    "close": "Schliessen",
+    "dismiss": "Ausblenden",
+    "loading": "Lädt…",
+    "actions": "Aktionen"
+  },
+  "actions": {
+    "undo": "Rückgängig"
+  },
+  "nav": {
+    "label": "Hauptnavigation",
+    "replicate": "Replizieren",
+    "connections": "Verbindungen",
+    "log": "Protokoll",
+    "settings": "Einstellungen",
+    "lockNow": "Jetzt sperren",
+    "toggleTheme": "Zwischen hell und dunkel wechseln",
+    "toggleSidebar": "Navigation ein- oder ausblenden"
+  },
+  "validation": {
+    "required": "Dieses Feld ist erforderlich.",
+    "number": "Gib eine Zahl ein.",
+    "range": "Die Zahl liegt ausserhalb des erlaubten Bereichs.",
+    "option": "Wähle eine der Optionen.",
+    "tooLong": "Das ist zu lang."
+  },
+  "errors": {
+    "api": {
+      "connectionNotFound": "Diese Verbindung gibt es nicht mehr.",
+      "nameTaken": "Eine Verbindung mit diesem Namen gibt es schon.",
+      "invalidName": "Der Name muss 1 bis 80 Zeichen lang sein.",
+      "invalidConnection": "Einige Verbindungseinstellungen sind ungültig.",
+      "unknownPlugin": "Dieser Datenbanktyp ist nicht installiert.",
+      "pluginMismatch": "Die Verbindung gehört zu einem anderen Datenbanktyp.",
+      "secretsUnavailable": "Es ist kein Schlüssel zur Verschlüsselung verfügbar, ein Passwort kann nicht gespeichert werden.",
+      "runNotFound": "Dieser Lauf existiert nicht mehr.",
+      "runInProgress": "Ein anderer Lauf ist noch in Arbeit.",
+      "runNotActive": "Dieser Lauf ist nicht in Arbeit.",
+      "noDatabases": "Wähle mindestens eine Datenbank.",
+      "tooManyDatabases": "Zu viele Datenbanken in einem Lauf.",
+      "duplicateTarget": "Zwei Datenbanken würden auf dem Ziel gleich heissen.",
+      "sameDatabase": "Quelle und Ziel sind derselbe Server: gib der Kopie einen anderen Namen oder wähle ein anderes Ziel.",
+      "transferUnsupported": "Das Kopieren zwischen diesen beiden Datenbanktypen ist noch nicht möglich.",
+      "invalidConfig": "Die Verbindungseinstellungen sind unvollständig.",
+      "connectionFailed": "Verbindung zum Datenbankserver fehlgeschlagen.",
+      "clientToolsMissing": "Die Werkzeuge für diese Datenbank fehlen: installiere den PostgreSQL-Client oder starte Docker.",
+      "targetExists": "Auf dem Ziel gibt es schon eine Datenbank mit diesem Namen.",
+      "dumpFailed": "Das Lesen der Datenbank von der Quelle ist fehlgeschlagen.",
+      "restoreFailed": "Das Schreiben der Datenbank auf das Ziel ist fehlgeschlagen.",
+      "sourceMissing": "Eine Verbindung dieses Laufs wurde gelöscht.",
+      "aborted": "Der Lauf wurde abgebrochen.",
+      "noPin": "Es ist noch keine PIN gesetzt.",
+      "invalidPin": "Die PIN muss aus 4 bis 8 Ziffern bestehen.",
+      "currentPinRequired": "Gib die aktuelle PIN ein.",
+      "wrongPin": "Die PIN ist falsch.",
+      "pinThrottled": "Zu viele falsche PINs. Warte einen Moment.",
+      "confirmationRequired": "Bitte bestätige zuerst."
+    },
+    "status": {
+      "unreachable": "Die App ist nicht erreichbar.",
+      "badRequest": "Die Anfrage war ungültig.",
+      "forbidden": "Das ist nicht erlaubt.",
+      "notFound": "Nicht gefunden.",
+      "conflict": "Das widerspricht dem aktuellen Zustand.",
+      "unprocessable": "Die Anfrage konnte nicht verarbeitet werden.",
+      "locked": "Die App ist gesperrt.",
+      "rateLimited": "Zu viele Anfragen. Warte einen Moment.",
+      "server": "In der App ist etwas schiefgelaufen."
+    }
+  },
+  "pin": {
+    "setup": {
+      "title": "PIN wählen",
+      "hint": "Die PIN schützt diese App und die gespeicherten Verbindungen. Du wirst bei jedem Start und bei jeder Sperre danach gefragt.",
+      "pin": "PIN (4 bis 8 Ziffern)",
+      "repeat": "PIN wiederholen",
+      "autoLock": "Sperren nach",
+      "submit": "PIN setzen"
+    },
+    "lock": {
+      "title": "DB Replicator ist gesperrt",
+      "hint": "Gib deine PIN ein, um fortzufahren.",
+      "label": "PIN",
+      "placeholder": "PIN",
+      "unlock": "Entsperren",
+      "forgot": "PIN vergessen",
+      "wait": "Warte {{seconds}} s, bevor du es erneut versuchst.",
+      "reason": {
+        "idle": "Die App hat sich nach einer Zeit ohne Aktivität selbst gesperrt.",
+        "system": "Die App wurde gesperrt, weil dein Computer gesperrt wurde."
+      }
+    },
+    "forgot": {
+      "title": "PIN zurücksetzen",
+      "body": "Eine PIN lässt sich nicht wiederherstellen. Du kannst eine neue setzen, dabei werden aber alle gespeicherten Passwörter gelöscht.",
+      "erases": "Gelöscht: alle gespeicherten Passwörter.",
+      "keeps": "Bleiben: deine Verbindungen (ohne Passwörter), der Verlauf der Läufe und das Protokoll.",
+      "confirm": "Ich verstehe, dass alle gespeicherten Passwörter gelöscht werden.",
+      "reset": "Passwörter löschen und PIN zurücksetzen"
+    },
+    "form": {
+      "invalid": "Die PIN muss aus 4 bis 8 Ziffern bestehen.",
+      "mismatch": "Die beiden PINs stimmen nicht überein."
+    },
+    "errors": {
+      "wrongPin": "Die PIN ist falsch.",
+      "pinThrottled": "Zu viele falsche PINs. Warte einen Moment.",
+      "noPin": "Es ist noch keine PIN gesetzt.",
+      "invalidPin": "Die PIN muss aus 4 bis 8 Ziffern bestehen.",
+      "currentPinRequired": "Gib die aktuelle PIN ein.",
+      "confirmationRequired": "Bitte bestätige zuerst.",
+      "unreachable": "Die App ist nicht erreichbar.",
+      "unknown": "Etwas ist schiefgelaufen."
+    }
+  },
+  "connections": {
+    "title": "Verbindungen",
+    "subtitle": "Gespeicherte Datenbankserver und -dateien. Passwörter werden verschlüsselt gespeichert.",
+    "new": "Neue Verbindung",
+    "empty": "Noch keine Verbindungen. Speichere eine, damit du sie nicht jedes Mal eingeben musst.",
+    "loadFailed": "Die Verbindungen konnten nicht geladen werden.",
+    "saved": "Verbindung gespeichert.",
+    "saveFailed": "Die Verbindung konnte nicht gespeichert werden",
+    "deleted": "Verbindung gelöscht.",
+    "deleteFailed": "Die Verbindung konnte nicht gelöscht werden",
+    "passwordSaved": "Gespeichert",
+    "noPassword": "Keines",
+    "neverUsed": "Nie benutzt",
+    "columns": {
+      "name": "Name",
+      "type": "Typ",
+      "target": "Adresse",
+      "password": "Passwort",
+      "lastUsed": "Zuletzt benutzt"
+    },
+    "delete": {
+      "title": "Verbindung löschen",
+      "body": "Die Verbindung «{{name}}» löschen?",
+      "note": "Frühere Läufe und das Protokoll bleiben erhalten."
+    },
+    "dialog": {
+      "newTitle": "Neue Verbindung",
+      "editTitle": "Verbindung bearbeiten",
+      "description": "Wähle den Datenbanktyp und fülle seine Einstellungen aus.",
+      "pluginsFailed": "Die Datenbanktypen konnten nicht geladen werden.",
+      "test": "Verbindung testen",
+      "testing": "Teste…",
+      "testAs": "Testen als",
+      "roleSource": "Quelle",
+      "roleTarget": "Ziel",
+      "testOk": "Verbunden.",
+      "testFailed": "Die Verbindung ist fehlgeschlagen."
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "z. B. Produktion, Lokaler Test",
+      "type": "Datenbanktyp",
+      "advanced": "Erweiterte Einstellungen",
+      "selectDefault": "Standard",
+      "passwordKept": "Gespeichert – leer lassen, um es zu behalten",
+      "forgetPassword": "Gespeichertes Passwort entfernen",
+      "passwordForgotten": "Das gespeicherte Passwort wird beim Speichern entfernt."
+    }
+  },
+  "docker": {
+    "title": "Datenbanken in Docker",
+    "description": "Laufende Container auf diesem Computer, die eine Datenbank enthalten.",
+    "empty": "Keine laufenden Container mit einer unterstützten Datenbank gefunden.",
+    "failed": "Docker konnte nicht abgefragt werden.",
+    "unavailable": {
+      "notInstalled": "Docker ist nicht installiert (oder nicht im PATH).",
+      "notRunning": "Docker läuft nicht. Starte es und aktualisiere."
+    },
+    "add": "Verwenden",
+    "saved": "Gespeichert",
+    "useSaved": "«{{name}}» verwenden",
+    "refresh": "Aktualisieren",
+    "passwordNote": "Das Passwort wird nie aus dem Container gelesen: gib es einmal ein, es wird verschlüsselt gespeichert."
+  },
+  "replicate": {
+    "title": "Replizieren",
+    "subtitle": "Kopiere Datenbanken von einem Server auf einen anderen.",
+    "source": "Von (Quelle)",
+    "target": "Nach (Ziel)",
+    "chooseConnection": "Verbindung",
+    "choosePlaceholder": "Verbindung wählen…",
+    "newConnection": "Neue Verbindung",
+    "fromDocker": "Aus Docker",
+    "noConnections": "Noch keine Verbindungen. Lege eine an oder wähle eine Docker-Datenbank.",
+    "databases": "Datenbanken",
+    "reload": "Neu laden",
+    "pickSourceFirst": "Wähle zuerst die Quelle.",
+    "loadFailed": "Die Datenbanken konnten nicht aufgelistet werden.",
+    "noDatabases": "Diese Verbindung hat keine Datenbanken zum Kopieren.",
+    "selectAll": "Alle auswählen",
+    "targetName": "Name auf dem Ziel",
+    "start": "Starten",
+    "startButton": "{{count}} Datenbank(en) kopieren",
+    "replaceExisting": "Datenbanken ersetzen, die auf dem Ziel schon existieren",
+    "replaceHint": "Ohne diese Option wird eine bereits vorhandene Datenbank mit einem Fehler übersprungen.",
+    "viewLog": "Protokoll ansehen",
+    "startFailed": "Der Lauf konnte nicht gestartet werden",
+    "cancelFailed": "Der Lauf konnte nicht abgebrochen werden",
+    "blocker": {
+      "running": "Ein Lauf ist in Arbeit.",
+      "pickBoth": "Wähle eine Quelle und ein Ziel.",
+      "unsupported": "Diese beiden Datenbanktypen lassen sich noch nicht kopieren.",
+      "noDatabases": "Lade zuerst die Datenbanken der Quelle.",
+      "selectOne": "Wähle mindestens eine Datenbank.",
+      "emptyName": "Ein Name auf dem Ziel ist leer.",
+      "duplicateName": "Zwei Datenbanken haben auf dem Ziel denselben Namen."
+    },
+    "plan": {
+      "sourceCannotBeSource": "Vom Datenbanktyp der Quelle lässt sich nicht kopieren.",
+      "targetCannotBeTarget": "Auf den Datenbanktyp des Ziels lässt sich nicht kopieren.",
+      "crossEngineUnavailable": "Das Kopieren zwischen verschiedenen Datenbanktypen ist noch nicht möglich."
+    },
+    "confirm": {
+      "title": "Vorhandene Datenbanken ersetzen?",
+      "body": "Datenbanken mit diesen Namen auf «{{target}}» werden zuerst gelöscht und durch die Kopie ersetzt:",
+      "note": "Das lässt sich nicht rückgängig machen.",
+      "action": "Ersetzen und kopieren"
+    }
+  },
+  "runs": {
+    "progress": "Fortschritt des Laufs",
+    "cancel": "Lauf abbrechen",
+    "summary": "{{done}} von {{total}} kopiert",
+    "replacing": "ersetzt Vorhandenes",
+    "warnings": "{{count}} Warnung(en) – siehe Protokoll",
+    "status": {
+      "queued": "In der Warteschlange",
+      "running": "Läuft",
+      "succeeded": "Erfolgreich",
+      "failed": "Fehlgeschlagen",
+      "cancelled": "Abgebrochen"
+    },
+    "dbStatus": {
+      "pending": "Wartet",
+      "dumping": "Liest",
+      "restoring": "Schreibt",
+      "done": "Fertig",
+      "failed": "Fehlgeschlagen",
+      "cancelled": "Abgebrochen"
+    }
+  },
+  "log": {
+    "title": "Protokoll",
+    "subtitle": "Jeder Lauf und was dabei geschehen ist.",
+    "runs": "Läufe",
+    "appLog": "App-Protokoll",
+    "noRuns": "Noch keine Läufe.",
+    "runGone": "Dieser Lauf existiert nicht mehr.",
+    "loadFailed": "Das Protokoll konnte nicht geladen werden.",
+    "empty": "Auf dieser Stufe wurde nichts protokolliert.",
+    "level": "Anzeigen",
+    "levels": {
+      "debug": "Debug",
+      "info": "Info",
+      "warn": "Warnung",
+      "error": "Fehler"
+    },
+    "copy": "Kopieren",
+    "copied": "Protokoll kopiert.",
+    "copyFailed": "Das Protokoll konnte nicht kopiert werden"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "subtitle": "Sicherheit, Sprache und Informationen zu dieser Installation.",
+    "security": {
+      "title": "Sicherheit",
+      "description": "Die PIN ist der einzige Schutz: Sie sperrt die App beim Start, nach einer Zeit ohne Aktivität und wenn der Computer gesperrt wird."
+    },
+    "pin": {
+      "change": "PIN ändern",
+      "currentPin": "Aktuelle PIN",
+      "pin": "Neue PIN",
+      "repeat": "Neue PIN wiederholen",
+      "submit": "PIN ändern",
+      "changed": "PIN geändert."
+    },
+    "autoLock": {
+      "label": "Sperren nach",
+      "minutes": "{{count}} Min. ohne Aktivität",
+      "hint": "Die App sperrt sich auch, wenn dein Computer gesperrt wird oder in den Ruhezustand geht."
+    },
+    "language": {
+      "title": "Sprache",
+      "label": "Sprache der App"
+    },
+    "about": {
+      "title": "Info",
+      "version": "Version",
+      "dataFolder": "Datenordner",
+      "passwordKey": "Passwortschlüssel",
+      "reveal": "Datenordner anzeigen",
+      "keyProtection": {
+        "os-keychain": "Durch den Schlüsselbund des Betriebssystems geschützt",
+        "file": "In einer Datei gespeichert, die nur du lesen kannst (kein Schlüsselbund verfügbar)"
+      }
+    }
+  }
+}

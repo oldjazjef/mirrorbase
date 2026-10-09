@@ -1,0 +1,123 @@
+<div class="flex flex-col gap-4" [formGroup]="form()">
+  <div class="grid gap-4 sm:grid-cols-2">
+    @for (field of basic(); track field.key) {
+    <ng-container
+      [ngTemplateOutlet]="fieldTemplate"
+      [ngTemplateOutletContext]="{ $implicit: field }"
+    />
+    }
+  </div>
+
+  @if (advanced().length > 0) {
+  <div class="flex flex-col gap-3">
+    <button
+      hlmBtn
+      variant="ghost"
+      size="sm"
+      type="button"
+      class="w-fit"
+      [attr.aria-expanded]="advancedOpen()"
+      aria-controls="dr-advanced-fields"
+      (click)="toggleAdvanced()"
+    >
+      <ng-icon
+        name="lucideChevronRight"
+        class="transition-transform motion-reduce:transition-none"
+        [class.rotate-90]="advancedOpen()"
+        aria-hidden="true"
+      />
+      {{ 'connections.form.advanced' | translate }}
+    </button>
+    @if (advancedOpen()) {
+    <div id="dr-advanced-fields" class="grid gap-4 sm:grid-cols-2">
+      @for (field of advanced(); track field.key) {
+      <ng-container
+        [ngTemplateOutlet]="fieldTemplate"
+        [ngTemplateOutletContext]="{ $implicit: field }"
+      />
+      }
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Inside the form group: formControlName finds its parent where the template is DECLARED. -->
+  <ng-template #fieldTemplate let-field>
+    <div
+      class="dr-field flex min-w-0 flex-col gap-1.5"
+      [class.sm:col-span-2]="wide(field)"
+    >
+      @if (field.type === 'boolean') {
+      <label class="flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          [id]="'dr-field-' + field.key"
+          [formControlName]="field.key"
+        />
+        {{ field.label | drLocalized }}
+      </label>
+      } @else {
+      <label hlmLabel [for]="'dr-field-' + field.key">
+        {{ field.label | drLocalized }} @if (field.required) {
+        <span class="text-muted-foreground" aria-hidden="true">*</span>
+        }
+      </label>
+
+      @switch (field.type) { @case ('select') {
+      <select
+        hlmInput
+        [id]="'dr-field-' + field.key"
+        [formControlName]="field.key"
+      >
+        <option value="">
+          {{ 'connections.form.selectDefault' | translate }}
+        </option>
+        @for (option of field.options; track option.value) {
+        <option [value]="option.value">{{ option.label | drLocalized }}</option>
+        }
+      </select>
+      } @case ('password') {
+      <input
+        hlmInput
+        type="password"
+        autocomplete="new-password"
+        [id]="'dr-field-' + field.key"
+        [formControlName]="field.key"
+        [attr.placeholder]="isSaved(field.key) ? ('connections.form.passwordKept' | translate) : null"
+      />
+      @if (isSaved(field.key)) {
+      <button
+        hlmBtn
+        variant="link"
+        size="xs"
+        type="button"
+        class="w-fit px-0"
+        (click)="forget.emit(field.key)"
+      >
+        {{ 'connections.form.forgetPassword' | translate }}
+      </button>
+      } @else if (forgotten().includes(field.key)) {
+      <p class="text-muted-foreground text-xs">
+        {{ 'connections.form.passwordForgotten' | translate }}
+      </p>
+      } } @default {
+      <input
+        hlmInput
+        type="text"
+        autocomplete="off"
+        spellcheck="false"
+        [id]="'dr-field-' + field.key"
+        [formControlName]="field.key"
+        [attr.inputmode]="field.type === 'number' ? 'numeric' : null"
+        [attr.placeholder]="placeholder(field) ?? null"
+      />
+      } } } @if (field.help; as help) {
+      <p class="text-muted-foreground text-xs">{{ help | drLocalized }}</p>
+      } @if (error(field.key); as message) {
+      <p class="text-destructive text-sm" role="alert">
+        {{ message | translate }}
+      </p>
+      }
+    </div>
+  </ng-template>
+</div>
