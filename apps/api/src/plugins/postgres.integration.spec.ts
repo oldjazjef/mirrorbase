@@ -46,7 +46,7 @@ function psql(database: string, sql: string): string {
 }
 
 const SUFFIX = `${Date.now()}`;
-const SHOP = `dr_shop_${SUFFIX}`;
+const SHOP = `mb_shop_${SUFFIX}`;
 const RESERVED = `authorization`;
 const COPY = (name: string) => `${name}_copy`;
 
@@ -203,18 +203,26 @@ describe.skipIf(!HOST)('postgres plugin against a real server', () => {
   });
 
   it('says what is wrong when the Docker client is chosen but Docker is not running', async () => {
-    const { s, source, target } = await setup('16', 'docker');
-    const run = await s.start.execute(
-      new StartRunCommand(
-        source.id,
-        target.id,
-        [{ source: RESERVED, target: COPY(RESERVED) }],
-        true,
-      ),
-    );
-    await runReplication(s.deps, run.id, new AbortController().signal);
-    const finished = (await s.runs.find(run.id))!;
-    expect(finished.status).toBe('failed');
-    expect(finished.databases[0]?.errorCode).toBe('clientToolsMissing');
+    // Make Docker unreachable on every machine: a CI runner has a running daemon, a laptop may not.
+    const before = process.env['DOCKER_HOST'];
+    process.env['DOCKER_HOST'] = 'unix:///nonexistent/mirrorbase-docker.sock';
+    try {
+      const { s, source, target } = await setup('16', 'docker');
+      const run = await s.start.execute(
+        new StartRunCommand(
+          source.id,
+          target.id,
+          [{ source: RESERVED, target: COPY(RESERVED) }],
+          true,
+        ),
+      );
+      await runReplication(s.deps, run.id, new AbortController().signal);
+      const finished = (await s.runs.find(run.id))!;
+      expect(finished.status).toBe('failed');
+      expect(finished.databases[0]?.errorCode).toBe('clientToolsMissing');
+    } finally {
+      if (before === undefined) delete process.env['DOCKER_HOST'];
+      else process.env['DOCKER_HOST'] = before;
+    }
   });
 });

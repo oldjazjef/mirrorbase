@@ -1,3 +1,6 @@
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { type DatabasePlugin, PluginError } from '@mirrorbase/db-plugin';
 import { sqlitePlugin } from '@mirrorbase/plugin-sqlite';
 import { connectionSetup } from '../testing/connection-fixture';
@@ -390,26 +393,34 @@ describe('testing a connection', () => {
 
   it('tests a real SQLite file end to end', async () => {
     const s = connectionSetup();
-    const result = await s.test.execute(
-      new TestConnectionCommand(
-        'sqlite',
-        { path: '/definitely/not/there.db' },
-        undefined,
-        undefined,
-        'target',
-      ),
-    );
-    expect(result.ok).toBe(true); // a target may not exist yet
-    const source = await s.test.execute(
-      new TestConnectionCommand(
-        'sqlite',
-        { path: '/definitely/not/there.db' },
-        undefined,
-        undefined,
-        'source',
-      ),
-    );
-    expect(source.ok).toBe(false);
+    // A folder that exists and is writable on every machine (a path like /definitely/not/there.db
+    // only passed for root: CI runs unprivileged, where "/" is not writable).
+    const folder = mkdtempSync(join(tmpdir(), 'mirrorbase-spec-'));
+    const missing = join(folder, 'not-there.db');
+    try {
+      const result = await s.test.execute(
+        new TestConnectionCommand(
+          'sqlite',
+          { path: missing },
+          undefined,
+          undefined,
+          'target',
+        ),
+      );
+      expect(result.ok).toBe(true); // a target may not exist yet
+      const source = await s.test.execute(
+        new TestConnectionCommand(
+          'sqlite',
+          { path: missing },
+          undefined,
+          undefined,
+          'source',
+        ),
+      );
+      expect(source.ok).toBe(false);
+    } finally {
+      rmSync(folder, { recursive: true, force: true });
+    }
   });
 
   it('refuses to borrow the passwords of a connection of another database type', async () => {
