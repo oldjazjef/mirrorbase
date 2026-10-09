@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# The gate lives in package.json (`ci:verify` / `ci:integration`), not here, so `pnpm check`
+# locally is literally the same command. Add a check to package.json, never to this file alone.
+#
+# There are no Nx `test` targets on purpose (Vitest fails inside Nx's run-commands spawn), which is
+# why the scripts call Vitest directly - see CLAUDE.md, Testing.
+
+env:
+  NX_DAEMON: 'false'
+  # Nx plugin workers use unix sockets whose paths include node_modules/.pnpm; a deep checkout
+  # path would push them past the ~108 byte limit.
+  NX_SOCKET_DIR: /tmp/nx
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm ci:verify
+
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      # A real server for the postgres plugin's integration spec (psql/pg_dump run on the runner).
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      MB_TEST_PG_HOST: 127.0.0.1
+      MB_TEST_PG_PORT: '5432'
+      MB_TEST_PG_USER: postgres
+      MB_TEST_PG_PASSWORD: ci-only-password
+    steps:
+      - uses: actions/checkout@v4
+      - name: PostgreSQL client tools (psql, pg_dump)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends postgresql-client
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # SQLite: no database service for the app itself. scripts/dev/with-test-db.mjs points
+      # DATABASE_URL at a fresh file under tmp/, applies the migration history, then runs the specs.
+      - run: pnpm ci:integration

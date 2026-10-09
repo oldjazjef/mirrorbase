@@ -74,10 +74,18 @@ its texts are the `help.*` keys in both message files. **A change to a page, but
 the matching help texts.** The "Buy me a coffee" card (`support-card`, URL in `core/support.ts`)
 sits at the end of the help and the settings.
 
+## CI and releases
+
+Same shape as lazy-koins. `.github/workflows/ci.yml`: `check` (= `pnpm ci:verify`) and `integration`
+(`pnpm ci:integration`, with a Postgres 16 service container and `MB_TEST_PG_*`). **The gate lives in
+`package.json`**; add checks there, never to the YAML alone. `release.yml` ("Run workflow" on main
+or a hand-published release) creates the tag and calls `_desktop.yml`, which builds the installers
+(Windows, macOS, Linux; version = tag via `MB_VERSION`) and attaches them to the release. Unsigned.
+
 ## Not built / open
 
 Creating a new local Docker container (the old script did), cross-engine copy, keeping dump files,
-CI workflows and Dockerfiles, code signing and auto-update.
+Dockerfiles, code signing and auto-update.
 
 ## Gotchas
 
