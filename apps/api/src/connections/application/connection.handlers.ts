@@ -30,7 +30,6 @@ import {
   type StoredConnection,
 } from '../domain/connection';
 import { ConnectionRepositoryPort } from '../ports/connection.repository.port';
-import { LogService } from '../../logs/log.service';
 import { ContainerStarter } from './container-starter';
 import { ConnectionSecrets } from './secrets';
 
@@ -159,7 +158,6 @@ export class CreateConnectionHandler implements ICommandHandler<
     private readonly registry: PluginRegistry,
     private readonly secrets: ConnectionSecrets,
     private readonly containers: ContainerStarter,
-    private readonly logs: LogService,
   ) {}
 
   async execute(command: CreateConnectionCommand): Promise<Connection> {
@@ -178,15 +176,9 @@ export class CreateConnectionHandler implements ICommandHandler<
         group: checkGroup(command.group),
       }),
     );
-    // A connection from a container is made to be used: bring the container up now.
-    if (created.dockerName) {
-      const log = this.logs.writer(null);
-      await this.containers.ensureRunning(
-        created.dockerName,
-        (level, message) => log.write(level, message),
-      );
-      await log.flush();
-    }
+    // A connection to a container is made to be used: bring the container up now, in the
+    // background (a first start may have to pull an image).
+    this.containers.prepareInBackground(created, plugin);
     return publicView(created);
   }
 }
@@ -397,7 +389,7 @@ export class ListConnectionDatabasesHandler implements IQueryHandler<
     });
     try {
       await this.containers.ensureReady(
-        stored.dockerName,
+        stored,
         plugin,
         connection,
         run.host,

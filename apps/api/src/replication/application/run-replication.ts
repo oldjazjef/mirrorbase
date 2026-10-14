@@ -101,14 +101,14 @@ export async function runReplication(
     const targetConnection = deps.secrets.toPluginConnection(target);
     // A connection made from a Docker container only works while the container runs.
     await deps.containers.ensureReady(
-      source.dockerName,
+      source,
       sourcePlugin,
       sourceConnection,
       host,
       'source',
     );
     await deps.containers.ensureReady(
-      target.dockerName,
+      target,
       targetPlugin,
       targetConnection,
       host,

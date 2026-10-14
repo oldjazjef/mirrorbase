@@ -520,6 +520,7 @@ describe('connections from a Docker container', () => {
     await s.create.execute(
       new CreateConnectionCommand('Pg', 'dockerish', {}, undefined, 'pg'),
     );
+    await s.containers.settled();
     expect(docker.started).toEqual(['id-pg']);
   });
 
@@ -529,6 +530,7 @@ describe('connections from a Docker container', () => {
     await s.create.execute(
       new CreateConnectionCommand('Pg', 'dockerish', {}, undefined, 'pg'),
     );
+    await s.containers.settled();
     expect(docker.started).toEqual([]);
   });
 
@@ -552,6 +554,7 @@ describe('connections from a Docker container', () => {
         new CreateConnectionCommand('A', 'dockerish', {}, undefined, 'pg'),
       ),
     ).resolves.toMatchObject({ dockerName: 'pg' });
+    await down.containers.settled();
 
     const gone = connectionSetup([sqliteLike()], {}, new FakeDocker([]));
     await expect(
@@ -559,6 +562,93 @@ describe('connections from a Docker container', () => {
         new CreateConnectionCommand('B', 'dockerish', {}, undefined, 'pg'),
       ),
     ).resolves.toMatchObject({ dockerName: 'pg' });
+  });
+});
+
+describe('connections to a plugin that runs its own container', () => {
+  /** A stand-in for "PostgreSQL (Docker)": `prepare` is what creates or starts the container. */
+  function owning(calls: string[], failure?: Error): DatabasePlugin {
+    return {
+      ...sqlitePlugin,
+      id: 'owning',
+      name: 'Owning',
+      connectionFields: [],
+      validate: () => [],
+      prepare: (_host, _connection, options) => {
+        calls.push(`prepare:${options?.role ?? '-'}`);
+        return failure ? Promise.reject(failure) : Promise.resolve();
+      },
+      testConnection: () => Promise.resolve({ ok: true }),
+      listDatabases: () => {
+        calls.push('list');
+        return Promise.resolve(['a']);
+      },
+    };
+  }
+
+  it('brings the container up right after the connection is saved', async () => {
+    const calls: string[] = [];
+    const s = connectionSetup([owning(calls)]);
+    const created = await s.create.execute(
+      new CreateConnectionCommand('Own', 'owning', {}, undefined, undefined),
+    );
+    expect(created.name).toBe('Own');
+    await s.containers.settled();
+    expect(calls).toEqual(['prepare:target']);
+  });
+
+  it('still saves the connection when the container cannot be started, and says why in the log', async () => {
+    const s = connectionSetup([
+      owning(
+        [],
+        new PluginError('clientToolsMissing', 'Docker is not running'),
+      ),
+    ]);
+    await expect(
+      s.create.execute(
+        new CreateConnectionCommand('Own', 'owning', {}, undefined, undefined),
+      ),
+    ).resolves.toMatchObject({ name: 'Own' });
+    await s.containers.settled();
+    await s.logs.writer(null).flush();
+    expect(
+      s.logRepository.entries.some((entry) =>
+        entry.message.includes('Docker is not running'),
+      ),
+    ).toBe(true);
+  });
+
+  it('prepares before the databases are listed', async () => {
+    const calls: string[] = [];
+    const s = connectionSetup([owning(calls)]);
+    const { id } = await s.create.execute(
+      new CreateConnectionCommand('Own', 'owning', {}, undefined, undefined),
+    );
+    await s.containers.settled();
+    calls.length = 0;
+    await s.databases.execute(new ListConnectionDatabasesQuery(id));
+    expect(calls).toEqual(['prepare:source', 'list']);
+  });
+
+  it('does not create the container twice when a call follows right after saving', async () => {
+    let running = 0;
+    let peak = 0;
+    const plugin: DatabasePlugin = {
+      ...owning([]),
+      prepare: async () => {
+        running += 1;
+        peak = Math.max(peak, running);
+        await new Promise((resolve) => setTimeout(resolve, 20));
+        running -= 1;
+      },
+    };
+    const s = connectionSetup([plugin]);
+    const { id } = await s.create.execute(
+      new CreateConnectionCommand('Own', 'owning', {}, undefined, undefined),
+    );
+    await s.databases.execute(new ListConnectionDatabasesQuery(id));
+    await s.containers.settled();
+    expect(peak).toBe(1);
   });
 });
 

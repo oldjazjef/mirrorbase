@@ -93,6 +93,21 @@ describe('sqlite docker plugin', () => {
     );
   });
 
+  it('prepare creates a missing container and starts a stopped one, without copying anything', async () => {
+    const fresh = createFakeHost(respond({ exists: false }));
+    await sqliteDockerPlugin.prepare?.(fresh, connection(), { role: 'target' });
+    expect(fresh.commands.some((c) => c.args[0] === 'run')).toBe(true);
+    expect(fresh.commands.some((c) => c.args[0] === 'cp')).toBe(false);
+
+    const stopped = createFakeHost((spec) =>
+      spec.args[0] === 'inspect'
+        ? { stdout: 'exited\n' }
+        : respond({ exists: true })(spec),
+    );
+    await sqliteDockerPlugin.prepare?.(stopped, connection());
+    expect(stopped.commands.some((c) => c.args[0] === 'start')).toBe(true);
+  });
+
   it('refuses to replace an existing file without confirmation', async () => {
     const host = createFakeHost(respond({ exists: true, fileExists: true }));
     await expect(

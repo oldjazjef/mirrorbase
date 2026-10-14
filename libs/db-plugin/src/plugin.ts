@@ -106,6 +106,18 @@ export interface DatabasePlugin {
     request: RestoreRequest,
   ): Promise<RestoreResult>;
 
+  /**
+   * Optional: bring up whatever the connection needs before it is used - a plugin that runs its
+   * own Docker container creates or starts it here and waits until it is ready. The host calls
+   * it when a connection is saved and at the start of every run, so the first dump or restore
+   * does not have to. Must be safe to call again (nothing to do when it is up already).
+   */
+  prepare?(
+    host: HostContext,
+    connection: PluginConnection,
+    options?: TestOptions,
+  ): Promise<void>;
+
   /** Recognise databases of this type among the running containers. */
   discoverDocker?(containers: readonly DockerContainer[]): DiscoveredEndpoint[];
 

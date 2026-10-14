@@ -185,6 +185,13 @@ export const sqliteDockerPlugin: DatabasePlugin = {
     return validateFields(FIELDS, connection);
   },
 
+  async prepare(
+    host: HostContext,
+    connection: PluginConnection,
+  ): Promise<void> {
+    await prepare(host, connection);
+  },
+
   async testConnection(
     host: HostContext,
     connection: PluginConnection,
