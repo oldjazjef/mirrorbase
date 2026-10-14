@@ -30,8 +30,20 @@ export const POSTGRES_DUMP_FORMAT = 'postgres-plain-sql@1';
 const LIST_QUERY =
   "SELECT datname FROM pg_database WHERE datistemplate = false AND datname NOT IN ('postgres') ORDER BY datname";
 
+/**
+ * Settings a newer pg_dump writes at the top of a dump (`SET transaction_timeout = 0` since 17)
+ * that an older server rejects. The dump restores fine without them, so they are no warning.
+ */
+const UNKNOWN_SETTING_OF_NEWER_DUMP =
+  /unrecognized configuration parameter "transaction_timeout"/;
+
 function errorLines(stderr: string): string[] {
-  return stderr.split(/\r?\n/).filter((line) => /\bERROR:/.test(line));
+  return stderr
+    .split(/\r?\n/)
+    .filter(
+      (line) =>
+        /\bERROR:/.test(line) && !UNKNOWN_SETTING_OF_NEWER_DUMP.test(line),
+    );
 }
 
 /** Queries are quick; a server that does not answer in two minutes is not going to. */
