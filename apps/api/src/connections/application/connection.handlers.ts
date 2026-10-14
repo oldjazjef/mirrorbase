@@ -19,15 +19,19 @@ import {
 import { PluginHostFactory } from '../../plugins/plugin-host';
 import { PluginRegistry } from '../../plugins/plugin-registry';
 import {
+  cleanGroup,
   cleanName,
   type Connection,
   ConnectionNameTakenError,
+  MAX_GROUP_LENGTH,
   MAX_NAME_LENGTH,
   normalizeConfig,
   pickSecrets,
   type StoredConnection,
 } from '../domain/connection';
 import { ConnectionRepositoryPort } from '../ports/connection.repository.port';
+import { LogService } from '../../logs/log.service';
+import { ContainerStarter } from './container-starter';
 import { ConnectionSecrets } from './secrets';
 
 /** A stored connection without its sealed values. */
@@ -60,6 +64,17 @@ function checkName(raw: string): string {
     );
   }
   return name;
+}
+
+export function checkGroup(raw: string | null | undefined): string | null {
+  const group = cleanGroup(raw);
+  if (group !== null && group.length > MAX_GROUP_LENGTH) {
+    throw badRequest(
+      'invalidGroup',
+      `The group name must be at most ${MAX_GROUP_LENGTH} characters`,
+    );
+  }
+  return group;
 }
 
 function checkValid(
@@ -130,6 +145,7 @@ export class CreateConnectionCommand {
     readonly config: Readonly<Record<string, unknown>>,
     readonly secrets: Readonly<Record<string, unknown>> | undefined,
     readonly dockerName: string | undefined,
+    readonly group: string | undefined = undefined,
   ) {}
 }
 
@@ -142,6 +158,8 @@ export class CreateConnectionHandler implements ICommandHandler<
     private readonly connections: ConnectionRepositoryPort,
     private readonly registry: PluginRegistry,
     private readonly secrets: ConnectionSecrets,
+    private readonly containers: ContainerStarter,
+    private readonly logs: LogService,
   ) {}
 
   async execute(command: CreateConnectionCommand): Promise<Connection> {
@@ -157,8 +175,18 @@ export class CreateConnectionHandler implements ICommandHandler<
         config,
         sealedSecrets: this.secrets.seal(secrets),
         dockerName: command.dockerName?.trim() || null,
+        group: checkGroup(command.group),
       }),
     );
+    // A connection from a container is made to be used: bring the container up now.
+    if (created.dockerName) {
+      const log = this.logs.writer(null);
+      await this.containers.ensureRunning(
+        created.dockerName,
+        (level, message) => log.write(level, message),
+      );
+      await log.flush();
+    }
     return publicView(created);
   }
 }
@@ -174,6 +202,8 @@ export class UpdateConnectionCommand {
     readonly secrets: Readonly<Record<string, unknown>> | undefined,
     /** Secret keys to forget. */
     readonly clearSecrets: readonly string[] | undefined,
+    /** undefined keeps the group, null or blank removes it. */
+    readonly group: string | null | undefined = undefined,
   ) {}
 }
 
@@ -219,6 +249,9 @@ export class UpdateConnectionHandler implements ICommandHandler<
             : {}),
           config,
           sealedSecrets: sealed,
+          ...(command.group !== undefined
+            ? { group: checkGroup(command.group) }
+            : {}),
         }),
       ),
     );
@@ -351,6 +384,7 @@ export class ListConnectionDatabasesHandler implements IQueryHandler<
     private readonly registry: PluginRegistry,
     private readonly secrets: ConnectionSecrets,
     private readonly hosts: PluginHostFactory,
+    private readonly containers: ContainerStarter,
   ) {}
 
   async execute({ id }: ListConnectionDatabasesQuery): Promise<string[]> {
@@ -362,6 +396,13 @@ export class ListConnectionDatabasesHandler implements IQueryHandler<
       secrets: Object.values(connection.secrets),
     });
     try {
+      await this.containers.ensureReady(
+        stored.dockerName,
+        plugin,
+        connection,
+        run.host,
+        'source',
+      );
       return await plugin.listDatabases(run.host, connection);
     } catch (error) {
       run.log.write(

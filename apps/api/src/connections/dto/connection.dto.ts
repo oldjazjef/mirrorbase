@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
   IsArray,
+  IsBoolean,
   IsIn,
   IsObject,
   IsOptional,
@@ -10,7 +11,12 @@ import {
 } from 'class-validator';
 import type { ConnectionConfig } from '@mirrorbase/db-plugin';
 import type { ConnectionTestResult } from '../application/connection.handlers';
-import { type Connection, MAX_NAME_LENGTH } from '../domain/connection';
+import type { ImportResult } from '../application/connection-transfer.handlers';
+import {
+  type Connection,
+  MAX_GROUP_LENGTH,
+  MAX_NAME_LENGTH,
+} from '../domain/connection';
 
 export class ConnectionDto {
   @ApiProperty() id!: string;
@@ -30,6 +36,13 @@ export class ConnectionDto {
   })
   secretKeys!: string[];
   @ApiProperty({ type: String, nullable: true }) dockerName!: string | null;
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    description:
+      'The group the connection is listed under, null when ungrouped',
+  })
+  group!: string | null;
   @ApiProperty({ format: 'date-time' }) createdAt!: string;
   @ApiProperty({ format: 'date-time' }) updatedAt!: string;
   @ApiProperty({ type: String, format: 'date-time', nullable: true })
@@ -73,6 +86,12 @@ export class CreateConnectionDto {
   @IsString()
   @MaxLength(200)
   dockerName?: string;
+
+  @ApiPropertyOptional({ maxLength: MAX_GROUP_LENGTH })
+  @IsOptional()
+  @IsString()
+  @MaxLength(MAX_GROUP_LENGTH * 2)
+  group?: string;
 }
 
 export class UpdateConnectionDto {
@@ -105,6 +124,15 @@ export class UpdateConnectionDto {
   @ArrayMaxSize(20)
   @IsString({ each: true })
   clearSecrets?: string[];
+
+  @ApiPropertyOptional({
+    maxLength: MAX_GROUP_LENGTH,
+    description: 'The group; an empty string removes the connection from it',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(MAX_GROUP_LENGTH * 2)
+  group?: string;
 }
 
 export class TestConnectionDto {
@@ -146,6 +174,70 @@ export class TestResultDto {
 
   static from(result: ConnectionTestResult): TestResultDto {
     return Object.assign(new TestResultDto(), result);
+  }
+}
+
+export class ExportConnectionsDto {
+  @ApiPropertyOptional({
+    type: [String],
+    description: 'Connections to export; every connection when omitted',
+  })
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(1000)
+  @IsString({ each: true })
+  ids?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Put the saved passwords into the file. Needs a password.',
+  })
+  @IsOptional()
+  @IsBoolean()
+  includePasswords?: boolean;
+
+  @ApiPropertyOptional({
+    description:
+      'Encrypts the whole file (AES-256-GCM, key from scrypt). At least 8 characters.',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(256)
+  password?: string;
+}
+
+export class ImportConnectionsDto {
+  @ApiProperty({ description: 'The text of an export file' })
+  @IsString()
+  @MaxLength(5_000_000)
+  content!: string;
+
+  @ApiPropertyOptional({ description: 'The password of an encrypted export' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(256)
+  password?: string;
+}
+
+export class ImportResultDto {
+  @ApiProperty() imported!: number;
+  @ApiProperty({
+    description: 'Of the imported, renamed because the name was taken',
+  })
+  renamed!: number;
+  @ApiProperty({
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: { name: { type: 'string' }, reason: { type: 'string' } },
+    },
+  })
+  skipped!: { name: string; reason: string }[];
+
+  static from(result: ImportResult): ImportResultDto {
+    return Object.assign(new ImportResultDto(), {
+      ...result,
+      skipped: [...result.skipped],
+    });
   }
 }
 

@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { PluginError } from '@mirrorbase/db-plugin';
 import { CreateConnectionCommand } from '../../connections/application/connection.handlers';
+import { FakeDocker } from '../../connections/testing/connection-fixture';
 import {
   newEngine,
   memoryPlugin,
@@ -55,6 +56,61 @@ async function setup() {
 }
 
 describe('runReplication', () => {
+  it('starts the stopped Docker containers of both connections before copying', async () => {
+    const engine = newEngine();
+    engine.stores.set('src.example', new Map([['alpha', 'AAAA']]));
+    const stopped = (name: string) => ({
+      id: `id-${name}`,
+      name,
+      image: 'postgres:16',
+      imageTag: '16',
+      state: 'exited',
+      ports: [],
+      env: {},
+    });
+    const docker = new FakeDocker([stopped('pg-src'), stopped('pg-dst')]);
+    const s = replicationSetup([memoryPlugin(engine)], {}, docker);
+    const source = await s.create.execute(
+      new CreateConnectionCommand(
+        'Source',
+        'memory',
+        { host: 'src.example' },
+        undefined,
+        'pg-src',
+      ),
+    );
+    const target = await s.create.execute(
+      new CreateConnectionCommand(
+        'Target',
+        'memory',
+        { host: 'dst.example' },
+        undefined,
+        'pg-dst',
+      ),
+    );
+    // Creating them already started them; stop them again, as after a reboot.
+    expect(docker.started).toEqual(['id-pg-src', 'id-pg-dst']);
+    docker.started.length = 0;
+    for (const [i, c] of docker.containers.entries()) {
+      docker.containers[i] = { ...c, state: 'exited' };
+    }
+
+    const run = await s.start.execute(
+      new StartRunCommand(source.id, target.id, [{ source: 'alpha' }], false),
+    );
+    await runReplication(s.deps, run.id, new AbortController().signal);
+
+    expect(docker.started).toEqual(['id-pg-src', 'id-pg-dst']);
+    expect((await s.runs.find(run.id))!.status).toBe('succeeded');
+  });
+
+  it('does not touch Docker for a connection that is not from a container', async () => {
+    const { s, startRun } = await setup();
+    const run = await startRun(['alpha']);
+    await runReplication(s.deps, run.id, new AbortController().signal);
+    expect(s.docker.started).toEqual([]);
+  });
+
   it('copies every selected database and records progress step by step', async () => {
     const { engine, s, startRun } = await setup();
     const run = await startRun(['alpha', 'beta']);

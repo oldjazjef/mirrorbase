@@ -68,7 +68,12 @@
       "currentPinRequired": "Gib die aktuelle PIN ein.",
       "wrongPin": "Die PIN ist falsch.",
       "pinThrottled": "Zu viele falsche PINs. Warte einen Moment.",
-      "confirmationRequired": "Bitte bestätige zuerst."
+      "confirmationRequired": "Bitte bestätige zuerst.",
+      "invalidGroup": "Der Gruppenname ist zu lang (höchstens 60 Zeichen).",
+      "invalidExportFile": "Diese Datei ist kein Mirrorbase-Export.",
+      "exportPasswordRequired": "Dieser Export ist verschlüsselt: Gib sein Passwort ein.",
+      "exportPasswordTooShort": "Das Export-Passwort braucht mindestens 8 Zeichen.",
+      "wrongExportPassword": "Das Passwort ist falsch oder die Datei wurde verändert."
     },
     "status": {
       "unreachable": "Die App ist nicht erreichbar.",
@@ -173,13 +178,51 @@
       "selectDefault": "Standard",
       "passwordKept": "Gespeichert – leer lassen, um es zu behalten",
       "forgetPassword": "Gespeichertes Passwort entfernen",
-      "passwordForgotten": "Das gespeicherte Passwort wird beim Speichern entfernt."
+      "passwordForgotten": "Das gespeicherte Passwort wird beim Speichern entfernt.",
+      "group": "Gruppe",
+      "groupPlaceholder": "z. B. Kunde A (optional)",
+      "groupHint": "Verbindungen mit derselben Gruppe werden zusammen aufgelistet. Leer lassen für keine Gruppe."
+    },
+    "ungrouped": "Ohne Gruppe",
+    "export": {
+      "open": "Exportieren",
+      "title": "Verbindungen exportieren",
+      "description": "Speichert alle Verbindungen in einer Datei, z. B. als Sicherung oder zum Umzug auf einen anderen Computer.",
+      "includePasswords": "Gespeicherte Passwörter mitexportieren",
+      "encrypt": "Datei mit einem Passwort schützen",
+      "passwordsNeedEncryption": "Passwörter werden nur verschlüsselt exportiert, darum ist ein Passwort nötig.",
+      "password": "Export-Passwort",
+      "repeat": "Passwort wiederholen",
+      "tooShort": "Mindestens 8 Zeichen verwenden.",
+      "mismatch": "Die Passwörter stimmen nicht überein.",
+      "passwordNote": "Dieses Passwort wird für den Import benötigt und kann nicht wiederhergestellt werden.",
+      "action": "Exportieren",
+      "done": "Verbindungen exportiert.",
+      "failed": "Die Verbindungen konnten nicht exportiert werden"
+    },
+    "import": {
+      "open": "Importieren",
+      "title": "Verbindungen importieren",
+      "description": "Fügt die Verbindungen einer Exportdatei dieser App hinzu.",
+      "file": "Exportdatei",
+      "password": "Passwort des Exports",
+      "encryptedNote": "Diese Datei ist verschlüsselt. Gib das Passwort ein, das du beim Export gewählt hast.",
+      "action": "Importieren",
+      "imported": "{{count}} Verbindung(en) importiert.",
+      "renamed": "{{count}} erhielten eine Nummer, weil der Name schon vergeben war.",
+      "skipped": "«{{name}}» übersprungen: {{reason}}",
+      "reasons": {
+        "unknownPlugin": "unbekannter Datenbanktyp",
+        "invalidEntry": "ungültiger Eintrag",
+        "nameTaken": "Name bereits vergeben"
+      },
+      "failed": "Die Verbindungen konnten nicht importiert werden"
     }
   },
   "docker": {
     "title": "Datenbanken in Docker",
-    "description": "Laufende Container auf diesem Computer, die eine Datenbank enthalten.",
-    "empty": "Keine laufenden Container mit einer unterstützten Datenbank gefunden.",
+    "description": "Container auf diesem Computer, die eine Datenbank enthalten. Ein gestoppter Container wird beim Verwenden gestartet.",
+    "empty": "Keine Container mit unterstützter Datenbank gefunden.",
     "failed": "Docker konnte nicht abgefragt werden.",
     "unavailable": {
       "notInstalled": "Docker ist nicht installiert (oder nicht im PATH).",
@@ -189,7 +232,8 @@
     "saved": "Gespeichert",
     "useSaved": "«{{name}}» verwenden",
     "refresh": "Aktualisieren",
-    "passwordNote": "Das Passwort wird nie aus dem Container gelesen: gib es einmal ein, es wird verschlüsselt gespeichert."
+    "passwordNote": "Das Passwort wird nie aus dem Container gelesen: gib es einmal ein, es wird verschlüsselt gespeichert.",
+    "stopped": "Gestoppt"
   },
   "replicate": {
     "title": "Replizieren",
@@ -376,7 +420,8 @@
         "steps": {
           "add": "Wähle «Neue Verbindung», gib einen Namen ein und wähle den Datenbanktyp.",
           "test": "Fülle die Felder aus, die der Typ verlangt, und teste die Verbindung, als Quelle oder als Ziel.",
-          "save": "Speichere. Die Verbindung erscheint nun in den Listen unter Replizieren."
+          "save": "Speichere. Die Verbindung erscheint nun in den Listen unter Replizieren.",
+          "group": "Gib optional eine Gruppe an. Verbindungen mit derselben Gruppe werden zusammen aufgelistet."
         },
         "tips": {
           "password": "Passwörter werden verschlüsselt gespeichert und erscheinen nie im Protokoll.",
@@ -404,7 +449,8 @@
         "where": "Replizieren",
         "steps": {
           "list": "Wähle «Aus Docker», um die Container aufzulisten, die gerade laufen.",
-          "pick": "Wähle einen aus, um Adresse und Port einzutragen. Ergänze Benutzer und Passwort."
+          "pick": "Wähle einen aus, um Adresse und Port einzutragen. Ergänze Benutzer und Passwort.",
+          "start": "Ein gestoppter Container wird für dich gestartet, wenn du seine Verbindung speicherst, seine Datenbanken auflistest oder ein Kopieren startest."
         },
         "tips": {
           "dockerRunning": "Docker muss laufen. Sonst sagt die Liste es dir."
@@ -420,6 +466,20 @@
         },
         "tips": {
           "secrets": "Passwörter sind im Protokoll verborgen."
+        }
+      },
+      "transfer": {
+        "title": "Verbindungen sichern oder umziehen",
+        "purpose": "Exportiere deine Verbindungen in eine Datei und importiere sie wieder, z. B. auf einem anderen Computer.",
+        "where": "Verbindungen",
+        "steps": {
+          "export": "Wähle Exportieren. Hake «Gespeicherte Passwörter mitexportieren» nur an, wenn du sie in der Datei brauchst.",
+          "password": "Passwörter werden nur verschlüsselt exportiert: Wähle ein Export-Passwort. Auch eine Datei ohne Passwörter kannst du verschlüsseln.",
+          "import": "Wähle Importieren, such die Datei aus und gib ihr Passwort ein, falls sie verschlüsselt ist."
+        },
+        "tips": {
+          "encrypted": "Bewahre das Export-Passwort sicher auf: Ohne es lässt sich die Datei nicht lesen.",
+          "names": "Eine Verbindung, deren Name schon existiert, wird mit angehängter Nummer importiert. Nichts wird überschrieben."
         }
       }
     },

@@ -7,7 +7,10 @@ import {
   type PluginConnection,
   type RestoreRequest,
 } from '@mirrorbase/db-plugin';
-import { connectionSetup } from '../../connections/testing/connection-fixture';
+import {
+  connectionSetup,
+  type FakeDocker,
+} from '../../connections/testing/connection-fixture';
 import type { ReplicationDeps } from '../application/run-replication';
 import {
   StartRunHandler,
@@ -139,8 +142,9 @@ export class FakeExecutor {
 export function replicationSetup(
   plugins: readonly DatabasePlugin[],
   configValues: Record<string, unknown> = {},
+  docker?: FakeDocker,
 ) {
-  const base = connectionSetup(plugins, configValues);
+  const base = connectionSetup(plugins, configValues, docker);
   const runs = new InMemoryRunRepository();
   const executor = new FakeExecutor();
   const deps: ReplicationDeps = {
@@ -149,6 +153,7 @@ export function replicationSetup(
     registry: base.registry,
     secrets: base.secrets,
     hosts: base.hosts,
+    containers: base.containers,
   };
   return {
     ...base,

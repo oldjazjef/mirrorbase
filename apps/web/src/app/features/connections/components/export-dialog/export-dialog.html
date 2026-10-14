@@ -1,0 +1,93 @@
+<hlm-dialog [state]="state()" (stateChanged)="onStateChanged($event)">
+  <hlm-dialog-content *hlmDialogPortal class="sm:max-w-md">
+    <hlm-dialog-header>
+      <h3 hlmDialogTitle>{{ 'connections.export.title' | translate }}</h3>
+      <p hlmDialogDescription>
+        {{ 'connections.export.description' | translate }}
+      </p>
+    </hlm-dialog-header>
+
+    <form
+      [id]="formId"
+      class="mb-dialog-body"
+      (submit)="$event.preventDefault(); export()"
+    >
+      <label class="flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          [checked]="includePasswords()"
+          (change)="includePasswords.set(checked($event))"
+        />
+        {{ 'connections.export.includePasswords' | translate }}
+      </label>
+      <label class="flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          [checked]="encrypting()"
+          [disabled]="includePasswords()"
+          (change)="encrypt.set(checked($event))"
+        />
+        {{ 'connections.export.encrypt' | translate }}
+      </label>
+      @if (includePasswords()) {
+      <p class="text-muted-foreground text-xs">
+        {{ 'connections.export.passwordsNeedEncryption' | translate }}
+      </p>
+      } @if (encrypting()) {
+      <div class="flex flex-col gap-1.5">
+        <label hlmLabel for="mb-export-password"
+          >{{ 'connections.export.password' | translate }}</label
+        >
+        <input
+          hlmInput
+          id="mb-export-password"
+          type="password"
+          autocomplete="new-password"
+          [value]="password()"
+          (input)="password.set(value($event))"
+        />
+        @if (tooShort()) {
+        <p class="text-destructive text-sm" role="alert">
+          {{ 'connections.export.tooShort' | translate }}
+        </p>
+        }
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <label hlmLabel for="mb-export-repeat"
+          >{{ 'connections.export.repeat' | translate }}</label
+        >
+        <input
+          hlmInput
+          id="mb-export-repeat"
+          type="password"
+          autocomplete="new-password"
+          [value]="repeat()"
+          (input)="repeat.set(value($event))"
+        />
+        @if (mismatch()) {
+        <p class="text-destructive text-sm" role="alert">
+          {{ 'connections.export.mismatch' | translate }}
+        </p>
+        }
+      </div>
+      <p class="text-muted-foreground text-xs">
+        {{ 'connections.export.passwordNote' | translate }}
+      </p>
+      }
+    </form>
+
+    <hlm-dialog-footer>
+      <button hlmBtn variant="outline" type="button" hlmDialogClose>
+        {{ 'common.cancel' | translate }}
+      </button>
+      <button
+        hlmBtn
+        type="submit"
+        [attr.form]="formId"
+        [disabled]="busy() || !valid()"
+      >
+        {{ 'connections.export.action' | translate }}
+      </button>
+    </hlm-dialog-footer>
+  </hlm-dialog-content>
+</hlm-dialog>

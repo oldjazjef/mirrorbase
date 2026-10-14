@@ -55,7 +55,7 @@ describe('DockerCliAdapter', () => {
         inspect: { exitCode: 0, stdout: INSPECT, stderr: '' },
       }),
     );
-    const containers = await adapter.listRunning();
+    const containers = await adapter.list();
     expect(containers.map((c) => c.name)).toEqual(['alpha', 'pg16']);
     const pg = containers[1]!;
     expect(pg).toMatchObject({
@@ -79,13 +79,69 @@ describe('DockerCliAdapter', () => {
     expect(JSON.stringify(containers)).not.toContain('do-not-leak');
   });
 
+  it('asks for stopped containers as well', async () => {
+    let args: readonly string[] = [];
+    const adapter = new DockerCliAdapter((options) => {
+      args = options.args;
+      return Promise.resolve({ exitCode: 0, stdout: '', stderr: '' });
+    });
+    await adapter.list();
+    expect(args).toContain('-a');
+  });
+
+  it('reads the published ports of a stopped container from its host config', () => {
+    const [container] = parseInspect(
+      JSON.stringify([
+        {
+          Id: 'c'.repeat(64),
+          Name: '/pg-off',
+          Config: { Image: 'postgres:16', Env: [] },
+          State: { Status: 'exited' },
+          HostConfig: { PortBindings: { '5432/tcp': [{ HostPort: '5450' }] } },
+          NetworkSettings: { Ports: {} },
+        },
+      ]),
+    );
+    expect(container).toMatchObject({
+      state: 'exited',
+      ports: [{ containerPort: 5432, hostPort: 5450 }],
+    });
+  });
+
+  it('starts a container, and reports why it could not', async () => {
+    const ok = new DockerCliAdapter(
+      runner({ start: { exitCode: 0, stdout: 'pg\n', stderr: '' } }),
+    );
+    await expect(ok.start('pg')).resolves.toBeUndefined();
+
+    const gone = new DockerCliAdapter(
+      runner({
+        start: { exitCode: 1, stdout: '', stderr: 'No such container: pg\n' },
+      }),
+    );
+    await expect(gone.start('pg')).rejects.toThrow('No such container: pg');
+
+    const down = new DockerCliAdapter(
+      runner({
+        start: {
+          exitCode: 1,
+          stdout: '',
+          stderr: 'failed to connect to the docker API',
+        },
+      }),
+    );
+    await expect(down.start('pg')).rejects.toBeInstanceOf(
+      DockerUnavailableError,
+    );
+  });
+
   it('answers an empty list without inspecting when nothing runs', async () => {
     const calls: string[] = [];
     const adapter = new DockerCliAdapter((options) => {
       calls.push(options.args[0] ?? '');
       return Promise.resolve({ exitCode: 0, stdout: '', stderr: '' });
     });
-    expect(await adapter.listRunning()).toEqual([]);
+    expect(await adapter.list()).toEqual([]);
     expect(calls).toEqual(['ps']);
   });
 
@@ -95,7 +151,7 @@ describe('DockerCliAdapter', () => {
         ps: { exitCode: -1, stdout: '', stderr: '', failure: 'notFound' },
       }),
     );
-    await expect(missing.listRunning()).rejects.toMatchObject({
+    await expect(missing.list()).rejects.toMatchObject({
       reason: 'notInstalled',
     });
 
@@ -108,7 +164,7 @@ describe('DockerCliAdapter', () => {
         },
       }),
     );
-    const error = await stopped.listRunning().catch((e: unknown) => e);
+    const error = await stopped.list().catch((e: unknown) => e);
     expect(error).toBeInstanceOf(DockerUnavailableError);
     expect(error).toMatchObject({
       reason: 'notRunning',

@@ -10,9 +10,17 @@ import {
   TestConnectionCommand,
   UpdateConnectionCommand,
 } from './application/connection.handlers';
+import {
+  type ConnectionExport,
+  ExportConnectionsQuery,
+  ImportConnectionsCommand,
+  type ImportResult,
+} from './application/connection-transfer.handlers';
 import type { Connection } from './domain/connection';
 import type {
   CreateConnectionDto,
+  ExportConnectionsDto,
+  ImportConnectionsDto,
   TestConnectionDto,
   UpdateConnectionDto,
 } from './dto/connection.dto';
@@ -41,6 +49,7 @@ export class ConnectionsService {
         dto.config,
         dto.secrets,
         dto.dockerName,
+        dto.group,
       ),
     );
   }
@@ -53,6 +62,7 @@ export class ConnectionsService {
         dto.config,
         dto.secrets,
         dto.clearSecrets,
+        dto.group,
       ),
     );
   }
@@ -70,6 +80,22 @@ export class ConnectionsService {
         dto.connectionId,
         dto.role ?? 'source',
       ),
+    );
+  }
+
+  export(dto: ExportConnectionsDto): Promise<ConnectionExport> {
+    return this.queries.execute(
+      new ExportConnectionsQuery(
+        dto.ids,
+        dto.includePasswords ?? false,
+        dto.password,
+      ),
+    );
+  }
+
+  import(dto: ImportConnectionsDto): Promise<ImportResult> {
+    return this.commands.execute(
+      new ImportConnectionsCommand(dto.content, dto.password),
     );
   }
 

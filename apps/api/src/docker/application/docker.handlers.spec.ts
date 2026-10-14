@@ -12,10 +12,13 @@ class FakeDocker extends DockerPort {
   ) {
     super();
   }
-  listRunning(): Promise<DockerContainer[]> {
+  list(): Promise<DockerContainer[]> {
     return this.result instanceof Error
       ? Promise.reject(this.result)
       : Promise.resolve(this.result);
+  }
+  start(): Promise<void> {
+    return Promise.resolve();
   }
 }
 
@@ -64,6 +67,16 @@ describe('ListDockerDatabasesHandler', () => {
     ]);
   });
 
+  it('offers stopped containers too and says they are stopped', async () => {
+    const { handler: h } = handler(
+      new FakeDocker([{ ...pg('pg-off', 5443), state: 'exited' }]),
+    );
+    const result = await h.execute();
+    expect(result.items.map((i) => [i.containerName, i.state])).toEqual([
+      ['pg-off', 'exited'],
+    ]);
+  });
+
   it('marks a container that already has a saved connection', async () => {
     const { handler: h, repository } = handler(
       new FakeDocker([pg('pg-a', 5441), pg('pg-b', 5442)]),
@@ -74,6 +87,7 @@ describe('ListDockerDatabasesHandler', () => {
       config: { host: '127.0.0.1', port: 5441, user: 'app' },
       sealedSecrets: {},
       dockerName: 'pg-a',
+      group: null,
     });
     const result = await h.execute();
     expect(result.items.map((i) => i.savedConnectionId)).toEqual([
@@ -103,7 +117,7 @@ describe('ListDockerDatabasesHandler', () => {
 
   it('lets other errors through', async () => {
     const failing = new FakeDocker([]);
-    failing.listRunning = () => Promise.reject(new Error('boom'));
+    failing.list = () => Promise.reject(new Error('boom'));
     await expect(handler(failing).handler.execute()).rejects.toThrow('boom');
   });
 });

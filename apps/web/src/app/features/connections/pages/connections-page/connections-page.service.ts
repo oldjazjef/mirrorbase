@@ -9,6 +9,12 @@ import { PluginsService } from '../../../../core/plugins/plugins.service';
 import type { ConnectionPrefill } from '../../../../shared/components/connection-dialog';
 import { summarizeConfig } from '../../../../shared/format/format';
 
+/** A run of connections under one heading; `name` is null for the ungrouped ones. */
+export interface ConnectionGroup {
+  readonly name: string | null;
+  readonly rows: readonly ConnectionRow[];
+}
+
 export interface ConnectionRow {
   readonly connection: Connection;
   readonly pluginName: string;
@@ -23,6 +29,8 @@ export class ConnectionsPageService {
   private readonly plugins = inject(PluginsService);
 
   readonly dialogOpen = signal(false);
+  readonly exportOpen = signal(false);
+  readonly importOpen = signal(false);
   readonly editing = signal<Connection | null>(null);
   readonly prefill = signal<ConnectionPrefill | null>(null);
   readonly deleting = signal<Connection | null>(null);
@@ -35,6 +43,25 @@ export class ConnectionsPageService {
       target: summarizeConfig(connection.config),
       hasPassword: connection.secretKeys.length > 0,
     })),
+  );
+
+  /** Named groups A-Z, then the ungrouped. Headings only show when some group exists. */
+  readonly groups = computed<readonly ConnectionGroup[]>(() => {
+    const byGroup = new Map<string | null, ConnectionRow[]>();
+    for (const row of this.rows()) {
+      const key = row.connection.group;
+      byGroup.set(key, [...(byGroup.get(key) ?? []), row]);
+    }
+    const named = [...byGroup.keys()]
+      .filter((key): key is string => key !== null)
+      .sort((a, b) => a.localeCompare(b))
+      .map((name) => ({ name, rows: byGroup.get(name) ?? [] }));
+    const ungrouped = byGroup.get(null);
+    return ungrouped ? [...named, { name: null, rows: ungrouped }] : named;
+  });
+
+  readonly hasGroups = computed(() =>
+    this.groups().some((group) => group.name !== null),
   );
 
   readonly isEmpty = computed(
@@ -73,6 +100,14 @@ export class ConnectionsPageService {
       dockerName: item.containerName,
     });
     this.dialogOpen.set(true);
+  }
+
+  openExport(): void {
+    this.exportOpen.set(true);
+  }
+
+  openImport(): void {
+    this.importOpen.set(true);
   }
 
   closeDialog(): void {

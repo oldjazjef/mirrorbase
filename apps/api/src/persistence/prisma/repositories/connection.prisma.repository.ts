@@ -22,6 +22,7 @@ function toDomain(row: Row): StoredConnection {
     secretKeys: Object.keys(sealedSecrets),
     sealedSecrets,
     dockerName: row.dockerName,
+    group: row.groupName,
     createdAt: iso(row.createdAt),
     updatedAt: iso(row.updatedAt),
     lastUsedAt: isoOrNull(row.lastUsedAt),
@@ -64,6 +65,7 @@ export class ConnectionPrismaRepository extends ConnectionRepositoryPort {
           config: JSON.stringify(input.config),
           secrets: JSON.stringify(input.sealedSecrets),
           dockerName: input.dockerName,
+          groupName: input.group,
         },
       });
       return toDomain(row);
@@ -90,6 +92,7 @@ export class ConnectionPrismaRepository extends ConnectionRepositoryPort {
           ...(patch.sealedSecrets !== undefined
             ? { secrets: JSON.stringify(patch.sealedSecrets) }
             : {}),
+          ...(patch.group !== undefined ? { groupName: patch.group } : {}),
         },
       });
       return result.count === 0 ? null : this.find(id);

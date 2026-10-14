@@ -12,8 +12,10 @@ export class DockerUnavailableError extends Error {
   }
 }
 
-/** Read-only view of the containers on this machine. Bound to its adapter in IntegrationsModule. */
+/** The containers on this machine. Bound to its adapter in IntegrationsModule. */
 export abstract class DockerPort {
-  /** Running containers. @throws DockerUnavailableError */
-  abstract listRunning(): Promise<DockerContainer[]>;
+  /** Every container, running or not (`state` tells). @throws DockerUnavailableError */
+  abstract list(): Promise<DockerContainer[]>;
+  /** Starts a stopped container. @throws DockerUnavailableError, Error with docker's message */
+  abstract start(nameOrId: string): Promise<void>;
 }

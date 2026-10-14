@@ -9,12 +9,19 @@ import type { runProcess } from '../process/run-process';
 const SECRET_NAME = /pass|secret|token|key|credential|auth/i;
 
 const TIMEOUT_MS = 15_000;
+const START_TIMEOUT_MS = 60_000;
 
 interface InspectedContainer {
   Id?: string;
   Name?: string;
   Config?: { Image?: string; Env?: string[] | null };
   State?: { Status?: string };
+  HostConfig?: {
+    PortBindings?: Record<
+      string,
+      { HostIp?: string; HostPort?: string }[] | null
+    > | null;
+  };
   NetworkSettings?: {
     Ports?: Record<
       string,
@@ -29,10 +36,10 @@ export class DockerCliAdapter extends DockerPort {
     super();
   }
 
-  async listRunning(): Promise<DockerContainer[]> {
+  async list(): Promise<DockerContainer[]> {
     const listed = await this.run({
       command: 'docker',
-      args: ['ps', '-q', '--no-trunc'],
+      args: ['ps', '-a', '-q', '--no-trunc'],
       timeoutMs: TIMEOUT_MS,
     });
     if (listed.failure === 'notFound') {
@@ -63,6 +70,33 @@ export class DockerCliAdapter extends DockerPort {
     }
     return parseInspect(inspected.stdout);
   }
+
+  async start(nameOrId: string): Promise<void> {
+    const started = await this.run({
+      command: 'docker',
+      args: ['start', nameOrId],
+      timeoutMs: START_TIMEOUT_MS,
+    });
+    if (started.failure === 'notFound') {
+      throw new DockerUnavailableError(
+        'notInstalled',
+        'docker is not installed',
+      );
+    }
+    if (started.exitCode !== 0) {
+      const reason = firstLine(started.stderr) ?? 'docker start failed';
+      throw DOCKER_DOWN.test(started.stderr)
+        ? new DockerUnavailableError('notRunning', reason)
+        : new Error(reason);
+    }
+  }
+}
+
+const DOCKER_DOWN =
+  /cannot connect to the docker daemon|docker daemon running|failed to connect to the docker api|error during connect/i;
+
+function firstLine(text: string): string | undefined {
+  return text.trim().split(/\r?\n/)[0] || undefined;
 }
 
 export function parseInspect(json: string): DockerContainer[] {
@@ -83,7 +117,13 @@ export function parseInspect(json: string): DockerContainer[] {
       image,
       imageTag: tagOf(image),
       state: raw.State?.Status ?? 'unknown',
-      ports: portsOf(raw.NetworkSettings?.Ports),
+      // A stopped container has no live bindings; what it will publish is in its host config.
+      ports: portsOf(
+        raw.State?.Status === 'running' ||
+          Object.keys(raw.NetworkSettings?.Ports ?? {}).length > 0
+          ? raw.NetworkSettings?.Ports
+          : raw.HostConfig?.PortBindings,
+      ),
       env: safeEnv(raw.Config?.Env),
     });
   }

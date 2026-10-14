@@ -42,7 +42,11 @@
             </p>
           </div>
           <span hlmBadge variant="secondary">{{ item.pluginName }}</span>
-          @if (item.savedConnectionId) {
+          @if (item.state !== 'running') {
+          <span hlmBadge variant="outline"
+            >{{ 'docker.stopped' | translate }}</span
+          >
+          } @if (item.savedConnectionId) {
           <button
             hlmBtn
             variant="outline"

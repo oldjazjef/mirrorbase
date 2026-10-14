@@ -1,4 +1,5 @@
 import { Injectable, Logger, type OnModuleInit } from '@nestjs/common';
+import { ContainerStarter } from '../../connections/application/container-starter';
 import { ConnectionSecrets } from '../../connections/application/secrets';
 import { ConnectionRepositoryPort } from '../../connections/ports/connection.repository.port';
 import { LogService } from '../../logs/log.service';
@@ -23,6 +24,7 @@ export class ReplicationExecutor implements OnModuleInit {
     private readonly secrets: ConnectionSecrets,
     private readonly hosts: PluginHostFactory,
     private readonly logs: LogService,
+    private readonly containers: ContainerStarter,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -56,6 +58,7 @@ export class ReplicationExecutor implements OnModuleInit {
         registry: this.registry,
         secrets: this.secrets,
         hosts: this.hosts,
+        containers: this.containers,
       },
       runId,
       controller.signal,

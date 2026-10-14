@@ -9,6 +9,9 @@ import type {
   ConnectionInput,
   ConnectionUpdate,
   DockerDatabases,
+  ExportRequest,
+  ImportRequest,
+  ImportResult,
   TestRequest,
   TestResult,
 } from '../api/api.types';
@@ -104,6 +107,32 @@ export class ConnectionsService {
       this.http.post<TestResult>(apiUrl('/connections/test'), request),
     );
   }
+
+  /** The export file as the API built it (plain, or an encrypted envelope). */
+  export(request: ExportRequest): Promise<unknown> {
+    return firstValueFrom(
+      this.http.post<unknown>(apiUrl('/connections/export'), request),
+    );
+  }
+
+  async import(request: ImportRequest): Promise<ImportResult> {
+    const result = await firstValueFrom(
+      this.http.post<ImportResult>(apiUrl('/connections/import'), request),
+    );
+    this.reload();
+    return result;
+  }
+
+  /** The groups in use, sorted. */
+  readonly groups = computed<readonly string[]>(() =>
+    [
+      ...new Set(
+        this.connections()
+          .map((connection) => connection.group)
+          .filter((group): group is string => group !== null),
+      ),
+    ].sort((a, b) => a.localeCompare(b)),
+  );
 
   /** The databases on a saved connection. */
   async databases(id: string): Promise<string[]> {

@@ -23,6 +23,9 @@ import {
   ConnectionDto,
   CreateConnectionDto,
   DatabaseListDto,
+  ExportConnectionsDto,
+  ImportConnectionsDto,
+  ImportResultDto,
   TestConnectionDto,
   TestResultDto,
   UpdateConnectionDto,
@@ -65,6 +68,42 @@ export class ConnectionsController {
   @ApiOkResponse({ type: TestResultDto })
   async test(@Body() dto: TestConnectionDto): Promise<TestResultDto> {
     return TestResultDto.from(await this.connections.test(dto));
+  }
+
+  @Post('export')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'Export connections as a file',
+    description:
+      'Passwords are only included together with an export password, which encrypts the whole file.',
+  })
+  @ApiOkResponse({
+    description: 'The export file: plain JSON, or an encrypted envelope',
+    schema: { type: 'object', additionalProperties: true },
+  })
+  async export(
+    @Body() dto: ExportConnectionsDto,
+  ): Promise<Record<string, unknown>> {
+    return (await this.connections.export(dto)) as unknown as Record<
+      string,
+      unknown
+    >;
+  }
+
+  @Post('import')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'Import connections from an export file',
+    description:
+      'A name that is taken gets a number appended. Nothing is overwritten.',
+  })
+  @ApiOkResponse({ type: ImportResultDto })
+  @ApiUnprocessableEntityResponse({
+    description:
+      '`invalidExportFile`, `exportPasswordRequired`, `wrongExportPassword`',
+  })
+  async import(@Body() dto: ImportConnectionsDto): Promise<ImportResultDto> {
+    return ImportResultDto.from(await this.connections.import(dto));
   }
 
   @Get(':id')
