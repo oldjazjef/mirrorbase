@@ -242,6 +242,24 @@ describe('postgres plugin', () => {
       expect(sqlOf(host)).toHaveLength(1);
     });
 
+    it('does not warn about the transaction_timeout setting of a newer pg_dump', async () => {
+      const host = createFakeHost((spec) =>
+        spec.args.includes('-f')
+          ? {
+              stderr:
+                'psql:x.sql:13: ERROR:  unrecognized configuration parameter "transaction_timeout"\n',
+            }
+          : undefined,
+      );
+      const result = await postgresPlugin.restore(host, connection(), {
+        database: 'app',
+        artifact,
+        replaceExisting: true,
+      });
+      expect(result.warnings).toBe(0);
+      expect(host.logs.some((entry) => entry.level === 'warn')).toBe(false);
+    });
+
     it('drops, creates and counts harmless errors when replacing', async () => {
       const host = createFakeHost((spec) => {
         if (spec.args.some((a) => a.startsWith('SELECT 1')))
