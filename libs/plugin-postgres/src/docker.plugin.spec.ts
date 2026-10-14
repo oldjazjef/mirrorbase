@@ -149,6 +149,57 @@ describe('postgres docker plugin', () => {
     expect(host.commands.some((c) => c.args[0] === 'start')).toBe(true);
   });
 
+  it('recreates a container Mirrorbase made when its published port no longer matches', async () => {
+    const host = createFakeHost((spec) => {
+      if (spec.args[0] === 'inspect' && spec.args.includes('--format')) {
+        return spec.args[2]?.includes('PortBindings')
+          ? {
+              stdout:
+                '{"5432/tcp":[{"HostIp":"127.0.0.1","HostPort":"5433"}]} true',
+            }
+          : { stdout: 'running' };
+      }
+      return respond({ exists: true })(spec);
+    });
+    await postgresDockerPlugin.prepare?.(host, connection());
+    const verbs = host.commands.map((c) => c.args[0]);
+    expect(verbs).toContain('rm');
+    expect(verbs).toContain('run');
+    expect(verbs.indexOf('rm')).toBeLessThan(verbs.indexOf('run'));
+  });
+
+  it('refuses to remove a container it did not create when the port differs', async () => {
+    const host = createFakeHost((spec) => {
+      if (
+        spec.args[0] === 'inspect' &&
+        spec.args[2]?.includes('PortBindings')
+      ) {
+        return { stdout: '{} ' };
+      }
+      return respond({ exists: true })(spec);
+    });
+    await expect(
+      postgresDockerPlugin.prepare?.(host, connection()),
+    ).rejects.toMatchObject({ code: 'connectionFailed' });
+    expect(host.commands.some((c) => c.args[0] === 'rm')).toBe(false);
+  });
+
+  it('removes the half-made container when creating it fails', async () => {
+    const host = createFakeHost((spec) => {
+      if (spec.args[0] === 'inspect') {
+        return { exitCode: 1, stderr: 'Error: No such object: mb-pg' };
+      }
+      if (spec.args[0] === 'run') {
+        return { exitCode: 125, stderr: 'port is already allocated' };
+      }
+      return undefined;
+    });
+    await expect(
+      postgresDockerPlugin.prepare?.(host, connection()),
+    ).rejects.toMatchObject({ code: 'connectionFailed' });
+    expect(host.commands.some((c) => c.args[0] === 'rm')).toBe(true);
+  });
+
   it('says so when Docker is not running', async () => {
     const host = createFakeHost((spec) =>
       spec.args[0] === 'inspect'

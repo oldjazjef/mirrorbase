@@ -26,11 +26,23 @@ export interface ContainerSpec {
   readonly env?: Readonly<Record<string, string>>;
   /** Values to blank out of the log. */
   readonly secrets?: readonly string[];
+  /**
+   * The host port the container must publish. An existing container that publishes another one (the
+   * port was changed after it was created) cannot be reached where the connection points: it is
+   * recreated when Mirrorbase made it, otherwise the person is told.
+   */
+  readonly publish?: {
+    readonly containerPort: number;
+    readonly hostPort: number;
+  };
   /** Polled after a start or create until it answers true. */
   readonly isReady?: () => Promise<boolean>;
 }
 
 export type ContainerOutcome = 'existing' | 'started' | 'created';
+
+/** Marks the containers Mirrorbase created itself; only those are ever removed and recreated. */
+export const MANAGED_LABEL = 'app.mirrorbase.managed';
 
 const DOCKER_DOWN =
   /cannot connect to the docker daemon|docker daemon running|failed to connect to the docker api|error during connect/i;
@@ -112,12 +124,99 @@ async function waitUntilReady(
   );
 }
 
+interface ContainerPorts {
+  readonly hostPorts: readonly number[];
+  readonly managed: boolean;
+}
+
+/** What the container was created with; undefined when docker's answer cannot be read. */
+async function configuredPorts(
+  host: HostContext,
+  spec: ContainerSpec,
+): Promise<ContainerPorts | undefined> {
+  const result = await host.run({
+    command: 'docker',
+    args: [
+      'inspect',
+      '--format',
+      `{{json .HostConfig.PortBindings}} {{index .Config.Labels "${MANAGED_LABEL}"}}`,
+      spec.name,
+    ],
+    logCommand: false,
+    timeoutMs: DOCKER_TIMEOUT_MS,
+  });
+  if (result.exitCode !== 0) return undefined;
+  const text = result.stdout.trim();
+  const split = text.lastIndexOf('} ');
+  const json = split === -1 ? text : text.slice(0, split + 1);
+  const label = split === -1 ? '' : text.slice(split + 2).trim();
+  try {
+    const bindings = JSON.parse(json) as Record<
+      string,
+      readonly { HostPort?: string }[] | null
+    > | null;
+    if (typeof bindings !== 'object') return undefined;
+    const hostPorts = Object.values(bindings ?? {})
+      .flatMap((list) => list ?? [])
+      .map((binding) => Number(binding.HostPort))
+      .filter((port) => Number.isInteger(port));
+    return { hostPorts, managed: label === 'true' };
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Makes sure an existing container publishes the wanted port. Returns the state to continue
+ * with: 'missing' when it was removed to be created again.
+ */
+async function reconcilePort(
+  host: HostContext,
+  spec: ContainerSpec,
+  state: ContainerState,
+): Promise<ContainerState> {
+  if (!spec.publish) return state;
+  const configured = await configuredPorts(host, spec);
+  if (!configured || configured.hostPorts.includes(spec.publish.hostPort)) {
+    return state;
+  }
+  const have = configured.hostPorts.length
+    ? `port ${configured.hostPorts.join(', ')}`
+    : 'no port';
+  if (!configured.managed) {
+    throw new PluginError(
+      'connectionFailed',
+      `Container "${spec.name}" publishes ${have} on this computer, not ${spec.publish.hostPort}. ` +
+        `Change the port of the connection to match, or remove the container (docker rm -f ${spec.name}) so it is created again.`,
+    );
+  }
+  host.log(
+    'warn',
+    `Container ${spec.name} publishes ${have}, not ${spec.publish.hostPort}: recreating it`,
+  );
+  await removeContainer(host, spec.name);
+  return 'missing';
+}
+
+async function removeContainer(host: HostContext, name: string): Promise<void> {
+  await host.run({
+    command: 'docker',
+    args: ['rm', '-f', name],
+    logCommand: false,
+    timeoutMs: DOCKER_TIMEOUT_MS,
+  });
+}
+
 /** Makes sure the container exists and runs, and waits until it is ready. */
 export async function ensureContainer(
   host: HostContext,
   spec: ContainerSpec,
 ): Promise<ContainerOutcome> {
-  const state = await containerState(host, spec.name);
+  const state = await reconcilePort(
+    host,
+    spec,
+    await containerState(host, spec.name),
+  );
   if (state === 'running') {
     await waitUntilReady(host, spec);
     return 'existing';
@@ -149,6 +248,8 @@ export async function ensureContainer(
       '-d',
       '--name',
       spec.name,
+      '--label',
+      `${MANAGED_LABEL}=true`,
       ...envNames.flatMap((key) => ['-e', key]),
       ...(spec.runArgs ?? []),
       ...(spec.entrypoint ? ['--entrypoint', spec.entrypoint.command] : []),
@@ -163,6 +264,8 @@ export async function ensureContainer(
   const unavailable = dockerUnavailable(created);
   if (unavailable) throw unavailable;
   if (created.exitCode !== 0) {
+    // docker leaves a half-made container behind (e.g. the port is taken); it would block the name.
+    await removeContainer(host, spec.name);
     throw new PluginError(
       'connectionFailed',
       firstLine(created.stderr) || `Could not create ${spec.name}`,
