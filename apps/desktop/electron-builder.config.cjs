@@ -11,7 +11,10 @@
 //   Windows + macOS certificate: CSC_LINK (base64 .p12/.pfx or URL), CSC_KEY_PASSWORD
 //   macOS notarisation:          APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID (+ `notarize`)
 // Without CSC_LINK the macOS identity is forced off (no ad-hoc keychain lookup on CI runners).
-// Auto-update: none yet - no `publish` provider, so no latest*.yml is written.
+// Auto-update: `publish` names the GitHub releases, so electron-builder writes latest*.yml (and
+// app-update.yml into the app) that electron-updater reads. Nothing is uploaded by the builder
+// (`--publish never`): _desktop.yml attaches the files. macOS is unsigned and cannot update itself;
+// the app links to the release page there.
 const path = require('node:path');
 
 const repoRoot = path.resolve(__dirname, '../..');
@@ -52,7 +55,7 @@ module.exports = {
   npmRebuild: false,
   nodeGypRebuild: false,
   afterPack: require('./scripts/native-deps.cjs').afterPack,
-  publish: null,
+  publish: { provider: 'github', owner: 'oldjazjef', repo: 'mirrorbase' },
   win: {
     target: [{ target: 'nsis', arch: ['x64'] }],
     // Generated from assets/brand/icon.svg (`pnpm icons`); macOS and Linux use the PNG.

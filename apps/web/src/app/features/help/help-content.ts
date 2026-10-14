@@ -38,6 +38,18 @@ export const HELP_SECTIONS: readonly HelpSection[] = [
     links: [{ id: 'replicate', path: '/app/replicate' }],
   },
   {
+    id: 'dockerTarget',
+    steps: ['create', 'fill', 'test', 'copy'],
+    tips: ['dockerRunning', 'sameKind'],
+    links: [{ id: 'connections', path: '/app/connections' }],
+  },
+  {
+    id: 'updates',
+    steps: ['check', 'install'],
+    tips: ['mac'],
+    links: [{ id: 'settings', path: '/app/settings' }],
+  },
+  {
     id: 'log',
     steps: ['open', 'select'],
     tips: ['secrets'],

@@ -1,3 +1,4 @@
+export * from './container';
 export * from './docker';
 export * from './error';
 export * from './fields';

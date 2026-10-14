@@ -41,6 +41,10 @@ A database type is a `DatabasePlugin` (`libs/db-plugin`). The **only** place a t
 learns the fields, labels and capabilities from `GET /api/plugins`. Adding a type = a new
 `libs/plugin-<id>`, one registry line, a conformance run (`plugins.conformance.spec.ts`).
 
+The `*-docker` plugins share the dump format of their base plugin, so `planTransfer` is `native`
+between e.g. `postgres` and `postgres-docker`. `container.ts` in `libs/db-plugin` (find / start /
+create a container, wait until ready) is their shared helper; they only ask the host to run `docker`.
+
 `planTransfer(source, target)` returns `native` (same type), `interchange` (different types, future,
 via the neutral types in `interchange.ts`) or `unsupported`. Only `native` is implemented.
 Plugins get everything from `HostContext` (run process, docker, work dir, cancel signal); they never
@@ -84,8 +88,16 @@ or a hand-published release) creates the tag and calls `_desktop.yml`, which bui
 
 ## Not built / open
 
-Creating a new local Docker container (the old script did), cross-engine copy, keeping dump files,
-Dockerfiles, code signing and auto-update.
+Cross-engine copy, keeping dump files, Dockerfiles, code signing, and self-update on macOS (needs a
+signed app; the settings link to the releases page there).
+
+## Updates
+
+`apps/desktop/src/main/lib/updater.ts` (`UpdateController`, electron-updater) reads the GitHub
+releases: `publish` in `electron-builder.config.cjs` writes `latest*.yml` + `app-update.yml`, and
+`_desktop.yml` attaches `latest.yml`, `latest-linux.yml` and the `.exe.blockmap` to the release.
+The person decides every step (check, download, restart). Settings -> Updates shows the state
+(IPC `mb:update:*`, bridge `updates`). Not packaged or macOS = `unsupported`.
 
 ## Gotchas
 

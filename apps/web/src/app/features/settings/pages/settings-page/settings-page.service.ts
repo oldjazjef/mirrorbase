@@ -1,4 +1,10 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import {
+  DestroyRef,
+  Injectable,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { z } from 'zod';
 import { defineAction } from '../../../../core/actions/action';
@@ -7,6 +13,7 @@ import { AppVersionService } from '../../../../core/version/app-version.service'
 import {
   desktopBridge,
   type StorageInfo,
+  type UpdateState,
 } from '../../../../core/desktop/desktop-bridge';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import {
@@ -14,6 +21,10 @@ import {
   type PinProblem,
 } from '../../../../core/pin/pin-lock.service';
 import { zodValidator } from '../../../../shared/forms/zod-validator';
+
+/** Where new versions are published; an installation that cannot self-update links here. */
+export const RELEASES_URL =
+  'https://github.com/oldjazjef/mirrorbase/releases/latest';
 
 const PIN_PATTERN = /^\d{4,8}$/;
 
@@ -48,12 +59,21 @@ export class SettingsPageService {
   readonly problem = signal<PinProblem | null>(null);
   readonly storage = signal<StorageInfo | null>(null);
   readonly desktop = computed(() => desktopBridge() !== null);
+  /** Null outside the desktop app (nothing to update there). */
+  readonly update = signal<UpdateState | null>(null);
+  readonly releasesUrl = RELEASES_URL;
   readonly autoLock = computed(() => this.pin.status()?.autoLockMinutes ?? 15);
 
   constructor() {
     void desktopBridge()
       ?.storage.info()
       .then((info) => this.storage.set(info));
+    const updates = desktopBridge()?.updates;
+    if (updates) {
+      void updates.state().then((state) => this.update.set(state));
+      const stop = updates.onState((state) => this.update.set(state));
+      inject(DestroyRef).onDestroy(stop);
+    }
   }
 
   private readonly changeAction = defineAction<void, void>({
@@ -81,6 +101,18 @@ export class SettingsPageService {
 
   async setAutoLock(minutes: number): Promise<void> {
     await this.pin.setAutoLock(minutes);
+  }
+
+  checkForUpdates(): void {
+    void desktopBridge()?.updates?.check();
+  }
+
+  downloadUpdate(): void {
+    void desktopBridge()?.updates?.download();
+  }
+
+  installUpdate(): void {
+    void desktopBridge()?.updates?.install();
   }
 
   reveal(): void {

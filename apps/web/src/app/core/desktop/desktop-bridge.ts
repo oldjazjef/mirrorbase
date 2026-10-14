@@ -11,6 +11,17 @@ export interface StorageInfo {
   keyProtection: 'os-keychain' | 'file';
 }
 
+/** Where the app's own update stands. Mirror of `UpdateState` in apps/desktop. */
+export type UpdateState =
+  | { status: 'unsupported' }
+  | { status: 'idle' }
+  | { status: 'checking' }
+  | { status: 'none' }
+  | { status: 'available'; version: string }
+  | { status: 'downloading'; percent: number }
+  | { status: 'ready'; version: string }
+  | { status: 'error'; message: string };
+
 export interface DesktopBridge {
   readonly platform: string;
   readonly storage: {
@@ -21,6 +32,14 @@ export interface DesktopBridge {
   readonly lock?: {
     onLocked(listener: (reason: string) => void): () => void;
     setIdleMinutes(minutes: number): Promise<void>;
+  };
+  /** Updates from the GitHub releases. */
+  readonly updates?: {
+    state(): Promise<UpdateState>;
+    check(): Promise<void>;
+    download(): Promise<void>;
+    install(): Promise<void>;
+    onState(listener: (state: UpdateState) => void): () => void;
   };
   /** The app's language for the shell's menus and dialogs. */
   readonly locale?: {
