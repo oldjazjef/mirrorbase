@@ -12,6 +12,7 @@ import {
   session,
   shell,
 } from 'electron';
+import { autoUpdater } from 'electron-updater';
 import { IPC, type StorageInfo } from '../shared/bridge';
 import { type RunningApi, startApi } from './api-host';
 import { isDesktopLocale } from './lib/messages';
@@ -21,6 +22,7 @@ import {
   type LockReason,
   LockWatch,
 } from './lib/lock-watch';
+import { UpdateController } from './lib/updater';
 import { type KeyProtection, loadOrCreateKey } from './lib/secret-key';
 import { DATABASE_FILE, resolveDataDir, writeConfig } from './lib/storage';
 import { APP_ORIGIN } from './lib/web-protocol';
@@ -69,6 +71,7 @@ let keyProtection: KeyProtection = 'file';
 let lockTicker: NodeJS.Timeout | undefined;
 let shutdownDone = false;
 let lockWatch: LockWatch | null = null;
+let updates: UpdateController | null = null;
 
 app.on('second-instance', () => {
   if (mainWindow) {
@@ -142,6 +145,7 @@ async function start(): Promise<void> {
   session.defaultSession.setPermissionCheckHandler(() => false);
 
   Menu.setApplicationMenu(buildMenu());
+  startUpdates();
   registerIpc();
   startLockWatch();
   createWindow();
@@ -175,6 +179,21 @@ function createWindow(): void {
     if (mainWindow === window) mainWindow = null;
   });
   void window.loadURL(`${APP_ORIGIN}/`);
+}
+
+/**
+ * Updates come from the GitHub releases (electron-updater reads app-update.yml, written by
+ * electron-builder). A development run has none; an unsigned macOS app cannot replace itself, so
+ * the window offers the release page there.
+ */
+function startUpdates(): void {
+  updates = new UpdateController(
+    autoUpdater,
+    app.isPackaged && process.platform !== 'darwin',
+    (state) => mainWindow?.webContents.send(IPC.updateChanged, state),
+  );
+  // A quiet check shortly after start; the person decides about the download.
+  setTimeout(() => void updates?.check(), 10_000);
 }
 
 /** The PIN lock, driven by the OS: lock screen, sleep, and system-wide inactivity. */
@@ -221,6 +240,22 @@ function registerIpc(): void {
   ipcMain.handle(IPC.storageReveal, (event) => {
     if (!fromOurWindow(event)) throw new Error('forbidden');
     void shell.openPath(dataDir);
+  });
+  ipcMain.handle(IPC.updateState, (event) => {
+    if (!fromOurWindow(event)) throw new Error('forbidden');
+    return updates?.state() ?? { status: 'unsupported' };
+  });
+  ipcMain.handle(IPC.updateCheck, (event) => {
+    if (!fromOurWindow(event)) throw new Error('forbidden');
+    return updates?.check();
+  });
+  ipcMain.handle(IPC.updateDownload, (event) => {
+    if (!fromOurWindow(event)) throw new Error('forbidden');
+    return updates?.download();
+  });
+  ipcMain.handle(IPC.updateInstall, (event) => {
+    if (!fromOurWindow(event)) throw new Error('forbidden');
+    updates?.install();
   });
   ipcMain.handle(IPC.lockIdleMinutes, (event, minutes: unknown) => {
     if (!fromOurWindow(event)) throw new Error('forbidden');

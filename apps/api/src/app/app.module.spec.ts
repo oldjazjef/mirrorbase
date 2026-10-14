@@ -24,7 +24,7 @@ describe('AppModule', () => {
         .get(PluginRegistry)
         .all()
         .map((p) => p.id),
-    ).toEqual(['postgres', 'sqlite']);
+    ).toEqual(['postgres', 'postgres-docker', 'sqlite', 'sqlite-docker']);
     await moduleRef.close();
   });
 });

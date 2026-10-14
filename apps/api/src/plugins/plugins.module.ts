@@ -1,6 +1,9 @@
 import { Global, Module } from '@nestjs/common';
-import { postgresPlugin } from '@mirrorbase/plugin-postgres';
-import { sqlitePlugin } from '@mirrorbase/plugin-sqlite';
+import {
+  postgresDockerPlugin,
+  postgresPlugin,
+} from '@mirrorbase/plugin-postgres';
+import { sqliteDockerPlugin, sqlitePlugin } from '@mirrorbase/plugin-sqlite';
 import { PluginHostFactory } from './plugin-host';
 import { DATABASE_PLUGINS, PluginRegistry } from './plugin-registry';
 import { PluginsController } from './plugins.controller';
@@ -14,7 +17,15 @@ import { PluginsController } from './plugins.controller';
 @Module({
   controllers: [PluginsController],
   providers: [
-    { provide: DATABASE_PLUGINS, useValue: [postgresPlugin, sqlitePlugin] },
+    {
+      provide: DATABASE_PLUGINS,
+      useValue: [
+        postgresPlugin,
+        postgresDockerPlugin,
+        sqlitePlugin,
+        sqliteDockerPlugin,
+      ],
+    },
     PluginRegistry,
     PluginHostFactory,
   ],

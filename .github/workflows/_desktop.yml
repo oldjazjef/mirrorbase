@@ -98,6 +98,7 @@ jobs:
             dist/desktop/*.dmg
             dist/desktop/*.AppImage
             dist/desktop/*.blockmap
+            dist/desktop/latest*.yml
           if-no-files-found: error
           retention-days: 7
 
@@ -110,6 +111,9 @@ jobs:
         run: |
           shopt -s nullglob
           installers=(dist/desktop/*.exe dist/desktop/*.dmg dist/desktop/*.AppImage)
+          # What the in-app updater reads: latest.yml (Windows), latest-linux.yml, and the
+          # blockmaps for differential downloads. macOS does not self-update (unsigned).
+          updater_files=(dist/desktop/latest.yml dist/desktop/latest-linux.yml dist/desktop/*.exe.blockmap)
           if [ "${#installers[@]}" -eq 0 ]; then
             echo "::error::No installer in dist/desktop/ - did pnpm build:desktop write there?"
             ls -la dist/desktop || true
@@ -117,3 +121,6 @@ jobs:
           fi
           printf 'Uploading %s\n' "${installers[@]}"
           gh release upload "$TAG" "${installers[@]}" --clobber
+          for file in "${updater_files[@]}"; do
+            [ -f "$file" ] && gh release upload "$TAG" "$file" --clobber
+          done

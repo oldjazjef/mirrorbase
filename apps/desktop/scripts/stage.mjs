@@ -76,8 +76,9 @@ await esbuild.build({
   platform: 'node',
   target: 'node22',
   format: 'cjs',
-  // electron: provided by the runtime; better-sqlite3: native, installed below.
-  external: ['electron', 'better-sqlite3'],
+  // electron: provided by the runtime; better-sqlite3: native, electron-updater: loads its
+  // provider files at run time - both installed below.
+  external: ['electron', 'electron-updater', 'better-sqlite3'],
   sourcemap: true,
   logLevel: 'warning',
 });
@@ -117,6 +118,7 @@ const dependencies = { ...apiManifest.dependencies };
 delete dependencies.prisma;
 delete dependencies.dotenv;
 dependencies['better-sqlite3'] = installed('better-sqlite3');
+dependencies['electron-updater'] = installed('electron-updater');
 
 const manifest = {
   name: 'mirrorbase',

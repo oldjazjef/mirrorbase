@@ -302,6 +302,21 @@
       "title": "Sprache",
       "label": "Sprache der App"
     },
+    "updates": {
+      "title": "Updates",
+      "description": "Neue Versionen werden von den Mirrorbase-Releases auf GitHub geholt. Ohne dein Zutun wird nichts heruntergeladen.",
+      "check": "Nach Updates suchen",
+      "checking": "Suche nach einer neuen Version…",
+      "none": "Du hast die neueste Version.",
+      "available": "Version {{version}} ist verfügbar.",
+      "download": "Herunterladen",
+      "downloading": "Wird heruntergeladen… {{percent}} %",
+      "ready": "Version {{version}} ist bereit. Mirrorbase startet neu, um sie zu installieren.",
+      "install": "Neu starten und installieren",
+      "error": "Die Update-Suche ist fehlgeschlagen: {{message}}",
+      "unsupported": "Diese Installation kann sich nicht selbst aktualisieren. Neue Versionen gibt es auf der Release-Seite.",
+      "releases": "Release-Seite öffnen"
+    },
     "about": {
       "title": "Info",
       "version": "Version",
@@ -394,7 +409,7 @@
           "cancel": "Wähle «Abbrechen», um einen laufenden Lauf zu stoppen."
         },
         "tips": {
-          "sameType": "Quelle und Ziel müssen vom gleichen Datenbanktyp sein.",
+          "sameType": "Quelle und Ziel müssen dieselbe Art Datenbank sein (PostgreSQL oder SQLite, lokal oder in Docker).",
           "overwrite": "Kreuze «Datenbanken ersetzen, die auf dem Ziel schon existieren» nur an, wenn das Ziel ersetzt werden soll."
         }
       },
@@ -408,6 +423,33 @@
         },
         "tips": {
           "dockerRunning": "Docker muss laufen. Sonst sagt die Liste es dir."
+        }
+      },
+      "dockerTarget": {
+        "title": "In eine neue Docker-Datenbank kopieren",
+        "purpose": "Mirrorbase kann den Docker-Container für die Kopie selbst anlegen, aus einem Image deiner Wahl.",
+        "where": "Verbindungen",
+        "steps": {
+          "create": "Wähle Neue Verbindung und den Typ PostgreSQL (Docker) oder SQLite (Docker).",
+          "fill": "Gib einen Container-Namen und das Image ein (zum Beispiel postgres:16), bei PostgreSQL zusätzlich Port und Passwort.",
+          "test": "Teste die Verbindung als Ziel: Sie meldet, dass der Container angelegt wird. Speichern.",
+          "copy": "Wähle unter Replizieren diese Verbindung als Ziel und starte die Kopie. Der Container wird beim ersten Lauf angelegt und gestartet."
+        },
+        "tips": {
+          "dockerRunning": "Docker muss laufen. Beim ersten Lauf wird das Image heruntergeladen, das kann dauern.",
+          "sameKind": "Die Quelle muss dieselbe Art sein: PostgreSQL (auch Docker) nach PostgreSQL (Docker), SQLite nach SQLite (Docker)."
+        }
+      },
+      "updates": {
+        "title": "App aktualisieren",
+        "purpose": "Mirrorbase sucht auf GitHub nach neuen Versionen und installiert sie auf Wunsch.",
+        "where": "Einstellungen",
+        "steps": {
+          "check": "Öffne die Einstellungen und wähle Nach Updates suchen. Die App sucht auch ein paar Sekunden nach dem Start.",
+          "install": "Ist eine Version verfügbar, wähle Herunterladen und danach Neu starten und installieren."
+        },
+        "tips": {
+          "mac": "Unter macOS kann sich die App noch nicht selbst aktualisieren: Die Einstellungen verlinken die Release-Seite."
         }
       },
       "log": {

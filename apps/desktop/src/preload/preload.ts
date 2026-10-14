@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { type DesktopBridge, IPC } from '../shared/bridge';
+import { type DesktopBridge, IPC, type UpdateState } from '../shared/bridge';
 
 // Sandboxed preload (contextIsolation + sandbox): only `contextBridge` and `ipcRenderer` are used,
 // and the page gets plain functions - never ipcRenderer itself.
@@ -21,6 +21,20 @@ const bridge: DesktopBridge = {
     },
     setIdleMinutes: (minutes) =>
       ipcRenderer.invoke(IPC.lockIdleMinutes, minutes),
+  },
+  updates: {
+    state: () => ipcRenderer.invoke(IPC.updateState),
+    check: () => ipcRenderer.invoke(IPC.updateCheck),
+    download: () => ipcRenderer.invoke(IPC.updateDownload),
+    install: () => ipcRenderer.invoke(IPC.updateInstall),
+    onState: (listener) => {
+      const handler = (_event: unknown, state: unknown) =>
+        listener(state as UpdateState);
+      ipcRenderer.on(IPC.updateChanged, handler);
+      return () => {
+        ipcRenderer.removeListener(IPC.updateChanged, handler);
+      };
+    },
   },
   locale: {
     set: (locale) => ipcRenderer.invoke(IPC.localeSet, locale),
