@@ -142,6 +142,18 @@
       <h2 id="mb-docker-heading" class="text-lg font-semibold">
         {{ 'docker.title' | translate }}
       </h2>
+      <button
+        hlmBtn
+        variant="ghost"
+        size="sm"
+        type="button"
+        class="ml-auto"
+        [disabled]="service.data.docker.isLoading()"
+        (click)="service.data.reloadDocker()"
+      >
+        <ng-icon name="lucideRefreshCw" aria-hidden="true" />
+        {{ 'docker.refresh' | translate }}
+      </button>
     </div>
     <p class="text-muted-foreground text-sm">
       {{ 'docker.description' | translate }}
@@ -157,7 +169,8 @@
     </p>
     } @else {
     <ul class="mb-panel flex flex-col divide-y">
-      @for (item of docker.items; track item.containerId + item.pluginId) {
+      @for (item of service.dockerPageItems(); track item.containerId +
+      item.pluginId) {
       <li class="flex min-w-0 flex-wrap items-center gap-3 p-3">
         <ng-icon
           name="lucideBox"
@@ -193,6 +206,39 @@
       </li>
       }
     </ul>
+    @if (service.dockerPageCount() > 1) {
+    <nav
+      class="flex items-center justify-end gap-2"
+      [attr.aria-label]="'docker.pagination' | translate"
+    >
+      <button
+        hlmBtn
+        variant="outline"
+        size="sm"
+        type="button"
+        [disabled]="service.dockerPageIndex() === 0"
+        (click)="service.moveDockerPage(-1)"
+      >
+        <ng-icon name="lucideChevronLeft" aria-hidden="true" />
+        {{ 'docker.previous' | translate }}
+      </button>
+      <span class="text-muted-foreground text-sm" aria-live="polite">
+        {{ 'docker.page' | translate: { page: service.dockerPageIndex() + 1,
+        pages: service.dockerPageCount() } }}
+      </span>
+      <button
+        hlmBtn
+        variant="outline"
+        size="sm"
+        type="button"
+        [disabled]="service.dockerPageIndex() >= service.dockerPageCount() - 1"
+        (click)="service.moveDockerPage(1)"
+      >
+        {{ 'docker.next' | translate }}
+        <ng-icon name="lucideChevronRight" aria-hidden="true" />
+      </button>
+    </nav>
+    }
     <p class="text-muted-foreground text-xs">
       {{ 'docker.passwordNote' | translate }}
     </p>

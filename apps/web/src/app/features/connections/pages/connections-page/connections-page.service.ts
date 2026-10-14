@@ -22,6 +22,8 @@ export interface ConnectionRow {
   readonly hasPassword: boolean;
 }
 
+const DOCKER_PAGE_SIZE = 5;
+
 /** UI state of the Connections page; the data itself comes from the shared ConnectionsService. */
 @Injectable({ providedIn: 'root' })
 export class ConnectionsPageService {
@@ -34,6 +36,39 @@ export class ConnectionsPageService {
   readonly editing = signal<Connection | null>(null);
   readonly prefill = signal<ConnectionPrefill | null>(null);
   readonly deleting = signal<Connection | null>(null);
+
+  readonly dockerPage = signal(0);
+
+  /** The detected containers, as many as the list holds. */
+  private readonly dockerItems = computed<readonly DockerDatabase[]>(() => {
+    const docker = this.data.docker.hasValue()
+      ? this.data.docker.value()
+      : null;
+    return docker?.available ? docker.items : [];
+  });
+
+  readonly dockerPageCount = computed(() =>
+    Math.max(1, Math.ceil(this.dockerItems().length / DOCKER_PAGE_SIZE)),
+  );
+
+  /** The page shown; a list that got shorter after a refresh falls back to its last page. */
+  readonly dockerPageIndex = computed(() =>
+    Math.min(this.dockerPage(), this.dockerPageCount() - 1),
+  );
+
+  readonly dockerPageItems = computed<readonly DockerDatabase[]>(() => {
+    const start = this.dockerPageIndex() * DOCKER_PAGE_SIZE;
+    return this.dockerItems().slice(start, start + DOCKER_PAGE_SIZE);
+  });
+
+  moveDockerPage(step: number): void {
+    this.dockerPage.set(
+      Math.min(
+        Math.max(this.dockerPageIndex() + step, 0),
+        this.dockerPageCount() - 1,
+      ),
+    );
+  }
 
   readonly rows = computed<readonly ConnectionRow[]>(() =>
     this.data.connections().map((connection) => ({

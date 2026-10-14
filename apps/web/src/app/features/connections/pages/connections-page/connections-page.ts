@@ -8,9 +8,12 @@ import {
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideBox,
+  lucideChevronLeft,
+  lucideChevronRight,
   lucideDownload,
   lucidePencil,
   lucidePlus,
+  lucideRefreshCw,
   lucideTrash2,
   lucideUpload,
 } from '@ng-icons/lucide';
@@ -60,9 +63,12 @@ type RowActionId = 'edit' | 'delete';
   providers: [
     provideIcons({
       lucideBox,
+      lucideChevronLeft,
+      lucideChevronRight,
       lucideDownload,
       lucidePencil,
       lucidePlus,
+      lucideRefreshCw,
       lucideTrash2,
       lucideUpload,
     }),

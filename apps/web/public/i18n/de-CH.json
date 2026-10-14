@@ -232,6 +232,10 @@
     "saved": "Gespeichert",
     "useSaved": "«{{name}}» verwenden",
     "refresh": "Aktualisieren",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "page": "Seite {{page}} von {{pages}}",
+    "pagination": "Container-Seiten",
     "passwordNote": "Das Passwort wird nie aus dem Container gelesen: gib es einmal ein, es wird verschlüsselt gespeichert.",
     "stopped": "Gestoppt"
   },

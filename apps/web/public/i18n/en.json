@@ -232,6 +232,10 @@
     "saved": "Saved",
     "useSaved": "Use “{{name}}”",
     "refresh": "Refresh",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {{page}} of {{pages}}",
+    "pagination": "Pages of containers",
     "passwordNote": "The password is never read from the container: enter it once and it is saved encrypted.",
     "stopped": "Stopped"
   },
