@@ -130,6 +130,7 @@ function containerSpec(
     name: docker.name,
     image: docker.image,
     runArgs: ['-p', `127.0.0.1:${docker.port}:5432`],
+    publish: { containerPort: 5432, hostPort: docker.port },
     env: { POSTGRES_PASSWORD: docker.password },
     secrets: [docker.password],
     // The entrypoint first runs a temporary server that listens on the socket only: asking over
