@@ -83,7 +83,7 @@ export function connectionSetup(
   const config = fakeConfig(configValues);
   const secrets = new ConnectionSecrets(config);
   const hosts = new PluginHostFactory(config, logs);
-  const containers = new ContainerStarter(docker);
+  const containers = new ContainerStarter(docker, hosts, secrets);
   void CONNECTION_HANDLERS;
   return {
     docker,
@@ -101,7 +101,6 @@ export function connectionSetup(
       registry,
       secrets,
       containers,
-      logs,
     ),
     exporter: new ExportConnectionsHandler(repository, secrets),
     importer: new ImportConnectionsHandler(repository, registry, secrets),

@@ -47,6 +47,9 @@ create a container, wait until ready) is their shared helper; they only ask the 
 
 `planTransfer(source, target)` returns `native` (same type), `interchange` (different types, future,
 via the neutral types in `interchange.ts`) or `unsupported`. Only `native` is implemented.
+A plugin that runs its own container implements `prepare` (create/start it, wait until ready); the API
+(`ContainerStarter`) calls it after a connection is saved and at the start of every run, one call at a
+time per connection. Never rely on the first dump/restore to bring the container up.
 Plugins get everything from `HostContext` (run process, docker, work dir, cancel signal); they never
 touch the network or the database of the app itself.
 

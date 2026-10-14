@@ -106,6 +106,34 @@ describe('postgres docker plugin', () => {
     );
   });
 
+  it('prepare creates a missing container and waits for it, without touching the database', async () => {
+    const host = createFakeHost(respond({ exists: false }));
+    await postgresDockerPlugin.prepare?.(host, connection(), {
+      role: 'target',
+    });
+    expect(host.commands.some((c) => c.args[0] === 'run')).toBe(true);
+    expect(host.commands.some((c) => c.args[0] === 'exec')).toBe(true);
+    expect(
+      host.commands.some(
+        (c) => c.command === 'psql' || c.command === 'pg_dump',
+      ),
+    ).toBe(false);
+  });
+
+  it('prepare starts a stopped container and leaves a running one alone', async () => {
+    const stopped = createFakeHost((spec) => {
+      if (spec.args[0] === 'inspect') return { stdout: 'exited\n' };
+      return respond({ exists: true })(spec);
+    });
+    await postgresDockerPlugin.prepare?.(stopped, connection());
+    expect(stopped.commands.some((c) => c.args[0] === 'start')).toBe(true);
+
+    const running = createFakeHost(respond({ exists: true }));
+    await postgresDockerPlugin.prepare?.(running, connection());
+    expect(running.commands.some((c) => c.args[0] === 'start')).toBe(false);
+    expect(running.commands.some((c) => c.args[0] === 'run')).toBe(false);
+  });
+
   it('does not create a container that already exists', async () => {
     const host = createFakeHost(respond({ exists: true }));
     await postgresDockerPlugin.listDatabases(host, connection());

@@ -89,6 +89,7 @@ describe('runReplication', () => {
       ),
     );
     // Creating them already started them; stop them again, as after a reboot.
+    await s.containers.settled();
     expect(docker.started).toEqual(['id-pg-src', 'id-pg-dst']);
     docker.started.length = 0;
     for (const [i, c] of docker.containers.entries()) {
@@ -102,6 +103,73 @@ describe('runReplication', () => {
 
     expect(docker.started).toEqual(['id-pg-src', 'id-pg-dst']);
     expect((await s.runs.find(run.id))!.status).toBe('succeeded');
+  });
+
+  it('prepares the containers of source and target BEFORE the first dump, and fails the run early when one cannot start', async () => {
+    const engine = newEngine();
+    engine.stores.set('src.example', new Map([['alpha', 'AAAA']]));
+    const order: string[] = [];
+    const base = memoryPlugin(engine);
+    let failTarget = false;
+    const plugin = {
+      ...base,
+      prepare: (_host: unknown, c: { config: Record<string, unknown> }) => {
+        order.push(`prepare:${String(c.config['host'])}`);
+        return String(c.config['host']) === 'dst.example' && failTarget
+          ? Promise.reject(
+              new PluginError('clientToolsMissing', 'Docker is not running'),
+            )
+          : Promise.resolve();
+      },
+      dump: (...args: Parameters<typeof base.dump>) => {
+        order.push('dump');
+        return base.dump(...args);
+      },
+    };
+    const s = replicationSetup([plugin]);
+    const source = await s.create.execute(
+      new CreateConnectionCommand(
+        'Source',
+        'memory',
+        { host: 'src.example' },
+        undefined,
+        undefined,
+      ),
+    );
+    const target = await s.create.execute(
+      new CreateConnectionCommand(
+        'Target',
+        'memory',
+        { host: 'dst.example' },
+        undefined,
+        undefined,
+      ),
+    );
+    await s.containers.settled();
+    order.length = 0;
+
+    const first = await s.start.execute(
+      new StartRunCommand(source.id, target.id, [{ source: 'alpha' }], false),
+    );
+    await runReplication(s.deps, first.id, new AbortController().signal);
+    expect(order).toEqual([
+      'prepare:src.example',
+      'prepare:dst.example',
+      'dump',
+    ]);
+    expect((await s.runs.find(first.id))!.status).toBe('succeeded');
+
+    order.length = 0;
+    failTarget = true;
+    const second = await s.start.execute(
+      new StartRunCommand(source.id, target.id, [{ source: 'alpha' }], true),
+    );
+    await runReplication(s.deps, second.id, new AbortController().signal);
+    const failed = (await s.runs.find(second.id))!;
+    expect(failed.status).toBe('failed');
+    expect(failed.error).toBe('Docker is not running');
+    // Nothing was dumped for a target that could never take it.
+    expect(order).not.toContain('dump');
   });
 
   it('does not touch Docker for a connection that is not from a container', async () => {
