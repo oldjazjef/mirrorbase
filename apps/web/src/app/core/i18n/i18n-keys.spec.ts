@@ -36,6 +36,9 @@ const DYNAMIC_KEYS = [
   ...HTTP_STATUS_NAMES.map((name) => `errors.status.${name}`),
   ...['idle', 'system'].map((reason) => `pin.lock.reason.${reason}`),
   ...['source', 'target'].map((side) => `replicate.${side}`),
+  ...['unknownPlugin', 'invalidEntry', 'nameTaken'].map(
+    (reason) => `connections.import.reasons.${reason}`,
+  ),
   ...['os-keychain', 'file'].map(
     (kind) => `settings.about.keyProtection.${kind}`,
   ),

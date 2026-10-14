@@ -68,7 +68,12 @@
       "currentPinRequired": "Enter the current PIN.",
       "wrongPin": "That PIN is wrong.",
       "pinThrottled": "Too many wrong PINs. Wait a moment.",
-      "confirmationRequired": "Please confirm first."
+      "confirmationRequired": "Please confirm first.",
+      "invalidGroup": "The group name is too long (at most 60 characters).",
+      "invalidExportFile": "This file is not a Mirrorbase export.",
+      "exportPasswordRequired": "This export is encrypted: enter its password.",
+      "exportPasswordTooShort": "The export password needs at least 8 characters.",
+      "wrongExportPassword": "The password is wrong or the file was changed."
     },
     "status": {
       "unreachable": "The app cannot be reached.",
@@ -173,13 +178,51 @@
       "selectDefault": "Default",
       "passwordKept": "Saved - leave blank to keep it",
       "forgetPassword": "Remove the saved password",
-      "passwordForgotten": "The saved password will be removed when you save."
+      "passwordForgotten": "The saved password will be removed when you save.",
+      "group": "Group",
+      "groupPlaceholder": "e.g. Customer A (optional)",
+      "groupHint": "Connections with the same group are listed together. Leave empty for none."
+    },
+    "ungrouped": "Ungrouped",
+    "export": {
+      "open": "Export",
+      "title": "Export connections",
+      "description": "Save all connections to a file, e.g. as a backup or to move them to another computer.",
+      "includePasswords": "Include the saved passwords",
+      "encrypt": "Protect the file with a password",
+      "passwordsNeedEncryption": "Passwords are only exported encrypted, so a password is required.",
+      "password": "Export password",
+      "repeat": "Repeat the password",
+      "tooShort": "Use at least 8 characters.",
+      "mismatch": "The passwords do not match.",
+      "passwordNote": "You need this password to import the file. It cannot be recovered.",
+      "action": "Export",
+      "done": "Connections exported.",
+      "failed": "The connections could not be exported"
+    },
+    "import": {
+      "open": "Import",
+      "title": "Import connections",
+      "description": "Add the connections of an export file to this app.",
+      "file": "Export file",
+      "password": "Password of the export",
+      "encryptedNote": "This file is encrypted. Enter the password you chose when exporting.",
+      "action": "Import",
+      "imported": "{{count}} connection(s) imported.",
+      "renamed": "{{count}} got a number because the name was already taken.",
+      "skipped": "Skipped “{{name}}”: {{reason}}",
+      "reasons": {
+        "unknownPlugin": "unknown database type",
+        "invalidEntry": "invalid entry",
+        "nameTaken": "name already taken"
+      },
+      "failed": "The connections could not be imported"
     }
   },
   "docker": {
     "title": "Databases in Docker",
-    "description": "Running containers on this computer that hold a database.",
-    "empty": "No running containers with a supported database were found.",
+    "description": "Containers on this computer that hold a database. A stopped container is started when you use it.",
+    "empty": "No containers with a supported database were found.",
     "failed": "Docker could not be asked.",
     "unavailable": {
       "notInstalled": "Docker is not installed (or not on the PATH).",
@@ -189,7 +232,8 @@
     "saved": "Saved",
     "useSaved": "Use “{{name}}”",
     "refresh": "Refresh",
-    "passwordNote": "The password is never read from the container: enter it once and it is saved encrypted."
+    "passwordNote": "The password is never read from the container: enter it once and it is saved encrypted.",
+    "stopped": "Stopped"
   },
   "replicate": {
     "title": "Replicate",
@@ -391,7 +435,8 @@
         "steps": {
           "add": "Choose New connection, give it a name and pick the database type.",
           "test": "Fill in the fields the type asks for and test the connection, as source or as target.",
-          "save": "Save. The connection now appears in the lists of Replicate."
+          "save": "Save. The connection now appears in the lists of Replicate.",
+          "group": "Optionally enter a group. Connections with the same group are listed together."
         },
         "tips": {
           "password": "Passwords are saved encrypted and never appear in the log.",
@@ -419,7 +464,8 @@
         "where": "Replicate",
         "steps": {
           "list": "Choose From Docker to list the containers that are running now.",
-          "pick": "Pick one to fill in its address and port. Add the user and password."
+          "pick": "Pick one to fill in its address and port. Add the user and password.",
+          "start": "A stopped container is started for you when you save its connection, list its databases or start a copy."
         },
         "tips": {
           "dockerRunning": "Docker must be running. If it is not, the list says so."
@@ -462,6 +508,20 @@
         },
         "tips": {
           "secrets": "Passwords are hidden in the log."
+        }
+      },
+      "transfer": {
+        "title": "Back up or move connections",
+        "purpose": "Export your connections to a file and import them again, e.g. on another computer.",
+        "where": "Connections",
+        "steps": {
+          "export": "Choose Export. Tick “Include the saved passwords” only if you need them in the file.",
+          "password": "Passwords are only exported encrypted: choose an export password. You can also encrypt a file without passwords.",
+          "import": "Choose Import, pick the file and enter its password if it is encrypted."
+        },
+        "tips": {
+          "encrypted": "Keep the export password safe: without it the file cannot be read.",
+          "names": "A connection whose name already exists is imported with a number appended. Nothing is overwritten."
         }
       }
     },

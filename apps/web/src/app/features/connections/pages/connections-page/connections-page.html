@@ -2,6 +2,20 @@
   [title]="'connections.title' | translate"
   [subtitle]="'connections.subtitle' | translate"
 >
+  <button hlmBtn variant="outline" type="button" (click)="service.openImport()">
+    <ng-icon name="lucideUpload" aria-hidden="true" />
+    {{ 'connections.import.open' | translate }}
+  </button>
+  <button
+    hlmBtn
+    variant="outline"
+    type="button"
+    [disabled]="service.isEmpty()"
+    (click)="service.openExport()"
+  >
+    <ng-icon name="lucideDownload" aria-hidden="true" />
+    {{ 'connections.export.open' | translate }}
+  </button>
   <button hlmBtn type="button" (click)="service.openNew()">
     <ng-icon name="lucidePlus" aria-hidden="true" />
     {{ 'connections.new' | translate }}
@@ -62,7 +76,21 @@
         </tr>
       </thead>
       <tbody hlmTBody>
-        @for (row of service.rows(); track row.connection.id) {
+        @for (group of service.groups(); track group.name) { @if
+        (service.hasGroups()) {
+        <tr hlmTr class="bg-muted/40">
+          <th
+            colspan="6"
+            [attr.scope]="groupScope"
+            class="px-4 py-2 text-left text-sm font-semibold"
+          >
+            {{ group.name ?? ('connections.ungrouped' | translate) }}
+            <span class="text-muted-foreground font-normal"
+              >({{ group.rows.length }})</span
+            >
+          </th>
+        </tr>
+        } @for (row of group.rows; track row.connection.id) {
         <tr hlmTr>
           <td hlmTd class="max-w-0">
             <button
@@ -103,7 +131,7 @@
             <mb-row-actions [actions]="actions" (selected)="act($event, row)" />
           </td>
         </tr>
-        }
+        } }
       </tbody>
     </table>
   </div>
@@ -145,7 +173,11 @@
           </p>
         </div>
         <span hlmBadge variant="secondary">{{ item.pluginName }}</span>
-        @if (item.savedConnectionId) {
+        @if (item.state !== 'running') {
+        <span hlmBadge variant="outline"
+          >{{ 'docker.stopped' | translate }}</span
+        >
+        } @if (item.savedConnectionId) {
         <span hlmBadge variant="outline">{{ 'docker.saved' | translate }}</span>
         }
         <button
@@ -176,6 +208,16 @@
   [prefill]="service.prefill()"
   (closed)="service.closeDialog()"
   (saved)="service.closeDialog()"
+/>
+
+<mb-export-dialog
+  [open]="service.exportOpen()"
+  (closed)="service.exportOpen.set(false)"
+/>
+
+<mb-import-dialog
+  [open]="service.importOpen()"
+  (closed)="service.importOpen.set(false)"
 />
 
 <hlm-dialog

@@ -57,6 +57,7 @@ describe('persistence (SQLite, real migrations)', () => {
       config: { host: 'h', port: 5432 },
       sealedSecrets: { password: 'enc:v1:x:y:z' },
       dockerName: null,
+      group: null,
       ...extra,
     });
 

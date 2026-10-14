@@ -65,6 +65,30 @@
           {{ current.description | mbLocalized }}
         </p>
 
+        <div class="flex min-w-0 flex-col gap-1.5">
+          <label hlmLabel for="mb-conn-group"
+            >{{ 'connections.form.group' | translate }}</label
+          >
+          <input
+            hlmInput
+            id="mb-conn-group"
+            type="text"
+            autocomplete="off"
+            [attr.list]="groupListId"
+            maxlength="60"
+            [formControl]="groupControl"
+            [attr.placeholder]="'connections.form.groupPlaceholder' | translate"
+          />
+          <datalist [id]="groupListId">
+            @for (group of groups(); track group) {
+            <option [value]="group"></option>
+            }
+          </datalist>
+          <p class="text-muted-foreground text-xs">
+            {{ 'connections.form.groupHint' | translate }}
+          </p>
+        </div>
+
         <mb-plugin-fields
           [fields]="current.fields"
           [form]="form()"

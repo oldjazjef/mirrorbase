@@ -16,6 +16,8 @@ export interface Connection {
   readonly secretKeys: readonly string[];
   /** The Docker container it was created from, informational. */
   readonly dockerName: string | null;
+  /** The group it is listed under, null when ungrouped. */
+  readonly group: string | null;
   readonly createdAt: string;
   readonly updatedAt: string;
   readonly lastUsedAt: string | null;
@@ -33,12 +35,15 @@ export interface NewConnection {
   readonly config: ConnectionConfig;
   readonly sealedSecrets: Readonly<Record<string, string>>;
   readonly dockerName: string | null;
+  readonly group: string | null;
 }
 
 export interface ConnectionPatch {
   readonly name?: string;
   readonly config?: ConnectionConfig;
   readonly sealedSecrets?: Readonly<Record<string, string>>;
+  /** null removes the connection from its group. */
+  readonly group?: string | null;
 }
 
 /** Thrown by the repository when `name` is taken. */
@@ -46,6 +51,14 @@ export class ConnectionNameTakenError extends Error {
   constructor(readonly connectionName: string) {
     super(`A connection named "${connectionName}" exists already`);
   }
+}
+
+export const MAX_GROUP_LENGTH = 60;
+
+/** A group name as stored: trimmed, single-spaced; blank means "no group". */
+export function cleanGroup(raw: string | null | undefined): string | null {
+  const group = cleanName(raw ?? '');
+  return group.length === 0 ? null : group;
 }
 
 export function cleanName(raw: string): string {

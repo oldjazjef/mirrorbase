@@ -21,8 +21,14 @@ export const HELP_SECTIONS: readonly HelpSection[] = [
   },
   {
     id: 'connections',
-    steps: ['add', 'test', 'save'],
+    steps: ['add', 'test', 'save', 'group'],
     tips: ['password', 'docker'],
+    links: [{ id: 'connections', path: '/app/connections' }],
+  },
+  {
+    id: 'transfer',
+    steps: ['export', 'password', 'import'],
+    tips: ['encrypted', 'names'],
     links: [{ id: 'connections', path: '/app/connections' }],
   },
   {
@@ -33,7 +39,7 @@ export const HELP_SECTIONS: readonly HelpSection[] = [
   },
   {
     id: 'docker',
-    steps: ['list', 'pick'],
+    steps: ['list', 'pick', 'start'],
     tips: ['dockerRunning'],
     links: [{ id: 'replicate', path: '/app/replicate' }],
   },

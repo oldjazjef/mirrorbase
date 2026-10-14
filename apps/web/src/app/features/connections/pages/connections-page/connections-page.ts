@@ -8,9 +8,11 @@ import {
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideBox,
+  lucideDownload,
   lucidePencil,
   lucidePlus,
   lucideTrash2,
+  lucideUpload,
 } from '@ng-icons/lucide';
 import { TranslatePipe } from '@ngx-translate/core';
 import { HlmBadge } from '@mirrorbase/ui/badge';
@@ -20,6 +22,8 @@ import { HlmSkeletonImports } from '@mirrorbase/ui/skeleton';
 import { HlmTableImports } from '@mirrorbase/ui/table';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import { ConnectionDialog } from '../../../../shared/components/connection-dialog';
+import { ExportDialog } from '../../components/export-dialog/export-dialog';
+import { ImportDialog } from '../../components/import-dialog/import-dialog';
 import { EmptyState } from '../../../../shared/components/empty-state';
 import { PageHeader } from '../../../../shared/components/page-header';
 import {
@@ -42,6 +46,8 @@ type RowActionId = 'edit' | 'delete';
     HlmBadge,
     TranslatePipe,
     ConnectionDialog,
+    ExportDialog,
+    ImportDialog,
     EmptyState,
     PageHeader,
     RowActions,
@@ -52,7 +58,14 @@ type RowActionId = 'edit' | 'delete';
     ...HlmTableImports,
   ],
   providers: [
-    provideIcons({ lucideBox, lucidePencil, lucidePlus, lucideTrash2 }),
+    provideIcons({
+      lucideBox,
+      lucideDownload,
+      lucidePencil,
+      lucidePlus,
+      lucideTrash2,
+      lucideUpload,
+    }),
   ],
   templateUrl: './connections-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -60,6 +73,7 @@ type RowActionId = 'edit' | 'delete';
 export class ConnectionsPage {
   protected readonly service = inject(ConnectionsPageService);
   protected readonly language = inject(LanguageService);
+  protected readonly groupScope = 'colgroup';
   protected readonly skeletonRows = [1, 2, 3];
 
   protected readonly actions: readonly RowAction<RowActionId>[] = [

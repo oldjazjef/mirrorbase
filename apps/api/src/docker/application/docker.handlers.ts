@@ -15,6 +15,8 @@ export interface DockerDatabase {
   readonly name: string;
   readonly config: Readonly<Record<string, string | number | boolean>>;
   readonly summary: string;
+  /** `running`, `exited`, ... - a stopped one is started when it is used. */
+  readonly state: string;
   /** A saved connection that already points at this container's published port. */
   readonly savedConnectionId: string | null;
 }
@@ -47,7 +49,7 @@ export class ListDockerDatabasesHandler implements IQueryHandler<
   async execute(): Promise<DockerDatabases> {
     let containers;
     try {
-      containers = await this.docker.listRunning();
+      containers = await this.docker.list();
     } catch (error) {
       if (error instanceof DockerUnavailableError) {
         return { available: false, reason: error.reason, items: [] };
@@ -75,6 +77,9 @@ export class ListDockerDatabasesHandler implements IQueryHandler<
           name: endpoint.name,
           config: endpoint.config,
           summary: endpoint.summary,
+          state:
+            containers.find((c) => c.id === endpoint.containerId)?.state ??
+            'unknown',
           savedConnectionId: match?.id ?? null,
         });
       }

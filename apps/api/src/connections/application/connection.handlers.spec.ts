@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { type DatabasePlugin, PluginError } from '@mirrorbase/db-plugin';
 import { sqlitePlugin } from '@mirrorbase/plugin-sqlite';
-import { connectionSetup } from '../testing/connection-fixture';
+import { connectionSetup, FakeDocker } from '../testing/connection-fixture';
 import {
   CreateConnectionCommand,
   DeleteConnectionCommand,
@@ -488,5 +488,144 @@ describe('listing databases', () => {
     ).rejects.toMatchObject({
       response: { code: 'connectionFailed' },
     });
+  });
+});
+
+describe('connections from a Docker container', () => {
+  const container = (state: string) => ({
+    id: 'id-pg',
+    name: 'pg',
+    image: 'postgres:16',
+    imageTag: '16',
+    state,
+    ports: [],
+    env: {},
+  });
+  const sqliteLike = (listed: string[][] = []): DatabasePlugin => ({
+    ...sqlitePlugin,
+    id: 'dockerish',
+    name: 'Dockerish',
+    connectionFields: [],
+    validate: () => [],
+    testConnection: () => Promise.resolve({ ok: true }),
+    listDatabases: () => {
+      listed.push([]);
+      return Promise.resolve(['a']);
+    },
+  });
+
+  it('starts a stopped container when the connection is created', async () => {
+    const docker = new FakeDocker([container('exited')]);
+    const s = connectionSetup([sqliteLike()], {}, docker);
+    await s.create.execute(
+      new CreateConnectionCommand('Pg', 'dockerish', {}, undefined, 'pg'),
+    );
+    expect(docker.started).toEqual(['id-pg']);
+  });
+
+  it('leaves a running container alone', async () => {
+    const docker = new FakeDocker([container('running')]);
+    const s = connectionSetup([sqliteLike()], {}, docker);
+    await s.create.execute(
+      new CreateConnectionCommand('Pg', 'dockerish', {}, undefined, 'pg'),
+    );
+    expect(docker.started).toEqual([]);
+  });
+
+  it('starts it before the databases are listed, and then lists them', async () => {
+    const docker = new FakeDocker([container('running')]);
+    const s = connectionSetup([sqliteLike()], {}, docker);
+    const { id } = await s.create.execute(
+      new CreateConnectionCommand('Pg', 'dockerish', {}, undefined, 'pg'),
+    );
+    docker.containers[0] = container('exited'); // the machine was rebooted
+    expect(
+      await s.databases.execute(new ListConnectionDatabasesQuery(id)),
+    ).toEqual(['a']);
+    expect(docker.started).toEqual(['id-pg']);
+  });
+
+  it('still saves the connection when Docker cannot be reached or the container is gone', async () => {
+    const down = connectionSetup([sqliteLike()], {}, new FakeDocker([], true));
+    await expect(
+      down.create.execute(
+        new CreateConnectionCommand('A', 'dockerish', {}, undefined, 'pg'),
+      ),
+    ).resolves.toMatchObject({ dockerName: 'pg' });
+
+    const gone = connectionSetup([sqliteLike()], {}, new FakeDocker([]));
+    await expect(
+      gone.create.execute(
+        new CreateConnectionCommand('B', 'dockerish', {}, undefined, 'pg'),
+      ),
+    ).resolves.toMatchObject({ dockerName: 'pg' });
+  });
+});
+
+describe('connection groups', () => {
+  it('saves, changes and removes a group', async () => {
+    const s = connectionSetup();
+    const created = await s.create.execute(
+      new CreateConnectionCommand(
+        'Prod',
+        'postgres',
+        PG,
+        undefined,
+        undefined,
+        '  Work   DBs ',
+      ),
+    );
+    expect(created.group).toBe('Work DBs');
+
+    const kept = await s.update.execute(
+      new UpdateConnectionCommand(
+        created.id,
+        'Prod 2',
+        undefined,
+        undefined,
+        undefined,
+      ),
+    );
+    expect(kept.group).toBe('Work DBs');
+
+    const moved = await s.update.execute(
+      new UpdateConnectionCommand(
+        created.id,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'Home',
+      ),
+    );
+    expect(moved.group).toBe('Home');
+
+    const removed = await s.update.execute(
+      new UpdateConnectionCommand(
+        created.id,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        '',
+      ),
+    );
+    expect(removed.group).toBeNull();
+  });
+
+  it('refuses a group name that is too long', async () => {
+    const s = connectionSetup();
+    await expect(
+      s.create.execute(
+        new CreateConnectionCommand(
+          'X',
+          'postgres',
+          PG,
+          undefined,
+          undefined,
+          'g'.repeat(61),
+        ),
+      ),
+    ).rejects.toMatchObject({ response: { code: 'invalidGroup' } });
   });
 });

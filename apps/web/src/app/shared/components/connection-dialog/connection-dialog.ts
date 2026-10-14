@@ -74,6 +74,11 @@ export interface ConnectionPrefill {
 export class ConnectionDialog {
   private readonly connections = inject(ConnectionsService);
   protected readonly plugins = inject(PluginsService);
+  protected readonly groupListId = 'mb-conn-groups';
+  protected readonly groups = this.connections.groups;
+  protected readonly groupControl = new FormControl('', {
+    nonNullable: true,
+  });
 
   readonly open = input(false);
   /** Edit this connection (its type cannot change). */
@@ -124,6 +129,7 @@ export class ConnectionDialog {
         const pluginId =
           available.find((p) => p.id === wanted)?.id ?? available[0]?.id ?? '';
         this.pluginId.set(pluginId);
+        this.groupControl.setValue(existing?.group ?? '');
         this.rebuild(existing, prefill);
       });
     });
@@ -236,6 +242,7 @@ export class ConnectionDialog {
             config,
             secrets,
             clearSecrets: this.forgotten().filter((key) => !(key in secrets)),
+            group: this.groupControl.value.trim(),
           })
         : await this.connections.create({
             name,
@@ -243,6 +250,9 @@ export class ConnectionDialog {
             config,
             secrets,
             ...(dockerName ? { dockerName } : {}),
+            ...(this.groupControl.value.trim()
+              ? { group: this.groupControl.value.trim() }
+              : {}),
           });
       this.saved.emit(result);
     } catch {

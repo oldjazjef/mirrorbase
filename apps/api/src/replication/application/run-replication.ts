@@ -1,5 +1,6 @@
 import { rm } from 'node:fs/promises';
 import { PluginError } from '@mirrorbase/db-plugin';
+import { ContainerStarter } from '../../connections/application/container-starter';
 import { ConnectionSecrets } from '../../connections/application/secrets';
 import { ConnectionRepositoryPort } from '../../connections/ports/connection.repository.port';
 import { PluginHostFactory } from '../../plugins/plugin-host';
@@ -13,6 +14,8 @@ export interface ReplicationDeps {
   readonly registry: PluginRegistry;
   readonly secrets: ConnectionSecrets;
   readonly hosts: PluginHostFactory;
+  /** Starts the Docker containers connections were made from. */
+  readonly containers: ContainerStarter;
   readonly now?: () => Date;
 }
 
@@ -96,6 +99,21 @@ export async function runReplication(
     const targetPlugin = deps.registry.require(target.pluginId);
     const sourceConnection = deps.secrets.toPluginConnection(source);
     const targetConnection = deps.secrets.toPluginConnection(target);
+    // A connection made from a Docker container only works while the container runs.
+    await deps.containers.ensureReady(
+      source.dockerName,
+      sourcePlugin,
+      sourceConnection,
+      host,
+      'source',
+    );
+    await deps.containers.ensureReady(
+      target.dockerName,
+      targetPlugin,
+      targetConnection,
+      host,
+      'target',
+    );
     const workDir = await host.workDir();
 
     for (const [index, database] of [...databases].entries()) {

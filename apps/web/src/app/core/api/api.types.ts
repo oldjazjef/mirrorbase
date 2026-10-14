@@ -88,6 +88,8 @@ export interface Connection {
   /** Keys of the password fields that have a saved value (never the values). */
   readonly secretKeys: readonly string[];
   readonly dockerName: string | null;
+  /** The group it is listed under, null when ungrouped. */
+  readonly group: string | null;
   readonly createdAt: string;
   readonly updatedAt: string;
   readonly lastUsedAt: string | null;
@@ -99,6 +101,7 @@ export interface ConnectionInput {
   readonly config: Record<string, FieldValue>;
   readonly secrets: Record<string, string>;
   readonly dockerName?: string;
+  readonly group?: string;
 }
 
 export interface ConnectionUpdate {
@@ -107,6 +110,28 @@ export interface ConnectionUpdate {
   /** New passwords only; absent = keep. */
   readonly secrets: Record<string, string>;
   readonly clearSecrets: readonly string[];
+  /** Empty removes the connection from its group. */
+  readonly group?: string;
+}
+
+export interface ExportRequest {
+  readonly includePasswords: boolean;
+  /** Encrypts the file; required with `includePasswords`. */
+  readonly password?: string;
+}
+
+export interface ImportRequest {
+  readonly content: string;
+  readonly password?: string;
+}
+
+export interface ImportResult {
+  readonly imported: number;
+  readonly renamed: number;
+  readonly skipped: readonly {
+    readonly name: string;
+    readonly reason: string;
+  }[];
 }
 
 export interface TestRequest {
@@ -138,6 +163,8 @@ export interface DockerDatabase {
   readonly name: string;
   readonly config: Readonly<Record<string, FieldValue>>;
   readonly summary: string;
+  /** Docker's state: `running`, `exited`, ... A stopped container is started when used. */
+  readonly state: string;
   readonly savedConnectionId: string | null;
 }
 

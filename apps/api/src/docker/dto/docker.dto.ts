@@ -19,6 +19,11 @@ export class DockerDatabaseDto {
   })
   config!: Record<string, string | number | boolean>;
   @ApiProperty() summary!: string;
+  @ApiProperty({
+    example: 'running',
+    description: 'Docker state; a stopped container is started when it is used',
+  })
+  state!: string;
   @ApiProperty({ type: String, nullable: true }) savedConnectionId!:
     string | null;
 

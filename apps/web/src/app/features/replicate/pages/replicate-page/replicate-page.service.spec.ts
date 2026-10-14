@@ -36,6 +36,7 @@ const connection = (id: string, pluginId: string): Connection => ({
   config: { host: id },
   secretKeys: [],
   dockerName: null,
+  group: null,
   createdAt: '2026-10-09T10:00:00Z',
   updatedAt: '2026-10-09T10:00:00Z',
   lastUsedAt: null,

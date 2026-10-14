@@ -21,6 +21,11 @@ export const API_ERROR_CODES = [
   'unknownPlugin',
   'pluginMismatch',
   'secretsUnavailable',
+  'invalidGroup',
+  'invalidExportFile',
+  'exportPasswordRequired',
+  'exportPasswordTooShort',
+  'wrongExportPassword',
   // runs
   'runNotFound',
   'runInProgress',
